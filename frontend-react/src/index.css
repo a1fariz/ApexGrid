@@ -1,0 +1,259 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;700;900&display=swap');
+
+/* ============================================================
+   APEXGRID — F1 Theme CSS Variables
+   ============================================================ */
+:root {
+  --f1-red: #E10600;
+  --f1-red-dark: #b00500;
+  --f1-black: #15151E;
+  --f1-dark: #1F1F27;
+  --f1-darker: #0f0f17;
+  --f1-card: #1e1e2e;
+  --f1-gray: #38383F;
+  --f1-light: #8f8f9a;
+  --f1-white: #FFFFFF;
+  --f1-gold: #FFD700;
+  --f1-green: #00D2BE;
+  --f1-yellow: #FFD700;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--f1-black);
+  color: var(--f1-white);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--f1-black); }
+::-webkit-scrollbar-thumb { background: var(--f1-red); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--f1-red-dark); }
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+.font-f1 {
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  letter-spacing: 0.05em;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn-primary {
+  @apply px-6 py-3 bg-f1-red text-white font-semibold rounded-lg transition-all duration-200;
+  @apply hover:bg-red-700 hover:shadow-lg hover:shadow-red-900/30 active:scale-95;
+}
+
+.btn-secondary {
+  @apply px-6 py-3 bg-f1-gray text-white font-semibold rounded-lg transition-all duration-200;
+  @apply hover:bg-gray-600 active:scale-95;
+}
+
+.btn-outline {
+  @apply px-6 py-3 border border-f1-red text-f1-red font-semibold rounded-lg transition-all duration-200;
+  @apply hover:bg-f1-red hover:text-white active:scale-95;
+}
+
+.btn-ghost {
+  @apply px-4 py-2 text-gray-300 font-medium rounded-lg transition-all duration-200;
+  @apply hover:text-white hover:bg-white/10 active:scale-95;
+}
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.card {
+  background: var(--f1-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: rgba(225,6,0,0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(225,6,0,0.15);
+}
+
+.glass-card {
+  background: rgba(30, 30, 46, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+}
+
+/* ============================================================
+   FORMS
+   ============================================================ */
+.form-input {
+  @apply w-full px-4 py-3 rounded-lg bg-f1-gray border border-transparent text-white placeholder-gray-500;
+  @apply focus:outline-none focus:border-f1-red focus:ring-1 focus:ring-f1-red transition-all duration-200;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-gray-300 mb-2;
+}
+
+/* ============================================================
+   BADGES / STATUS
+   ============================================================ */
+.badge-upcoming {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+  background: rgba(0, 210, 190, 0.15);
+  color: #00D2BE;
+  border: 1px solid rgba(0, 210, 190, 0.3);
+}
+
+.badge-pending {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+  background: rgba(255, 215, 0, 0.15);
+  color: #FFD700;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.badge-confirmed {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badge-cancelled {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+  background: rgba(225, 6, 0, 0.15);
+  color: #E10600;
+  border: 1px solid rgba(225, 6, 0, 0.3);
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(225, 6, 0, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(225, 6, 0, 0); }
+}
+
+@keyframes spin-f1 {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-slide-left {
+  animation: slideInLeft 0.3s ease-out forwards;
+}
+
+.spin-f1 {
+  animation: spin-f1 0.8s linear infinite;
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.navbar-blur {
+  background: rgba(15, 15, 23, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* ============================================================
+   HERO STRIPE DECORATION
+   ============================================================ */
+.f1-stripe {
+  background: linear-gradient(90deg, var(--f1-red) 0%, transparent 100%);
+  height: 4px;
+  width: 80px;
+  border-radius: 2px;
+}
+
+/* ============================================================
+   TABLE
+   ============================================================ */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  background: rgba(255,255,255,0.05);
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #8f8f9a;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.data-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 14px;
+}
+
+.data-table tr:hover td {
+  background: rgba(255,255,255,0.02);
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast-success {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #10B981;
+}
+
+.toast-error {
+  background: rgba(225, 6, 0, 0.15);
+  border: 1px solid rgba(225, 6, 0, 0.4);
+  color: #ff4d4d;
+}
+
+/* ============================================================
+   LOADING
+   ============================================================ */
+.spinner-f1 {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(225, 6, 0, 0.1);
+  border-top-color: var(--f1-red);
+  border-radius: 50%;
+  animation: spin-f1 0.8s linear infinite;
+}
