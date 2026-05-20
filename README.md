@@ -144,7 +144,7 @@
 <details>
 <summary><strong>User Profile & E-Tickets (Level 2)</strong></summary>
 <br/>
-<img src="docs/images/user_profile.png" alt="User Profile" width="100%" />
+<img src="" alt="User Profile" width="100%" />
 <p><em>User profile showing account details, booking statistics, and the ability to download PDF e-tickets with QR codes for confirmed F1 bookings.</em></p>
 </details>
 
@@ -155,7 +155,7 @@
 <details open>
 <summary><strong>Admin Dashboard — Analytics (Level 2)</strong></summary>
 <br/>
-<img src="docs/images/admin_dashboard.png" alt="Admin Dashboard" width="100%" />
+<img src="" alt="Admin Dashboard" width="100%" />
 <p><em>Admin overview featuring real-time statistics (Revenue, Tickets Sold, Unique Customers) powered by database views, booking status breakdown, and race popularity charts.</em></p>
 </details>
 
@@ -183,7 +183,7 @@
 <details>
 <summary><strong>Circuit Management (Level 1)</strong></summary>
 <br/>
-<img src="docs/images/circuit_management.png" alt="Circuit Management Table" width="100%" />
+<img src="" alt="Circuit Management Table" width="100%" />
 <p><em>Full CRUD interface for managing F1 circuits. Includes track length, lap records, and location data which acts as the foundation for F1 races.</em></p>
 </details>
 
