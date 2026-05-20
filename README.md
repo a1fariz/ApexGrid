@@ -116,7 +116,7 @@
 <details open>
 <summary><strong>Home Page — Hero, Search & Pagination (Level 1)</strong></summary>
 <br/>
-<img src="docs/images/home.png" alt="Home Page" width="100%" />
+<img src="" alt="Home Page" width="100%" />
 <p><em>Landing page with "Experience Formula 1" hero section, advanced search bar, season/status filters, and paginated race cards.</em></p>
 </details>
 
