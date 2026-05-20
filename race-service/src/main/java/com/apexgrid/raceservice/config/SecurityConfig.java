@@ -30,10 +30,18 @@ public class SecurityConfig {
                 .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**").permitAll()
                 // Public: GET races (list, detail, upcoming, circuits)
                 .requestMatchers(HttpMethod.GET, "/api/races/**").permitAll()
+                // Public: GET circuits
+                .requestMatchers(HttpMethod.GET, "/api/circuits/**").permitAll()
                 // ADMIN only: POST, PUT, DELETE races
                 .requestMatchers(HttpMethod.POST, "/api/races/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/races/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/races/**").hasRole("ADMIN")
+                // ADMIN only: POST, PUT, DELETE circuits
+                .requestMatchers(HttpMethod.POST, "/api/circuits/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/circuits/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/circuits/**").hasRole("ADMIN")
+                // ADMIN only: statistics
+                .requestMatchers("/api/statistics/**").hasRole("ADMIN")
                 // All booking endpoints require authentication
                 .requestMatchers("/api/bookings/**").authenticated()
                 .anyRequest().authenticated()

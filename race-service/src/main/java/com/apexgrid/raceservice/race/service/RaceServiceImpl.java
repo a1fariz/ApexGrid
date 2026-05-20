@@ -17,6 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -116,6 +120,31 @@ public class RaceServiceImpl implements RaceService {
                 .stream()
                 .map(this::mapToCircuitResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<RaceResponse> searchRaces(String search, Integer season, String status, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("raceDate").ascending());
+        
+        String searchPattern = (search != null && !search.trim().isEmpty()) 
+                ? "%" + search.trim().toLowerCase() + "%" 
+                : null;
+        String statusFilter = (status != null && !status.trim().isEmpty()) 
+                ? status.trim().toUpperCase() 
+                : null;
+
+        Page<Race> racePage = raceRepository.searchRaces(
+                searchPattern,
+                season,
+                statusFilter,
+                pageRequest
+        );
+        return racePage.map(this::mapToRaceResponse);
+    }
+
+    @Override
+    public List<Integer> getSeasons() {
+        return raceRepository.findDistinctSeasons();
     }
 
     private RaceResponse mapToRaceResponse(Race race) {

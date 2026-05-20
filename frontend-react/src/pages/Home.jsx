@@ -5,39 +5,74 @@ import RaceCard from '../components/RaceCard'
 import LoadingSpinner from '../components/LoadingSpinner'
 import api from '../services/api'
 
-const STATS = [
-  { label: 'Active Races', value: '6', icon: '🏁' },
-  { label: 'Circuits', value: '6', icon: '🗺️' },
-  { label: 'Countries', value: '6', icon: '🌍' },
-  { label: 'Season', value: '2026', icon: '📅' },
-]
-
 export default function Home() {
   const [races, setRaces] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [filter, setFilter] = useState('ALL')
+
+  // Search & Filter state
+  const [search, setSearch] = useState('')
+  const [season, setSeason] = useState('')
+  const [statusFilter, setStatusFilter] = useState('')
+  const [seasons, setSeasons] = useState([])
+
+  // Pagination state
+  const [page, setPage] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
+  const [totalElements, setTotalElements] = useState(0)
+  const PAGE_SIZE = 9
 
   useEffect(() => {
-    const fetchRaces = async () => {
+    const fetchSeasons = async () => {
       try {
-        const res = await api.get('/races')
-        setRaces(res.data)
+        const res = await api.get('/races/seasons')
+        setSeasons(res.data)
       } catch (err) {
-        setError('Failed to load races. Please try again.')
-      } finally {
-        setLoading(false)
+        console.error('Failed to load seasons')
       }
     }
-    fetchRaces()
+    fetchSeasons()
   }, [])
 
-  const filteredRaces = races.filter(race => {
-    if (filter === 'ALL') return true
-    return race.status === filter
-  })
+  useEffect(() => {
+    fetchRaces()
+  }, [page, search, season, statusFilter])
 
-  const statuses = ['ALL', ...new Set(races.map(r => r.status))]
+  const fetchRaces = async () => {
+    setLoading(true)
+    try {
+      const params = new URLSearchParams()
+      params.append('page', page)
+      params.append('size', PAGE_SIZE)
+      if (search) params.append('search', search)
+      if (season) params.append('season', season)
+      if (statusFilter) params.append('status', statusFilter)
+
+      const res = await api.get(`/races/search?${params.toString()}`)
+      setRaces(res.data.content)
+      setTotalPages(res.data.totalPages)
+      setTotalElements(res.data.totalElements)
+    } catch (err) {
+      setError('Failed to load races. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault()
+    setPage(0)
+    fetchRaces()
+  }
+
+  const clearFilters = () => {
+    setSearch('')
+    setSeason('')
+    setStatusFilter('')
+    setPage(0)
+  }
+
+  const hasFilters = search || season || statusFilter
 
   return (
     <div className="min-h-screen">
@@ -51,18 +86,13 @@ export default function Home() {
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-f1-red/5 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-f1-red/3 rounded-full blur-3xl" />
-
-          {/* F1 speed lines */}
           <div className="absolute inset-0 opacity-5">
             {[...Array(8)].map((_, i) => (
               <div key={i}
                 className="absolute h-px bg-gradient-to-r from-transparent via-f1-red to-transparent"
                 style={{
-                  top: `${10 + i * 12}%`,
-                  left: '-10%',
-                  right: '-10%',
-                  transform: `rotate(-3deg)`,
-                  opacity: 1 - i * 0.1,
+                  top: `${10 + i * 12}%`, left: '-10%', right: '-10%',
+                  transform: 'rotate(-3deg)', opacity: 1 - i * 0.1,
                 }}
               />
             ))}
@@ -97,50 +127,73 @@ export default function Home() {
               Get Started
             </Link>
           </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 animate-fade-in"
-               style={{ animationDelay: '0.4s' }}>
-            {STATS.map((stat) => (
-              <div key={stat.label} className="glass-card p-4 text-center">
-                <div className="text-2xl mb-2">{stat.icon}</div>
-                <div className="font-f1 text-2xl font-bold text-f1-red">{stat.value}</div>
-                <div className="text-xs text-gray-400 mt-1">{stat.label}</div>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
       {/* Races Section */}
       <section id="races" className="max-w-7xl mx-auto px-4 py-16">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
-          <div>
-            <div className="f1-stripe mb-3" />
-            <h2 className="text-3xl font-bold text-white">Race Calendar</h2>
-            <p className="text-gray-400 mt-1">
-              {races.length} race{races.length !== 1 ? 's' : ''} available
-            </p>
-          </div>
+        <div className="mb-8">
+          <div className="f1-stripe mb-3" />
+          <h2 className="text-3xl font-bold text-white">Race Calendar</h2>
+          <p className="text-gray-400 mt-1">
+            {totalElements} race{totalElements !== 1 ? 's' : ''} found
+          </p>
+        </div>
 
-          {/* Status Filter */}
-          <div className="flex items-center gap-2 flex-wrap">
-            {statuses.map((status) => (
+        {/* Search & Filter Bar */}
+        <div className="card p-4 mb-8">
+          <form onSubmit={handleSearchSubmit} className="flex flex-col md:flex-row gap-3">
+            {/* Search Input */}
+            <div className="flex-1 relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">🔍</span>
+              <input
+                id="race-search-input"
+                type="text"
+                placeholder="Search races, circuits, countries..."
+                className="form-input pl-10 w-full"
+                value={search}
+                onChange={(e) => { setSearch(e.target.value); setPage(0) }}
+              />
+            </div>
+
+            {/* Season Filter */}
+            <select
+              id="season-filter"
+              className="form-input w-full md:w-36"
+              value={season}
+              onChange={(e) => { setSeason(e.target.value); setPage(0) }}
+            >
+              <option value="">All Seasons</option>
+              {seasons.map(s => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+
+            {/* Status Filter */}
+            <select
+              id="status-filter"
+              className="form-input w-full md:w-40"
+              value={statusFilter}
+              onChange={(e) => { setStatusFilter(e.target.value); setPage(0) }}
+            >
+              <option value="">All Statuses</option>
+              <option value="UPCOMING">UPCOMING</option>
+              <option value="LIVE">LIVE</option>
+              <option value="COMPLETED">COMPLETED</option>
+              <option value="CANCELLED">CANCELLED</option>
+            </select>
+
+            {hasFilters && (
               <button
-                key={status}
-                onClick={() => setFilter(status)}
-                id={`filter-${status}`}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  filter === status
-                    ? 'bg-f1-red text-white'
-                    : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
-                }`}
+                type="button"
+                onClick={clearFilters}
+                className="btn-ghost text-sm text-gray-400 hover:text-white"
               >
-                {status}
+                ✕ Clear
               </button>
-            ))}
-          </div>
+            )}
+          </form>
         </div>
 
         {/* Content */}
@@ -152,23 +205,61 @@ export default function Home() {
           <div className="text-center py-24">
             <div className="text-5xl mb-4">⚠️</div>
             <p className="text-red-400 text-lg">{error}</p>
-            <button onClick={() => window.location.reload()} className="btn-primary mt-4">
-              Retry
-            </button>
+            <button onClick={() => window.location.reload()} className="btn-primary mt-4">Retry</button>
           </div>
-        ) : filteredRaces.length === 0 ? (
+        ) : races.length === 0 ? (
           <div className="text-center py-24">
             <div className="text-5xl mb-4">🏁</div>
-            <p className="text-gray-400 text-lg">No races found for this filter</p>
+            <p className="text-gray-400 text-lg">No races found</p>
+            {hasFilters && (
+              <button onClick={clearFilters} className="btn-primary mt-4">Clear Filters</button>
+            )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredRaces.map((race, index) => (
-              <div key={race.id} className="animate-fade-in" style={{ animationDelay: `${index * 0.05}s` }}>
-                <RaceCard race={race} />
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {races.map((race, index) => (
+                <div key={race.id} className="animate-fade-in" style={{ animationDelay: `${index * 0.05}s` }}>
+                  <RaceCard race={race} />
+                </div>
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-10">
+                <button
+                  onClick={() => setPage(p => Math.max(0, p - 1))}
+                  disabled={page === 0}
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                >
+                  ← Prev
+                </button>
+
+                {[...Array(totalPages)].map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setPage(i)}
+                    className={`w-10 h-10 rounded-lg text-sm font-medium transition-all ${
+                      page === i
+                        ? 'bg-f1-red text-white'
+                        : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+
+                <button
+                  onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                  disabled={page >= totalPages - 1}
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                >
+                  Next →
+                </button>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </section>
 

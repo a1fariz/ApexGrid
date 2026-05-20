@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 @RestController
 @RequestMapping("/api/races")
 @RequiredArgsConstructor
@@ -38,6 +40,21 @@ public class RaceController {
     @GetMapping("/circuits")
     public ResponseEntity<List<CircuitResponse>> getAllCircuits() {
         return ResponseEntity.ok(raceService.getAllCircuits());
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<RaceResponse>> searchRaces(
+            @RequestParam(required = false, name = "search") String search,
+            @RequestParam(required = false, name = "season") Integer season,
+            @RequestParam(required = false, name = "status") String status,
+            @RequestParam(defaultValue = "0", name = "page") int page,
+            @RequestParam(defaultValue = "9", name = "size") int size) {
+        return ResponseEntity.ok(raceService.searchRaces(search, season, status, page, size));
+    }
+
+    @GetMapping("/seasons")
+    public ResponseEntity<List<Integer>> getSeasons() {
+        return ResponseEntity.ok(raceService.getSeasons());
     }
 
     @PostMapping

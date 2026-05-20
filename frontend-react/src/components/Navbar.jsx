@@ -33,7 +33,10 @@ export default function Navbar() {
             <Link to="/" className="btn-ghost text-sm">Races</Link>
 
             {isAuthenticated() && (
-              <Link to="/bookings" className="btn-ghost text-sm">My Bookings</Link>
+              <>
+                <Link to="/bookings" className="btn-ghost text-sm">My Bookings</Link>
+                <Link to="/profile" className="btn-ghost text-sm">Profile</Link>
+              </>
             )}
 
             {isAdmin() && (
@@ -82,9 +85,14 @@ export default function Navbar() {
             </Link>
 
             {isAuthenticated() && (
-              <Link to="/bookings" className="block px-4 py-2 rounded-lg hover:bg-white/5 text-sm" onClick={() => setMenuOpen(false)}>
-                🎫 My Bookings
-              </Link>
+              <>
+                <Link to="/bookings" className="block px-4 py-2 rounded-lg hover:bg-white/5 text-sm" onClick={() => setMenuOpen(false)}>
+                  🎫 My Bookings
+                </Link>
+                <Link to="/profile" className="block px-4 py-2 rounded-lg hover:bg-white/5 text-sm" onClick={() => setMenuOpen(false)}>
+                  👤 My Profile
+                </Link>
+              </>
             )}
 
             {isAdmin() && (

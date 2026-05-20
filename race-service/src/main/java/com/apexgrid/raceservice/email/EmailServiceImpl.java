@@ -14,6 +14,8 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.time.format.DateTimeFormatter;
 
+import org.springframework.core.io.ByteArrayResource;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -93,6 +95,51 @@ public class EmailServiceImpl implements EmailService {
             emailLog.setStatus("FAILED");
             emailLog.setErrorMessage(e.getMessage());
             log.error("Failed to send cancellation email: {}", e.getMessage());
+        } finally {
+            emailLogRepository.save(emailLog);
+        }
+    }
+
+    @Override
+    @Async("emailTaskExecutor")
+    public void sendTicketEmail(Booking booking, String userEmail, byte[] pdfTicket) {
+        String recipient = userEmail != null ? userEmail : "user-" + booking.getUserId() + "@apexgrid.local";
+        String subject = "🎫 Your F1 Ticket — " + booking.getBookingCode();
+        String body = buildTicketEmailHtml(booking);
+
+        EmailLog emailLog = EmailLog.builder()
+                .recipientEmail(recipient)
+                .subject(subject)
+                .body(body)
+                .emailType("TICKET_DELIVERY")
+                .booking(booking)
+                .status("PENDING")
+                .build();
+
+        try {
+            if (userEmail != null && pdfTicket != null) {
+                MimeMessage message = mailSender.createMimeMessage();
+                MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+                helper.setFrom(fromEmail);
+                helper.setTo(recipient);
+                helper.setSubject(subject);
+                helper.setText(body, true);
+                helper.addAttachment(
+                        "ApexGrid-Ticket-" + booking.getBookingCode() + ".pdf",
+                        new ByteArrayResource(pdfTicket),
+                        "application/pdf"
+                );
+                mailSender.send(message);
+                emailLog.setStatus("SENT");
+                log.info("Ticket email with PDF sent to: {}", recipient);
+            } else {
+                emailLog.setStatus("SKIPPED");
+                log.info("Ticket email logged (no email/pdf) for booking: {}", booking.getBookingCode());
+            }
+        } catch (Exception e) {
+            emailLog.setStatus("FAILED");
+            emailLog.setErrorMessage(e.getMessage());
+            log.error("Failed to send ticket email: {}", e.getMessage());
         } finally {
             emailLogRepository.save(emailLog);
         }
@@ -191,5 +238,35 @@ public class EmailServiceImpl implements EmailService {
                 raceName,
                 booking.getCancellationReason() != null ? booking.getCancellationReason() : "Expired"
         );
+    }
+
+    private String buildTicketEmailHtml(Booking booking) {
+        Race race = booking.getRace();
+        String raceName = race != null ? race.getName() : "N/A";
+        String circuitName = race != null && race.getCircuit() != null ? race.getCircuit().getName() : "N/A";
+
+        return """
+            <!DOCTYPE html>
+            <html>
+            <body style="font-family:Arial,sans-serif;background:#15151E;color:#fff;">
+              <div style="max-width:600px;margin:20px auto;background:#1e1e2e;border-radius:12px;overflow:hidden;">
+                <div style="background:#E10600;padding:30px;text-align:center;">
+                  <h1 style="margin:0;font-size:28px;letter-spacing:2px;">🎫 APEXGRID</h1>
+                  <p style="margin:5px 0 0;opacity:0.9;">Your F1 Ticket is Ready!</p>
+                </div>
+                <div style="padding:30px;">
+                  <h2>Ticket Attached!</h2>
+                  <p>Your ticket for <strong>%s</strong> at <strong>%s</strong> is attached to this email as a PDF.</p>
+                  <p>Booking Code: <strong style="color:#E10600;font-size:18px;">%s</strong></p>
+                  <p style="color:#aaa;font-size:14px;">Please present the attached PDF ticket (with QR Code) at the circuit gate on race day.</p>
+                  <p style="color:#aaa;font-size:14px;">You can also download your ticket anytime from your profile on the ApexGrid website.</p>
+                </div>
+                <div style="background:#0f0f17;padding:20px;text-align:center;color:#666;font-size:12px;">
+                  <p>© 2026 ApexGrid — The Ultimate F1 Experience</p>
+                </div>
+              </div>
+            </body>
+            </html>
+            """.formatted(raceName, circuitName, booking.getBookingCode());
     }
 }

@@ -6,6 +6,8 @@ import com.apexgrid.raceservice.race.dto.RaceResponse;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 public interface RaceService {
     List<RaceResponse> getAllRaces();
     RaceResponse getRaceById(Integer id);
@@ -14,4 +16,6 @@ public interface RaceService {
     void deleteRace(Integer id);
     List<RaceResponse> getUpcomingRaces();
     List<CircuitResponse> getAllCircuits();
+    Page<RaceResponse> searchRaces(String search, Integer season, String status, int page, int size);
+    List<Integer> getSeasons();
 }

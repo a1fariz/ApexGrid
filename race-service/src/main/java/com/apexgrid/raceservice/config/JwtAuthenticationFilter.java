@@ -39,6 +39,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Set userId and role as request attributes for controllers to use
                 request.setAttribute("userId", userId);
                 request.setAttribute("userRole", role);
+                request.setAttribute("username", username);
+
+                String fullName = jwtUtils.extractFullName(jwt);
+                if (fullName != null) request.setAttribute("fullName", fullName);
+
+                String email = jwtUtils.extractEmail(jwt);
+                if (email != null) request.setAttribute("userEmail", email);
 
                 List<SimpleGrantedAuthority> authorities = List.of(
                         new SimpleGrantedAuthority("ROLE_" + role)

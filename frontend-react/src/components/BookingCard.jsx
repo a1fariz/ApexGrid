@@ -45,6 +45,7 @@ function Countdown({ expiredAt }) {
 
 export default function BookingCard({ booking, onUpdate }) {
   const [loading, setLoading] = useState(false)
+  const [downloading, setDownloading] = useState(false)
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '—'
@@ -80,6 +81,25 @@ export default function BookingCard({ booking, onUpdate }) {
       alert(err.response?.data?.message || 'Failed to cancel booking')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleDownloadTicket = async () => {
+    setDownloading(true)
+    try {
+      const res = await api.get(`/bookings/${booking.id}/ticket`, { responseType: 'blob' })
+      const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }))
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', `ApexGrid-Ticket-${booking.bookingCode}.pdf`)
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      window.URL.revokeObjectURL(url)
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to download ticket')
+    } finally {
+      setDownloading(false)
     }
   }
 
@@ -151,6 +171,25 @@ export default function BookingCard({ booking, onUpdate }) {
               {loading ? '...' : '❌ Cancel'}
             </button>
           </div>
+        )}
+
+        {/* Download Ticket for CONFIRMED */}
+        {booking.status === 'CONFIRMED' && (
+          <button
+            onClick={handleDownloadTicket}
+            disabled={downloading}
+            id={`download-ticket-${booking.id}`}
+            className="w-full py-2.5 text-sm bg-f1-red/10 hover:bg-f1-red/20 text-f1-red font-semibold rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {downloading ? (
+              <>
+                <span className="w-4 h-4 border-2 border-f1-red/30 border-t-f1-red rounded-full spin-f1" />
+                Generating...
+              </>
+            ) : (
+              '🎫 Download F1 Ticket (PDF)'
+            )}
+          </button>
         )}
 
         <div className="mt-3 text-xs text-gray-600">

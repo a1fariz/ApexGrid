@@ -8,8 +8,10 @@ import Register from './pages/Register'
 import Home from './pages/Home'
 import RaceDetail from './pages/RaceDetail'
 import BookingHistory from './pages/BookingHistory'
+import UserProfile from './pages/UserProfile'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminRaceManagement from './pages/AdminRaceManagement'
+import AdminCircuitManagement from './pages/AdminCircuitManagement'
 
 function App() {
   return (
@@ -29,6 +31,14 @@ function App() {
             }
           />
           <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/admin"
             element={
               <AdminRoute>
@@ -41,6 +51,14 @@ function App() {
             element={
               <AdminRoute>
                 <AdminRaceManagement />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/circuits"
+            element={
+              <AdminRoute>
+                <AdminCircuitManagement />
               </AdminRoute>
             }
           />

@@ -112,6 +112,7 @@ CREATE TABLE bookings (
     quantity INTEGER NOT NULL DEFAULT 1,
     total_price DECIMAL(12,2) NOT NULL DEFAULT 0.00,
     status VARCHAR(20) DEFAULT 'PENDING',
+    ticket_pdf_url TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     expired_at TIMESTAMP,
     confirmed_at TIMESTAMP,
@@ -268,6 +269,36 @@ SELECT
 FROM bookings b
 JOIN races r ON b.race_id = r.id
 JOIN circuits c ON r.circuit_id = c.id;
+
+-- Admin statistics - overview metrics
+CREATE OR REPLACE VIEW v_admin_statistics AS
+SELECT 
+    COUNT(*) FILTER (WHERE b.status = 'CONFIRMED') AS total_confirmed_bookings,
+    COUNT(*) FILTER (WHERE b.status = 'PENDING') AS total_pending_bookings,
+    COUNT(*) FILTER (WHERE b.status = 'CANCELLED') AS total_cancelled_bookings,
+    COALESCE(SUM(b.total_price) FILTER (WHERE b.status = 'CONFIRMED'), 0) AS total_revenue,
+    COALESCE(SUM(b.quantity) FILTER (WHERE b.status = 'CONFIRMED'), 0) AS total_tickets_sold,
+    COUNT(DISTINCT b.user_id) AS total_unique_customers
+FROM bookings b;
+
+-- Race popularity - tickets sold per race
+CREATE OR REPLACE VIEW v_race_popularity AS
+SELECT 
+    r.id AS race_id,
+    r.name AS race_name,
+    c.name AS circuit_name,
+    c.country,
+    r.race_date,
+    r.total_quota,
+    r.available_quota,
+    COALESCE(SUM(b.quantity) FILTER (WHERE b.status = 'CONFIRMED'), 0) AS tickets_sold,
+    COALESCE(SUM(b.total_price) FILTER (WHERE b.status = 'CONFIRMED'), 0) AS revenue,
+    COUNT(b.id) FILTER (WHERE b.status = 'CONFIRMED') AS confirmed_bookings
+FROM races r
+JOIN circuits c ON r.circuit_id = c.id
+LEFT JOIN bookings b ON b.race_id = r.id
+GROUP BY r.id, r.name, c.name, c.country, r.race_date, r.total_quota, r.available_quota
+ORDER BY tickets_sold DESC;
 
 -- ============================================================
 -- END OF SCHEMA

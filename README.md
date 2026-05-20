@@ -114,10 +114,10 @@
 ### 🏠 User Features
 
 <details open>
-<summary><strong>Home Page — Hero & Stats</strong></summary>
+<summary><strong>Home Page — Hero, Search & Pagination (Level 1)</strong></summary>
 <br/>
-<img src="docs/home-page-user.png" alt="Home Page" width="100%" />
-<p><em>Landing page with "Experience Formula 1" hero section, season stats (Active Races, Circuits, Countries, Season), and navigation bar with user info.</em></p>
+<img src="docs/images/home.png" alt="Home Page" width="100%" />
+<p><em>Landing page with "Experience Formula 1" hero section, advanced search bar, season/status filters, and paginated race cards.</em></p>
 </details>
 
 <details>
@@ -141,15 +141,22 @@
 <p><em>Personal booking dashboard with summary stats (All, Pending, Confirmed, Cancelled) and booking cards showing unique booking codes (APEX-XXXXXX), status badges, race details, and total price.</em></p>
 </details>
 
+<details>
+<summary><strong>User Profile & E-Tickets (Level 2)</strong></summary>
+<br/>
+<img src="docs/images/user_profile.png" alt="User Profile" width="100%" />
+<p><em>User profile showing account details, booking statistics, and the ability to download PDF e-tickets with QR codes for confirmed F1 bookings.</em></p>
+</details>
+
 ---
 
 ### 👨‍💼 Admin Panel
 
 <details open>
-<summary><strong>Admin Dashboard</strong></summary>
+<summary><strong>Admin Dashboard — Analytics (Level 2)</strong></summary>
 <br/>
-<img src="docs/admin-dashboard.png" alt="Admin Dashboard" width="100%" />
-<p><em>Admin overview with system stats (Total Races, Active Circuits, Season, Scheduler status), quick action buttons, and microservices architecture status panel showing all 3 services.</em></p>
+<img src="docs/images/admin_dashboard.png" alt="Admin Dashboard" width="100%" />
+<p><em>Admin overview featuring real-time statistics (Revenue, Tickets Sold, Unique Customers) powered by database views, booking status breakdown, and race popularity charts.</em></p>
 </details>
 
 <details>
@@ -171,6 +178,13 @@
 <br/>
 <img src="docs/edit-race.png" alt="Edit Race" width="100%" />
 <p><em>Pre-filled edit form for updating existing race details — same fields as create with current data loaded for modification.</em></p>
+</details>
+
+<details>
+<summary><strong>Circuit Management (Level 1)</strong></summary>
+<br/>
+<img src="docs/images/circuit_management.png" alt="Circuit Management Table" width="100%" />
+<p><em>Full CRUD interface for managing F1 circuits. Includes track length, lap records, and location data which acts as the foundation for F1 races.</em></p>
 </details>
 
 ---
