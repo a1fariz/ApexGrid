@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="docs/screenshots/logo-banner.png" alt="ApexGrid Banner" width="100%" />
-</p>
-
 <h1 align="center">🏎️ ApexGrid</h1>
 
 <p align="center">
@@ -21,7 +17,9 @@
   <img src="https://img.shields.io/badge/Architecture-Microservices-FF6B6B?style=flat-square" />
   <img src="https://img.shields.io/badge/Auth-JWT-000000?style=flat-square" />
   <img src="https://img.shields.io/badge/Gateway-Spring_Cloud-6DB33F?style=flat-square" />
+  <img src="https://img.shields.io/badge/API_Docs-Swagger_UI-85EA2D?style=flat-square" />
   <img src="https://img.shields.io/badge/Status-Production_Ready-brightgreen?style=flat-square" />
+  <img src="https://img.shields.io/badge/Last_Updated-May_20,_2026-blue?style=flat-square" />
 </p>
 
 ---
@@ -32,12 +30,13 @@
 
 ### ✨ Key Highlights
 
-- 🔐 **JWT Authentication** — Secure stateless auth with role-based access control
+- 🔐 **JWT Authentication** — Secure stateless auth with role-based access control (USER & ADMIN)
 - 🏁 **Real-time Quota** — Database-triggered quota management (auto-decrements on booking)
 - 🎟️ **Booking Lifecycle** — PENDING → CONFIRMED → CANCELLED with auto-expiry (30 min)
 - 👨‍💼 **Admin Panel** — Full CRUD race management for administrators
 - 🌐 **API Gateway** — Centralized routing with Spring Cloud Gateway
 - 📧 **Async Email** — Non-blocking email notifications with retry logging
+- 📋 **Swagger UI** — Interactive API documentation for both services
 - 🎨 **F1 Dark Theme** — Premium dark UI with glassmorphism effects
 
 ---
@@ -72,6 +71,7 @@
 │  • Role Management     │   │  • Email Service (Async)     │
 │  • Password Hashing    │   │  • Booking Scheduler         │
 │    (BCrypt)            │   │  • JWT Validation            │
+│  • Swagger UI (:8082)  │   │  • Swagger UI (:8081)       │
 └──────────┬─────────────┘   └──────────────┬───────────────┘
            │                                │
            └────────────┬───────────────────┘
@@ -93,32 +93,113 @@
 
 ## 📸 Screenshots
 
-<details>
-<summary><strong>🔐 Login Page</strong></summary>
+### 🔐 Authentication
+
+<details open>
+<summary><strong>Login Page</strong></summary>
 <br/>
-<img src="docs/screenshots/login.png" alt="Login Page" width="100%" />
-<p><em>Sleek F1-themed login with glassmorphism card and gradient background effects</em></p>
+<img src="docs/login.png" alt="Login Page" width="100%" />
+<p><em>F1-themed login page with dark gradient background — supports username or email authentication with JWT token generation.</em></p>
 </details>
 
 <details>
-<summary><strong>🏠 Home — Race List</strong></summary>
+<summary><strong>Register Page</strong></summary>
 <br/>
-<img src="docs/screenshots/home.png" alt="Home Page" width="100%" />
-<p><em>Browse upcoming F1 Grand Prix events with real-time ticket availability</em></p>
+<img src="docs/register.png" alt="Register Page" width="100%" />
+<p><em>User registration form with full name, username, email, password and confirm password fields — includes input validation.</em></p>
+</details>
+
+---
+
+### 🏠 User Features
+
+<details open>
+<summary><strong>Home Page — Hero & Stats</strong></summary>
+<br/>
+<img src="docs/home-page-user.png" alt="Home Page" width="100%" />
+<p><em>Landing page with "Experience Formula 1" hero section, season stats (Active Races, Circuits, Countries, Season), and navigation bar with user info.</em></p>
 </details>
 
 <details>
-<summary><strong>🎟️ Race Detail & Booking</strong></summary>
+<summary><strong>Race Calendar — Browse Races</strong></summary>
 <br/>
-<img src="docs/screenshots/booking.png" alt="Booking Page" width="100%" />
-<p><em>View race details, select ticket quantity, and book with dynamic price calculation</em></p>
+<img src="docs/raceBookings.png" alt="Race Calendar" width="100%" />
+<p><em>Browse all upcoming F1 Grand Prix events with race cards showing date, location, price, ticket availability bar, and status badges (UPCOMING).</em></p>
 </details>
 
 <details>
-<summary><strong>👨‍💼 Admin Dashboard</strong></summary>
+<summary><strong>Race Detail & Ticket Booking</strong></summary>
 <br/>
-<img src="docs/screenshots/admin.png" alt="Admin Dashboard" width="100%" />
-<p><em>Admin race management with full CRUD operations, status badges, and search</em></p>
+<img src="docs/bookings.png" alt="Race Detail & Booking" width="100%" />
+<p><em>Detailed race information (date, season, circuit, country, track length) with real-time ticket booking — dynamic price calculation, quantity selector, and 30-minute booking expiry notice.</em></p>
+</details>
+
+<details>
+<summary><strong>My Bookings — Booking History</strong></summary>
+<br/>
+<img src="docs/mybookings.png" alt="My Bookings" width="100%" />
+<p><em>Personal booking dashboard with summary stats (All, Pending, Confirmed, Cancelled) and booking cards showing unique booking codes (APEX-XXXXXX), status badges, race details, and total price.</em></p>
+</details>
+
+---
+
+### 👨‍💼 Admin Panel
+
+<details open>
+<summary><strong>Admin Dashboard</strong></summary>
+<br/>
+<img src="docs/admin-dashboard.png" alt="Admin Dashboard" width="100%" />
+<p><em>Admin overview with system stats (Total Races, Active Circuits, Season, Scheduler status), quick action buttons, and microservices architecture status panel showing all 3 services.</em></p>
+</details>
+
+<details>
+<summary><strong>Race Management — Data Table</strong></summary>
+<br/>
+<img src="docs/race-manajement.png" alt="Race Management Table" width="100%" />
+<p><em>Full race management table with columns for Race, Circuit, Date, Quota (available/total), Price, Status badges, and Edit/Delete action buttons.</em></p>
+</details>
+
+<details>
+<summary><strong>Add New Race — Create Form</strong></summary>
+<br/>
+<img src="docs/add-new-race-admin.png" alt="Add New Race" width="100%" />
+<p><em>Modal form for creating a new race — includes Race Name, Circuit selector, Status, Date & Time, Season, Round Number, Total Quota, Ticket Price, Description, and Image URL fields.</em></p>
+</details>
+
+<details>
+<summary><strong>Edit Race — Update Form</strong></summary>
+<br/>
+<img src="docs/edit-race.png" alt="Edit Race" width="100%" />
+<p><em>Pre-filled edit form for updating existing race details — same fields as create with current data loaded for modification.</em></p>
+</details>
+
+---
+
+### 📋 API Documentation (Swagger UI)
+
+<details>
+<summary><strong>Race Service API — Swagger UI</strong></summary>
+<br/>
+<img src="docs/swagger-ui1.png" alt="Race Service Swagger" width="100%" />
+<p><em>Interactive Swagger UI for Race Service (port 8081) — documents all race-controller and booking-controller endpoints with request/response schemas (RaceRequest, BookingResponse, etc.).</em></p>
+</details>
+
+<details>
+<summary><strong>User Service API — Swagger UI</strong></summary>
+<br/>
+<img src="docs/swagger-ui2.png" alt="User Service Swagger" width="100%" />
+<p><em>Interactive Swagger UI for User Service (port 8082) — documents auth-controller endpoints (register, login, me) with schemas (RegisterRequest, LoginRequest, JwtResponse, UserResponse).</em></p>
+</details>
+
+---
+
+### 🗄️ Database Design
+
+<details>
+<summary><strong>Entity Relationship Diagram</strong></summary>
+<br/>
+<img src="docs/diagram-schema.png" alt="Database ER Diagram" width="100%" />
+<p><em>Complete database schema showing all 6 tables (users, roles, races, circuits, bookings, email_logs) and 2 views (v_race_summary, v_booking_summary) with their relationships and column definitions.</em></p>
 </details>
 
 ---
@@ -194,6 +275,12 @@
 - ✅ Loading spinners & animations
 - ✅ Booking history with status badges
 
+### API Documentation
+- ✅ Swagger UI for Race Service (port 8081)
+- ✅ Swagger UI for User Service (port 8082)
+- ✅ OpenAPI 3.0 specification
+- ✅ Interactive API testing
+
 ---
 
 ## 🚀 Quick Start
@@ -250,7 +337,11 @@ npm run dev
 
 ### Step 4: Open App
 
-🌐 **http://localhost:5173**
+| URL | Description |
+|-----|-------------|
+| 🌐 http://localhost:5173 | **Frontend App** |
+| 📋 http://localhost:8081/swagger-ui.html | **Race Service API Docs** |
+| 📋 http://localhost:8082/swagger-ui.html | **User Service API Docs** |
 
 ---
 
@@ -448,8 +539,20 @@ apexgrid-project/
 │   ├── schema.sql                     # Full schema + triggers + views + seeds
 │   └── setup-user.sql                 # DB user creation
 │
-├── 📂 docs/
-│   └── screenshots/                   # UI screenshots
+├── 📂 docs/                           # Screenshots & documentation
+│   ├── login.png
+│   ├── register.png
+│   ├── home-page-user.png
+│   ├── raceBookings.png
+│   ├── bookings.png
+│   ├── mybookings.png
+│   ├── admin-dashboard.png
+│   ├── race-manajement.png
+│   ├── add-new-race-admin.png
+│   ├── edit-race.png
+│   ├── swagger-ui1.png
+│   ├── swagger-ui2.png
+│   └── diagram-schema.png
 │
 ├── start-all.bat                      # One-click start (Windows)
 ├── stop-all.bat                       # Stop all services
@@ -527,5 +630,6 @@ This project is developed for educational purposes as part of a university/portf
 ---
 
 <p align="center">
-  Built with ❤️ and ☕ by <strong>ApexGrid Team</strong>
+  Built with ❤️ and ☕ by <strong>ApexGrid Team</strong><br/>
+  Last updated: May 20, 2026
 </p>
