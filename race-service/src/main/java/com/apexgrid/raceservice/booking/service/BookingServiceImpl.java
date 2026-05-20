@@ -190,8 +190,7 @@ public class BookingServiceImpl implements BookingService {
                 .confirmedAt(booking.getConfirmedAt())
                 .cancelledAt(booking.getCancelledAt())
                 .cancellationReason(booking.getCancellationReason())
-                .ticketPdfUrl(booking.getTicketPdfUrl())
-                .hasTicket(booking.getTicketPdfUrl() != null || "CONFIRMED".equals(booking.getStatus()))
+                .hasTicket("CONFIRMED".equals(booking.getStatus()))
                 .build();
     }
 }

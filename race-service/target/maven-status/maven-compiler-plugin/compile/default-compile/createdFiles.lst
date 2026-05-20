@@ -37,7 +37,6 @@ com\apexgrid\raceservice\statistics\RacePopularityResponse.class
 com\apexgrid\raceservice\race\entity\Circuit$CircuitBuilder.class
 com\apexgrid\raceservice\race\repository\RaceRepository.class
 com\apexgrid\raceservice\booking\repository\BookingRepository.class
-com\apexgrid\raceservice\ticket\TicketService.class
 com\apexgrid\raceservice\race\entity\Race.class
 com\apexgrid\raceservice\scheduler\BookingScheduler.class
 com\apexgrid\raceservice\race\dto\RaceRequest.class

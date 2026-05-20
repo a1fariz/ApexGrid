@@ -30,6 +30,5 @@ public class BookingResponse {
     private LocalDateTime confirmedAt;
     private LocalDateTime cancelledAt;
     private String cancellationReason;
-    private String ticketPdfUrl;
     private Boolean hasTicket;
 }

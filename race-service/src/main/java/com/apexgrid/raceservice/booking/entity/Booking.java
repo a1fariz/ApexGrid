@@ -56,8 +56,6 @@ public class Booking {
     @Column(name = "cancellation_reason", length = 255)
     private String cancellationReason;
 
-    @Column(name = "ticket_pdf_url")
-    private String ticketPdfUrl;
 
     @PrePersist
     protected void onCreate() {

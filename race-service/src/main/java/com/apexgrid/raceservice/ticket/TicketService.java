@@ -57,9 +57,6 @@ public class TicketService {
             // 3. Generate PDF ticket with embedded QR Code
             byte[] pdfTicket = pdfTicketGenerator.generateTicket(booking, holderName, qrCodeImage);
 
-            // 4. Mark ticket as generated
-            booking.setTicketPdfUrl("generated:" + booking.getBookingCode());
-            bookingRepository.save(booking);
 
             log.info("Ticket generated for booking: {} — holder: {}", booking.getBookingCode(), holderName);
             return pdfTicket;
