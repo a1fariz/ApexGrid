@@ -611,7 +611,7 @@ spring.mail.password=your-16-char-app-password
 
 ---
 
-## 🔄 Business Flow
+##  Business Flow
 
 ```
 User Registration                Admin Creates Race
@@ -644,6 +644,6 @@ This project is developed for educational purposes as part of a university/portf
 ---
 
 <p align="center">
-  Built with ❤️ and ☕ by <strong>ApexGrid Team</strong><br/>
+  Built with me and my ☕ by <strong>ApexGrid Team</strong><br/>
   Last updated: May 20, 2026
 </p>
