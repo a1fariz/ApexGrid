@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import LoadingSpinner from '../components/LoadingSpinner'
+import PageTransition from '../components/PageTransition'
+import ConfirmModal from '../components/ConfirmModal'
+import { showToast } from '../components/Toast'
 import api from '../services/api'
 
 const EMPTY_FORM = {
@@ -17,6 +20,7 @@ export default function AdminCircuitManagement() {
   const [form, setForm] = useState(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [deleteTarget, setDeleteTarget] = useState(null)
 
   const fetchCircuits = async () => {
     try {
@@ -56,12 +60,13 @@ export default function AdminCircuitManagement() {
   }
 
   const handleDelete = async (circuit) => {
-    if (!confirm(`Delete circuit "${circuit.name}"? This cannot be undone.`)) return
+    setDeleteTarget(null)
     try {
       await api.delete(`/circuits/${circuit.id}`)
+      showToast(`Circuit "${circuit.name}" deleted successfully`, 'success')
       fetchCircuits()
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to delete circuit')
+      showToast(err.response?.data?.message || 'Failed to delete circuit', 'error')
     }
   }
 
@@ -90,6 +95,7 @@ export default function AdminCircuitManagement() {
   }
 
   return (
+    <PageTransition>
     <div className="min-h-screen">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 py-10">
@@ -157,7 +163,7 @@ export default function AdminCircuitManagement() {
                               Edit
                             </button>
                             <button
-                              onClick={() => handleDelete(circuit)}
+                            onClick={() => setDeleteTarget(circuit)}
                               className="px-3 py-1 text-xs bg-red-500/10 hover:bg-red-500/20 rounded-lg text-red-400 transition-colors"
                             >
                               Delete
@@ -279,6 +285,19 @@ export default function AdminCircuitManagement() {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        title="Delete Circuit"
+        message={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
+        icon="🗑️"
+        confirmText="Yes, Delete"
+        confirmColor="red"
+        onConfirm={() => handleDelete(deleteTarget)}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
+    </PageTransition>
   )
 }

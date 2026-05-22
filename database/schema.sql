@@ -194,14 +194,30 @@ CREATE TRIGGER update_races_updated_at
 CREATE OR REPLACE FUNCTION update_race_quota()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF NEW.status = 'CONFIRMED' AND OLD.status = 'PENDING' THEN
-        UPDATE races SET available_quota = available_quota - NEW.quantity WHERE id = NEW.race_id;
-    ELSIF NEW.status = 'CANCELLED' AND OLD.status IN ('PENDING', 'CONFIRMED') THEN
-        UPDATE races SET available_quota = available_quota + NEW.quantity WHERE id = NEW.race_id;
+
+    -- Reduce quota when booking confirmed
+    IF OLD.status = 'PENDING'
+       AND NEW.status = 'CONFIRMED' THEN
+
+        UPDATE races
+        SET available_quota = available_quota - NEW.quantity
+        WHERE id = NEW.race_id;
+
     END IF;
+
+    -- Restore quota ONLY if previously confirmed
+    IF OLD.status = 'CONFIRMED'
+       AND NEW.status = 'CANCELLED' THEN
+
+        UPDATE races
+        SET available_quota = available_quota + NEW.quantity
+        WHERE id = NEW.race_id;
+
+    END IF;
+
     RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$ LANGUAGE plpgsql;
 
 DROP TRIGGER IF EXISTS trg_update_quota ON bookings;
 CREATE TRIGGER trg_update_quota

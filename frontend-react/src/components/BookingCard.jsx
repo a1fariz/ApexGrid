@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import api from '../services/api'
+import ConfirmModal from './ConfirmModal'
+import { showToast } from './Toast'
 
 function StatusBadge({ status }) {
   const config = {
@@ -11,21 +13,29 @@ function StatusBadge({ status }) {
   return <span className={cls}>{icon} {label}</span>
 }
 
-function Countdown({ expiredAt }) {
+function CircularCountdown({ expiredAt }) {
   const [timeLeft, setTimeLeft] = useState('')
+  const [progress, setProgress] = useState(100)
+  const TOTAL_DURATION = 30 * 60 * 1000 // 30 minutes in ms
 
   useEffect(() => {
     if (!expiredAt) return
 
     const update = () => {
-      const diff = new Date(expiredAt) - new Date()
+      const expiry = new Date(expiredAt).getTime()
+      const now = Date.now()
+      const diff = expiry - now
+
       if (diff <= 0) {
         setTimeLeft('Expired')
+        setProgress(0)
         return
       }
+
       const mins = Math.floor(diff / 60000)
       const secs = Math.floor((diff % 60000) / 1000)
-      setTimeLeft(`${mins}m ${secs}s`)
+      setTimeLeft(`${mins}:${secs.toString().padStart(2, '0')}`)
+      setProgress(Math.max(0, (diff / TOTAL_DURATION) * 100))
     }
 
     update()
@@ -35,10 +45,34 @@ function Countdown({ expiredAt }) {
 
   if (!timeLeft || timeLeft === 'Expired') return null
 
+  const radius = 22
+  const circumference = 2 * Math.PI * radius
+  const dashOffset = circumference - (progress / 100) * circumference
+  const isUrgent = progress < 33
+
   return (
-    <div className="flex items-center gap-1.5 text-amber-400 text-xs">
-      <span className="inline-block w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse" />
-      Expires in {timeLeft}
+    <div className="flex items-center gap-3 py-2">
+      <div className="countdown-container" style={{ width: 52, height: 52 }}>
+        <svg width="52" height="52" className="countdown-ring" viewBox="0 0 52 52">
+          <circle className="countdown-ring-bg" cx="26" cy="26" r={radius} />
+          <circle
+            className="countdown-ring-progress"
+            cx="26" cy="26" r={radius}
+            stroke={isUrgent ? '#E10600' : '#FFD700'}
+            strokeDasharray={circumference}
+            strokeDashoffset={dashOffset}
+          />
+        </svg>
+        <span className={`countdown-text ${isUrgent ? 'text-f1-red' : 'text-amber-400'}`}>
+          {timeLeft}
+        </span>
+      </div>
+      <div>
+        <div className={`text-xs font-semibold ${isUrgent ? 'text-f1-red' : 'text-amber-400'}`}>
+          {isUrgent ? '⚡ Hurry up!' : '⏱ Time Remaining'}
+        </div>
+        <div className="text-[10px] text-gray-500">Confirm before expiry</div>
+      </div>
     </div>
   )
 }
@@ -46,6 +80,7 @@ function Countdown({ expiredAt }) {
 export default function BookingCard({ booking, onUpdate }) {
   const [loading, setLoading] = useState(false)
   const [downloading, setDownloading] = useState(false)
+  const [confirmModal, setConfirmModal] = useState({ open: false, type: null })
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '—'
@@ -59,26 +94,28 @@ export default function BookingCard({ booking, onUpdate }) {
   }
 
   const handleConfirm = async () => {
-    if (!confirm('Confirm this booking?')) return
+    setConfirmModal({ open: false, type: null })
     setLoading(true)
     try {
       await api.put(`/bookings/${booking.id}/confirm`)
+      showToast(`Booking ${booking.bookingCode} confirmed! 🏆`, 'success')
       onUpdate?.()
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to confirm booking')
+      showToast(err.response?.data?.message || 'Failed to confirm booking', 'error')
     } finally {
       setLoading(false)
     }
   }
 
   const handleCancel = async () => {
-    if (!confirm('Cancel this booking?')) return
+    setConfirmModal({ open: false, type: null })
     setLoading(true)
     try {
       await api.put(`/bookings/${booking.id}/cancel`, { reason: 'Cancelled by user' })
+      showToast(`Booking ${booking.bookingCode} has been cancelled`, 'success')
       onUpdate?.()
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to cancel booking')
+      showToast(err.response?.data?.message || 'Failed to cancel booking', 'error')
     } finally {
       setLoading(false)
     }
@@ -96,106 +133,137 @@ export default function BookingCard({ booking, onUpdate }) {
       link.click()
       link.remove()
       window.URL.revokeObjectURL(url)
+      showToast('Ticket downloaded successfully! 🎫', 'success')
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to download ticket')
+      showToast(err.response?.data?.message || 'Failed to download ticket', 'error')
     } finally {
       setDownloading(false)
     }
   }
 
   return (
-    <div className="card overflow-hidden" id={`booking-card-${booking.id}`}>
-      {/* Status stripe */}
-      <div className={`h-1 ${
-        booking.status === 'CONFIRMED' ? 'bg-green-500' :
-        booking.status === 'CANCELLED' ? 'bg-f1-red' :
-        'bg-amber-400'
-      }`} />
+    <>
+      <div className="card overflow-hidden" id={`booking-card-${booking.id}`}>
+        {/* Status stripe */}
+        <div className={`h-1 ${
+          booking.status === 'CONFIRMED' ? 'bg-gradient-to-r from-green-500 to-emerald-400' :
+          booking.status === 'CANCELLED' ? 'bg-gradient-to-r from-f1-red to-red-400' :
+          'bg-gradient-to-r from-amber-400 to-yellow-300'
+        }`} />
 
-      <div className="p-5">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <div className="font-mono text-f1-red font-bold text-sm mb-1">{booking.bookingCode}</div>
-            <h3 className="font-semibold text-white">{booking.raceName}</h3>
-            <p className="text-sm text-gray-400">{booking.circuitName} • {booking.country}</p>
+        <div className="p-5">
+          {/* Header */}
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <div className="font-mono text-f1-red font-bold text-sm mb-1 tracking-wider">{booking.bookingCode}</div>
+              <h3 className="font-semibold text-white">{booking.raceName}</h3>
+              <p className="text-sm text-gray-500">{booking.circuitName} • {booking.country}</p>
+            </div>
+            <StatusBadge status={booking.status} />
           </div>
-          <StatusBadge status={booking.status} />
-        </div>
 
-        {/* Details */}
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          <div className="bg-white/5 rounded-lg p-2.5 text-center">
-            <div className="text-xs text-gray-500 mb-0.5">Race Date</div>
-            <div className="text-xs font-medium">{formatDate(booking.raceDate)}</div>
+          {/* Details */}
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            <div className="bg-white/[0.03] rounded-xl p-2.5 text-center">
+              <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Date</div>
+              <div className="text-xs font-medium">{formatDate(booking.raceDate)}</div>
+            </div>
+            <div className="bg-white/[0.03] rounded-xl p-2.5 text-center">
+              <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Tickets</div>
+              <div className="text-sm font-bold text-white">{booking.quantity}</div>
+            </div>
+            <div className="bg-white/[0.03] rounded-xl p-2.5 text-center">
+              <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Total</div>
+              <div className="text-xs font-bold text-f1-red">{formatPrice(booking.totalPrice)}</div>
+            </div>
           </div>
-          <div className="bg-white/5 rounded-lg p-2.5 text-center">
-            <div className="text-xs text-gray-500 mb-0.5">Tickets</div>
-            <div className="text-sm font-bold text-white">{booking.quantity}</div>
-          </div>
-          <div className="bg-white/5 rounded-lg p-2.5 text-center">
-            <div className="text-xs text-gray-500 mb-0.5">Total</div>
-            <div className="text-xs font-bold text-f1-red">{formatPrice(booking.totalPrice)}</div>
-          </div>
-        </div>
 
-        {/* Countdown for PENDING */}
-        {booking.status === 'PENDING' && (
-          <div className="mb-4">
-            <Countdown expiredAt={booking.expiredAt} />
-          </div>
-        )}
+          {/* Circular Countdown for PENDING */}
+          {booking.status === 'PENDING' && (
+            <div className="mb-4 bg-amber-400/[0.04] rounded-xl px-3 py-1 border border-amber-400/10">
+              <CircularCountdown expiredAt={booking.expiredAt} />
+            </div>
+          )}
 
-        {/* Cancellation reason */}
-        {booking.status === 'CANCELLED' && booking.cancellationReason && (
-          <p className="text-xs text-gray-500 mb-3 italic">"{booking.cancellationReason}"</p>
-        )}
+          {/* Cancellation reason */}
+          {booking.status === 'CANCELLED' && booking.cancellationReason && (
+            <p className="text-xs text-gray-500 mb-3 italic bg-white/[0.02] rounded-lg px-3 py-2">
+              "{booking.cancellationReason}"
+            </p>
+          )}
 
-        {/* Actions */}
-        {booking.status === 'PENDING' && (
-          <div className="flex gap-2">
+          {/* Actions */}
+          {booking.status === 'PENDING' && (
+            <div className="flex gap-2">
+              <button
+                onClick={() => setConfirmModal({ open: true, type: 'confirm' })}
+                disabled={loading}
+                id={`confirm-btn-${booking.id}`}
+                className="flex-1 py-2.5 text-sm bg-green-600/90 hover:bg-green-500 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 hover:shadow-lg hover:shadow-green-900/30"
+              >
+                {loading ? '...' : '✅ Confirm'}
+              </button>
+              <button
+                onClick={() => setConfirmModal({ open: true, type: 'cancel' })}
+                disabled={loading}
+                id={`cancel-btn-${booking.id}`}
+                className="flex-1 py-2.5 text-sm bg-white/[0.04] hover:bg-red-900/30 hover:text-f1-red text-gray-400 font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 border border-white/[0.04] hover:border-f1-red/20"
+              >
+                {loading ? '...' : '❌ Cancel'}
+              </button>
+            </div>
+          )}
+
+          {/* Download Ticket for CONFIRMED */}
+          {booking.status === 'CONFIRMED' && (
             <button
-              onClick={handleConfirm}
-              disabled={loading}
-              id={`confirm-btn-${booking.id}`}
-              className="flex-1 py-2 text-sm bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
+              onClick={handleDownloadTicket}
+              disabled={downloading}
+              id={`download-ticket-${booking.id}`}
+              className="w-full py-2.5 text-sm bg-f1-red/[0.08] hover:bg-f1-red/[0.15] text-f1-red font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 border border-f1-red/10 hover:border-f1-red/25"
             >
-              {loading ? '...' : '✅ Confirm'}
+              {downloading ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-f1-red/30 border-t-f1-red rounded-full spin-f1" />
+                  Generating...
+                </>
+              ) : (
+                '🎫 Download F1 Ticket (PDF)'
+              )}
             </button>
-            <button
-              onClick={handleCancel}
-              disabled={loading}
-              id={`cancel-btn-${booking.id}`}
-              className="flex-1 py-2 text-sm bg-f1-gray hover:bg-red-900/50 hover:text-f1-red text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
-            >
-              {loading ? '...' : '❌ Cancel'}
-            </button>
+          )}
+
+          <div className="mt-3 text-[10px] text-gray-600 tracking-wide">
+            Booked {formatDate(booking.createdAt)}
           </div>
-        )}
-
-        {/* Download Ticket for CONFIRMED */}
-        {booking.status === 'CONFIRMED' && (
-          <button
-            onClick={handleDownloadTicket}
-            disabled={downloading}
-            id={`download-ticket-${booking.id}`}
-            className="w-full py-2.5 text-sm bg-f1-red/10 hover:bg-f1-red/20 text-f1-red font-semibold rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            {downloading ? (
-              <>
-                <span className="w-4 h-4 border-2 border-f1-red/30 border-t-f1-red rounded-full spin-f1" />
-                Generating...
-              </>
-            ) : (
-              '🎫 Download F1 Ticket (PDF)'
-            )}
-          </button>
-        )}
-
-        <div className="mt-3 text-xs text-gray-600">
-          Booked {formatDate(booking.createdAt)}
         </div>
       </div>
-    </div>
+
+      {/* Confirm Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.open && confirmModal.type === 'confirm'}
+        title="Confirm Booking"
+        message={`Are you sure you want to confirm booking ${booking.bookingCode}? This action will finalize your ticket purchase.`}
+        icon="🏆"
+        confirmText="Yes, Confirm"
+        confirmColor="green"
+        loading={loading}
+        onConfirm={handleConfirm}
+        onCancel={() => setConfirmModal({ open: false, type: null })}
+      />
+
+      {/* Cancel Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.open && confirmModal.type === 'cancel'}
+        title="Cancel Booking"
+        message={`Are you sure you want to cancel booking ${booking.bookingCode}? Your tickets will be released and the quota will be restored.`}
+        icon="⚠️"
+        confirmText="Yes, Cancel Booking"
+        confirmColor="red"
+        loading={loading}
+        onConfirm={handleCancel}
+        onCancel={() => setConfirmModal({ open: false, type: null })}
+      />
+    </>
   )
 }

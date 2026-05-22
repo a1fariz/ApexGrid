@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import LoadingSpinner from '../components/LoadingSpinner'
+import PageTransition from '../components/PageTransition'
+import { showToast } from '../components/Toast'
 import { useAuth } from '../hooks/useAuth'
 import api from '../services/api'
 
@@ -41,7 +43,7 @@ export default function UserProfile() {
       link.remove()
       window.URL.revokeObjectURL(url)
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to download ticket')
+      showToast(err.response?.data?.message || 'Failed to download ticket', 'error')
     } finally {
       setDownloading(null)
     }
@@ -66,6 +68,7 @@ export default function UserProfile() {
   }
 
   return (
+    <PageTransition>
     <div className="min-h-screen">
       <Navbar />
 
@@ -179,5 +182,6 @@ export default function UserProfile() {
         </div>
       </div>
     </div>
+    </PageTransition>
   )
 }

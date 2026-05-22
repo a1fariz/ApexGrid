@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import PageTransition from '../components/PageTransition'
 import api from '../services/api'
 
 export default function Register() {
@@ -68,11 +69,12 @@ export default function Register() {
     `form-input ${errors[field] ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`
 
   return (
+    <PageTransition>
     <div className="min-h-screen flex items-center justify-center px-4 py-10"
-         style={{ background: 'radial-gradient(ellipse at top, #1a0a0a 0%, #15151E 60%)' }}>
+         style={{ background: 'radial-gradient(ellipse at top, #120505 0%, #0A0A0F 60%)' }}>
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-f1-red/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-f1-red/[0.04] rounded-full blur-[120px]" />
       </div>
 
       <div className="w-full max-w-md relative z-10 animate-fade-in">
@@ -197,5 +199,6 @@ export default function Register() {
         </div>
       </div>
     </div>
+    </PageTransition>
   )
 }

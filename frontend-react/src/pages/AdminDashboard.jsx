@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import LoadingSpinner from '../components/LoadingSpinner'
+import PageTransition from '../components/PageTransition'
 import { useAuth } from '../hooks/useAuth'
 import api from '../services/api'
 
@@ -38,6 +39,7 @@ export default function AdminDashboard() {
   const maxTickets = popular.length > 0 ? Math.max(...popular.map(r => r.ticketsSold || 0), 1) : 1
 
   return (
+    <PageTransition>
     <div className="min-h-screen">
       <Navbar />
 
@@ -217,5 +219,6 @@ export default function AdminDashboard() {
         </div>
       </div>
     </div>
+    </PageTransition>
   )
 }

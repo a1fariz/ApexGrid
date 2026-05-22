@@ -1,25 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;700;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;700;900&display=swap');
-
 /* ============================================================
-   APEXGRID — F1 Theme CSS Variables
+   APEXGRID — F1 Premium Dark Theme CSS Variables
    ============================================================ */
 :root {
   --f1-red: #E10600;
   --f1-red-dark: #b00500;
-  --f1-black: #15151E;
-  --f1-dark: #1F1F27;
-  --f1-darker: #0f0f17;
-  --f1-card: #1e1e2e;
-  --f1-gray: #38383F;
+  --f1-red-glow: rgba(225, 6, 0, 0.25);
+  --f1-black: #0A0A0F;
+  --f1-dark: #111118;
+  --f1-darker: #07070B;
+  --f1-card: #14141E;
+  --f1-card-hover: #1A1A28;
+  --f1-gray: #2A2A35;
   --f1-light: #8f8f9a;
   --f1-white: #FFFFFF;
   --f1-gold: #FFD700;
   --f1-green: #00D2BE;
   --f1-yellow: #FFD700;
+  --f1-surface: rgba(255, 255, 255, 0.03);
 }
 
 * {
@@ -37,16 +40,17 @@ body {
   color: var(--f1-white);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
 }
 
 /* ============================================================
-   SCROLLBAR
+   SCROLLBAR — Slim & Themed
    ============================================================ */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--f1-black); }
-::-webkit-scrollbar-thumb { background: var(--f1-red); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--f1-red-dark); }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(225, 6, 0, 0.3); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--f1-red); }
 
 /* ============================================================
    TYPOGRAPHY
@@ -60,103 +64,137 @@ body {
    BUTTONS
    ============================================================ */
 .btn-primary {
-  @apply px-6 py-3 bg-f1-red text-white font-semibold rounded-lg transition-all duration-200;
-  @apply hover:bg-red-700 hover:shadow-lg hover:shadow-red-900/30 active:scale-95;
+  @apply px-6 py-3 bg-f1-red text-white font-semibold rounded-xl transition-all duration-300;
+  @apply hover:bg-red-700 hover:shadow-lg hover:shadow-red-900/40 active:scale-95;
 }
 
 .btn-secondary {
-  @apply px-6 py-3 bg-f1-gray text-white font-semibold rounded-lg transition-all duration-200;
-  @apply hover:bg-gray-600 active:scale-95;
+  @apply px-6 py-3 bg-white/5 text-white font-semibold rounded-xl transition-all duration-300;
+  @apply hover:bg-white/10 active:scale-95;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .btn-outline {
-  @apply px-6 py-3 border border-f1-red text-f1-red font-semibold rounded-lg transition-all duration-200;
-  @apply hover:bg-f1-red hover:text-white active:scale-95;
+  @apply px-6 py-3 border border-f1-red/40 text-f1-red font-semibold rounded-xl transition-all duration-300;
+  @apply hover:bg-f1-red hover:text-white hover:border-f1-red active:scale-95;
 }
 
 .btn-ghost {
-  @apply px-4 py-2 text-gray-300 font-medium rounded-lg transition-all duration-200;
-  @apply hover:text-white hover:bg-white/10 active:scale-95;
+  @apply px-4 py-2 text-gray-400 font-medium rounded-xl transition-all duration-200;
+  @apply hover:text-white hover:bg-white/[0.06] active:scale-95;
 }
 
 /* ============================================================
-   CARDS
+   CARDS — Premium glassmorphism with glow
    ============================================================ */
 .card {
   background: var(--f1-card);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 12px;
-  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .card:hover {
-  border-color: rgba(225,6,0,0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(225,6,0,0.15);
+  border-color: rgba(225, 6, 0, 0.25);
+  transform: translateY(-3px);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(225, 6, 0, 0.1),
+    0 8px 32px var(--f1-red-glow);
 }
 
 .glass-card {
-  background: rgba(30, 30, 46, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(20, 20, 30, 0.85);
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+}
+
+/* Static card (no hover effect) — for inner panels */
+.card-static {
+  background: var(--f1-card);
+  border: 1px solid rgba(255, 255, 255, 0.04);
   border-radius: 16px;
 }
 
 /* ============================================================
-   FORMS
+   FORMS — Refined inputs
    ============================================================ */
 .form-input {
-  @apply w-full px-4 py-3 rounded-lg bg-f1-gray border border-transparent text-white placeholder-gray-500;
-  @apply focus:outline-none focus:border-f1-red focus:ring-1 focus:ring-f1-red transition-all duration-200;
+  @apply w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-white placeholder-gray-600;
+  @apply focus:outline-none focus:border-f1-red/60 focus:ring-2 focus:ring-f1-red/20 transition-all duration-300;
 }
 
 .form-label {
-  @apply block text-sm font-medium text-gray-300 mb-2;
+  @apply block text-sm font-medium text-gray-400 mb-2;
+}
+
+/* Fix browser autofill white background on dark theme */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #14141E inset !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  caret-color: #FFFFFF;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 /* ============================================================
-   BADGES / STATUS
+   BADGES / STATUS — Pill shapes with subtle backgrounds
    ============================================================ */
 .badge-upcoming {
   @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
-  background: rgba(0, 210, 190, 0.15);
+  background: rgba(0, 210, 190, 0.1);
   color: #00D2BE;
-  border: 1px solid rgba(0, 210, 190, 0.3);
+  border: 1px solid rgba(0, 210, 190, 0.2);
 }
 
 .badge-pending {
   @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
-  background: rgba(255, 215, 0, 0.15);
+  background: rgba(255, 215, 0, 0.1);
   color: #FFD700;
-  border: 1px solid rgba(255, 215, 0, 0.3);
+  border: 1px solid rgba(255, 215, 0, 0.2);
 }
 
 .badge-confirmed {
   @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
-  background: rgba(16, 185, 129, 0.15);
+  background: rgba(16, 185, 129, 0.1);
   color: #10B981;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .badge-cancelled {
   @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
-  background: rgba(225, 6, 0, 0.15);
+  background: rgba(225, 6, 0, 0.1);
   color: #E10600;
-  border: 1px solid rgba(225, 6, 0, 0.3);
+  border: 1px solid rgba(225, 6, 0, 0.2);
 }
 
 /* ============================================================
-   ANIMATIONS
+   ANIMATIONS — Smooth & Premium
    ============================================================ */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @keyframes slideInLeft {
   from { opacity: 0; transform: translateX(-20px); }
   to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes pulse-red {
@@ -169,26 +207,82 @@ body {
   to { transform: rotate(360deg); }
 }
 
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.9) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes countdownPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
 .animate-fade-in {
-  animation: fadeIn 0.4s ease-out forwards;
+  animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-slide-left {
-  animation: slideInLeft 0.3s ease-out forwards;
+  animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .spin-f1 {
   animation: spin-f1 0.8s linear infinite;
 }
 
+/* Skeleton shimmer effect */
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.03) 40%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 60%,
+    transparent 100%
+  );
+  animation: shimmer 1.8s infinite;
+}
+
 /* ============================================================
-   NAVBAR
+   PAGE TRANSITIONS
+   ============================================================ */
+.page-transition {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-transition-enter {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================
+   NAVBAR — Deeper blur
    ============================================================ */
 .navbar-blur {
-  background: rgba(15, 15, 23, 0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(10, 10, 15, 0.92);
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 /* ============================================================
@@ -196,13 +290,13 @@ body {
    ============================================================ */
 .f1-stripe {
   background: linear-gradient(90deg, var(--f1-red) 0%, transparent 100%);
-  height: 4px;
-  width: 80px;
+  height: 3px;
+  width: 60px;
   border-radius: 2px;
 }
 
 /* ============================================================
-   TABLE
+   TABLE — Premium data table
    ============================================================ */
 .data-table {
   width: 100%;
@@ -210,44 +304,46 @@ body {
 }
 
 .data-table th {
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.02);
   padding: 12px 16px;
   text-align: left;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #8f8f9a;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  letter-spacing: 0.08em;
+  color: #6b6b78;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .data-table td {
   padding: 14px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
   font-size: 14px;
 }
 
 .data-table tr:hover td {
-  background: rgba(255,255,255,0.02);
+  background: rgba(255, 255, 255, 0.015);
 }
 
 /* ============================================================
-   TOAST
+   TOAST — Premium notifications
    ============================================================ */
 .toast-success {
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(16, 185, 129, 0.4);
-  color: #10B981;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #34D399;
+  backdrop-filter: blur(12px);
 }
 
 .toast-error {
-  background: rgba(225, 6, 0, 0.15);
-  border: 1px solid rgba(225, 6, 0, 0.4);
-  color: #ff4d4d;
+  background: rgba(225, 6, 0, 0.12);
+  border: 1px solid rgba(225, 6, 0, 0.25);
+  color: #ff6b6b;
+  backdrop-filter: blur(12px);
 }
 
 /* ============================================================
-   LOADING
+   LOADING SPINNER
    ============================================================ */
 .spinner-f1 {
   width: 40px;
@@ -256,4 +352,135 @@ body {
   border-top-color: var(--f1-red);
   border-radius: 50%;
   animation: spin-f1 0.8s linear infinite;
+}
+
+/* ============================================================
+   CONFIRM MODAL — Premium dialog
+   ============================================================ */
+.confirm-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: overlayIn 0.25s ease-out forwards;
+}
+
+.confirm-modal-content {
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  border-radius: 24px;
+  background: linear-gradient(145deg, #1a1a28, #12121c);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(225, 6, 0, 0.05);
+  animation: modalIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.confirm-modal-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+/* ============================================================
+   COUNTDOWN RING — Circular SVG timer
+   ============================================================ */
+.countdown-ring {
+  transform: rotate(-90deg);
+}
+
+.countdown-ring-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.06);
+  stroke-width: 3;
+}
+
+.countdown-ring-progress {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear, stroke 0.5s ease;
+}
+
+.countdown-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.countdown-text {
+  position: absolute;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'Orbitron', monospace;
+}
+
+/* ============================================================
+   RACE CARD FALLBACK IMAGE
+   ============================================================ */
+.race-fallback-image {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--f1-dark) 0%, var(--f1-black) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.race-fallback-image::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 14px,
+      rgba(255, 255, 255, 0.015) 14px,
+      rgba(255, 255, 255, 0.015) 15px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 14px,
+      rgba(255, 255, 255, 0.015) 14px,
+      rgba(255, 255, 255, 0.015) 15px
+    );
+}
+
+.race-fallback-image::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--f1-red), transparent);
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer-glow {
+  background:
+    radial-gradient(ellipse at center bottom, rgba(225, 6, 0, 0.03) 0%, transparent 60%),
+    var(--f1-black);
 }

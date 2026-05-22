@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import LoadingSpinner from '../components/LoadingSpinner'
+import PageTransition from '../components/PageTransition'
+import ConfirmModal from '../components/ConfirmModal'
+import { showToast } from '../components/Toast'
 import api from '../services/api'
 
 const EMPTY_FORM = {
@@ -18,6 +21,7 @@ export default function AdminRaceManagement() {
   const [form, setForm] = useState(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [deleteTarget, setDeleteTarget] = useState(null)
 
   const fetchData = async () => {
     try {
@@ -63,12 +67,13 @@ export default function AdminRaceManagement() {
   }
 
   const handleDelete = async (race) => {
-    if (!confirm(`Delete race "${race.name}"? This cannot be undone.`)) return
+    setDeleteTarget(null)
     try {
       await api.delete(`/races/${race.id}`)
+      showToast(`Race "${race.name}" deleted successfully`, 'success')
       fetchData()
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to delete race')
+      showToast(err.response?.data?.message || 'Failed to delete race', 'error')
     }
   }
 
@@ -111,6 +116,7 @@ export default function AdminRaceManagement() {
   }
 
   return (
+    <PageTransition>
     <div className="min-h-screen">
       <Navbar />
 
@@ -192,9 +198,9 @@ export default function AdminRaceManagement() {
                               Edit
                             </button>
                             <button
-                              onClick={() => handleDelete(race)}
+                            onClick={() => setDeleteTarget(race)}
                               id={`delete-race-${race.id}`}
-                              className="px-3 py-1 text-xs bg-red-500/10 hover:bg-red-500/20 rounded-lg text-red-400 transition-colors"
+                              className="px-3 py-1.5 text-xs bg-red-500/10 hover:bg-red-500/20 rounded-lg text-red-400 transition-colors"
                             >
                               Delete
                             </button>
@@ -327,6 +333,19 @@ export default function AdminRaceManagement() {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        title="Delete Race"
+        message={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
+        icon="🗑️"
+        confirmText="Yes, Delete"
+        confirmColor="red"
+        onConfirm={() => handleDelete(deleteTarget)}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
+    </PageTransition>
   )
 }
