@@ -116,7 +116,7 @@
 <details open>
 <summary><strong>Home Page — Hero, Search & Pagination (Level 1)</strong></summary>
 <br/>
-<img src="" alt="Home Page" width="100%" />
+<img src="docs/images/home.png" alt="Home Page" width="100%" />
 <p><em>Landing page with "Experience Formula 1" hero section, advanced search bar, season/status filters, and paginated race cards.</em></p>
 </details>
 
@@ -144,7 +144,7 @@
 <details>
 <summary><strong>User Profile & E-Tickets (Level 2)</strong></summary>
 <br/>
-<img src="" alt="User Profile" width="100%" />
+<img src="docs/images/user_profile.png" alt="User Profile" width="100%" />
 <p><em>User profile showing account details, booking statistics, and the ability to download PDF e-tickets with QR codes for confirmed F1 bookings.</em></p>
 </details>
 
@@ -155,7 +155,7 @@
 <details open>
 <summary><strong>Admin Dashboard — Analytics (Level 2)</strong></summary>
 <br/>
-<img src="" alt="Admin Dashboard" width="100%" />
+<img src="docs/images/admin_dashboard.png" alt="Admin Dashboard" width="100%" />
 <p><em>Admin overview featuring real-time statistics (Revenue, Tickets Sold, Unique Customers) powered by database views, booking status breakdown, and race popularity charts.</em></p>
 </details>
 
@@ -183,7 +183,7 @@
 <details>
 <summary><strong>Circuit Management (Level 1)</strong></summary>
 <br/>
-<img src="" alt="Circuit Management Table" width="100%" />
+<img src="docs/images/circuit_management.png" alt="Circuit Management Table" width="100%" />
 <p><em>Full CRUD interface for managing F1 circuits. Includes track length, lap records, and location data which acts as the foundation for F1 races.</em></p>
 </details>
 
@@ -279,15 +279,17 @@
 - ✅ Auto-expiry (30 minutes via DB trigger)
 - ✅ Quota auto-restore on cancellation (DB trigger)
 
-### Frontend
-- ✅ F1-branded dark theme (#15151E + #E10600)
-- ✅ Glassmorphism card effects
-- ✅ Responsive design (mobile + desktop)
-- ✅ Protected routes (auth required)
-- ✅ Admin-only routes (ADMIN role required)
-- ✅ Toast notifications
-- ✅ Loading spinners & animations
-- ✅ Booking history with status badges
+### Frontend & UI/UX (Premium UAS Edition)
+- ✅ **Deep Dark Theme** — Ultra-premium dark theme (#0A0A0F + #E10600) with neon-glow card borders
+- ✅ **Interactive Seating Zone Map** — Clickable SVG racetrack segments (GA, Grandstand, VIP) with real-time multiplier calculations
+- ✅ **Custom Glassmorphism Modals** — Replaced native browser popups with beautiful floating dialogs (`ConfirmModal`)
+- ✅ **Skeleton Loaders** — Layout-preserving skeleton cards preventing content shifts during fetch
+- ✅ **Page Transitions** — Fluid fade & slide animations for Router navigation
+- ✅ **SVG Image Fallbacks** — Checkered flag start-grid SVG fallback handling for invalid URLs
+- ✅ **Protected Routes** — Auth-guarded navigation for users and admin dashboards
+- ✅ **Autofill Overrides** — Prevented browser input-autofill from breaking the dark theme background
+- ✅ **Circular Progress Countdowns** — SVG circular countdown timer for pending booking expiries
+- ✅ **Toast Notifications** — Beautiful alerts for system messages and user feedback
 
 ### API Documentation
 - ✅ Swagger UI for Race Service (port 8081)
