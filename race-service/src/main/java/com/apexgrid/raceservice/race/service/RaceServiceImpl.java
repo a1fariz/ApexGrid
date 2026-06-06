@@ -31,7 +31,8 @@ public class RaceServiceImpl implements RaceService {
 
     @Override
     public List<RaceResponse> getAllRaces() {
-        return raceRepository.findAll()
+        // Fix N+1: use JOIN FETCH to load all races + circuits in a single query
+        return raceRepository.findAllWithCircuit()
                 .stream()
                 .map(this::mapToRaceResponse)
                 .collect(Collectors.toList());
@@ -86,7 +87,16 @@ public class RaceServiceImpl implements RaceService {
         race.setRaceTime(request.getRaceTime());
         race.setSeason(request.getSeason());
         race.setRound(request.getRound());
-        race.setTotalQuota(request.getTotalQuota());
+
+        // Fix: sync availableQuota proportionally when totalQuota changes
+        int oldTotal = race.getTotalQuota() != null ? race.getTotalQuota() : 0;
+        int newTotal = request.getTotalQuota();
+        int delta = newTotal - oldTotal;
+        int currentAvailable = race.getAvailableQuota() != null ? race.getAvailableQuota() : 0;
+        int newAvailable = Math.max(0, currentAvailable + delta);
+        race.setTotalQuota(newTotal);
+        race.setAvailableQuota(newAvailable);
+
         race.setTicketPrice(request.getTicketPrice());
         race.setDescription(request.getDescription());
         if (request.getStatus() != null) race.setStatus(request.getStatus());
@@ -152,6 +162,7 @@ public class RaceServiceImpl implements RaceService {
         return RaceResponse.builder()
                 .id(race.getId())
                 .name(race.getName())
+                .circuitId(circuit != null ? circuit.getId() : null)
                 .raceDate(race.getRaceDate())
                 .raceTime(race.getRaceTime())
                 .season(race.getSeason())

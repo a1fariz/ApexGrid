@@ -5,12 +5,31 @@ import { showToast } from './Toast'
 
 function StatusBadge({ status }) {
   const config = {
-    PENDING: { cls: 'badge-pending', icon: '⏳', label: 'Pending' },
+    PENDING:   { cls: 'badge-pending',   icon: '⏳', label: 'Pending' },
     CONFIRMED: { cls: 'badge-confirmed', icon: '✅', label: 'Confirmed' },
     CANCELLED: { cls: 'badge-cancelled', icon: '❌', label: 'Cancelled' },
   }
   const { cls, icon, label } = config[status] || config.PENDING
   return <span className={cls}>{icon} {label}</span>
+}
+
+function ZoneBadge({ zone }) {
+  const config = {
+    GA:  { label: 'General Admission', color: '#00D2BE', bg: 'rgba(0,210,190,0.08)',  border: 'rgba(0,210,190,0.2)' },
+    GS:  { label: 'Grandstand',        color: '#FFD700', bg: 'rgba(255,215,0,0.08)',  border: 'rgba(255,215,0,0.2)' },
+    VIP: { label: 'Paddock Club (VIP)',color: '#E10600', bg: 'rgba(225,6,0,0.08)',    border: 'rgba(225,6,0,0.2)' },
+  }
+  const z = zone?.toUpperCase() || 'GA'
+  const { label, color, bg, border } = config[z] || config.GA
+  return (
+    <span
+      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
+      style={{ color, background: bg, border: `1px solid ${border}` }}
+    >
+      <span style={{ width: 5, height: 5, borderRadius: '50%', background: color, display: 'inline-block' }} />
+      {z} · {label}
+    </span>
+  )
 }
 
 function CircularCountdown({ expiredAt }) {
@@ -98,7 +117,7 @@ export default function BookingCard({ booking, onUpdate }) {
     setLoading(true)
     try {
       await api.put(`/bookings/${booking.id}/confirm`)
-      showToast(`Booking ${booking.bookingCode} confirmed! 🏆`, 'success')
+      showToast(`Booking ${booking.bookingCode} confirmed`, 'success')
       onUpdate?.()
     } catch (err) {
       showToast(err.response?.data?.message || 'Failed to confirm booking', 'error')
@@ -133,7 +152,7 @@ export default function BookingCard({ booking, onUpdate }) {
       link.click()
       link.remove()
       window.URL.revokeObjectURL(url)
-      showToast('Ticket downloaded successfully! 🎫', 'success')
+      showToast('Ticket downloaded successfully', 'success')
     } catch (err) {
       showToast(err.response?.data?.message || 'Failed to download ticket', 'error')
     } finally {
@@ -158,6 +177,9 @@ export default function BookingCard({ booking, onUpdate }) {
               <div className="font-mono text-f1-red font-bold text-sm mb-1 tracking-wider">{booking.bookingCode}</div>
               <h3 className="font-semibold text-white">{booking.raceName}</h3>
               <p className="text-sm text-gray-500">{booking.circuitName} • {booking.country}</p>
+              <div className="mt-2">
+                <ZoneBadge zone={booking.zone} />
+              </div>
             </div>
             <StatusBadge status={booking.status} />
           </div>
@@ -201,7 +223,7 @@ export default function BookingCard({ booking, onUpdate }) {
                 id={`confirm-btn-${booking.id}`}
                 className="flex-1 py-2.5 text-sm bg-green-600/90 hover:bg-green-500 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 hover:shadow-lg hover:shadow-green-900/30"
               >
-                {loading ? '...' : '✅ Confirm'}
+                {loading ? '...' : 'Confirm'}
               </button>
               <button
                 onClick={() => setConfirmModal({ open: true, type: 'cancel' })}
@@ -209,7 +231,7 @@ export default function BookingCard({ booking, onUpdate }) {
                 id={`cancel-btn-${booking.id}`}
                 className="flex-1 py-2.5 text-sm bg-white/[0.04] hover:bg-red-900/30 hover:text-f1-red text-gray-400 font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 border border-white/[0.04] hover:border-f1-red/20"
               >
-                {loading ? '...' : '❌ Cancel'}
+                {loading ? '...' : 'Cancel Booking'}
               </button>
             </div>
           )}
@@ -228,7 +250,7 @@ export default function BookingCard({ booking, onUpdate }) {
                   Generating...
                 </>
               ) : (
-                '🎫 Download F1 Ticket (PDF)'
+                'Download Ticket (PDF)'
               )}
             </button>
           )}

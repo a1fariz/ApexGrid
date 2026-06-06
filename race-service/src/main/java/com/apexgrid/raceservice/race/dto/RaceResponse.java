@@ -17,6 +17,7 @@ public class RaceResponse {
 
     private Integer id;
     private String name;
+    private Integer circuitId;       // Added: needed by admin edit form to pre-select circuit
     private LocalDateTime raceDate;
     private LocalTime raceTime;
     private Integer season;
@@ -34,3 +35,4 @@ public class RaceResponse {
     private String imageUrl;
     private String circuitImageUrl;
 }
+

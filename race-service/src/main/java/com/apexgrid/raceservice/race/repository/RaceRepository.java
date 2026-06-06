@@ -16,6 +16,10 @@ import org.springframework.data.domain.Pageable;
 @Repository
 public interface RaceRepository extends JpaRepository<Race, Integer> {
 
+    // Fix N+1: load all races with their circuits in a single JOIN query
+    @Query("SELECT r FROM Race r JOIN FETCH r.circuit")
+    List<Race> findAllWithCircuit();
+
     List<Race> findByStatusOrderByRaceDateAsc(String status);
 
     List<Race> findBySeasonOrderByRoundAsc(Integer season);

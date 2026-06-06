@@ -144,7 +144,7 @@ export default function BookingHistory() {
               </p>
               {filter === 'ALL' && (
                 <button onClick={() => navigate('/')} className="btn-primary">
-                  Browse Races 🏎️
+                  Browse Races
                 </button>
               )}
             </div>

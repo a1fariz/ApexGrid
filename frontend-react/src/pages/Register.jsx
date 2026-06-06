@@ -57,8 +57,13 @@ export default function Register() {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center animate-fade-in">
-          <div className="text-6xl mb-4">🏆</div>
-          <h2 className="text-2xl font-bold text-white mb-2">Registration Successful!</h2>
+          <div className="w-16 h-16 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-5">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="#34D399" strokeWidth="1.5"/>
+              <path d="M7.5 12l3 3 6-6" stroke="#34D399" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">Registration Successful</h2>
           <p className="text-gray-400">Redirecting to login...</p>
         </div>
       </div>
@@ -183,7 +188,7 @@ export default function Register() {
                   Creating account...
                 </span>
               ) : (
-                'Create Account 🏎️'
+                'Create Account'
               )}
             </button>
           </form>

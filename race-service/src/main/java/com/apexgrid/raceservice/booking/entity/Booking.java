@@ -35,6 +35,9 @@ public class Booking {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
+    @Column(name = "zone", length = 10)
+    private String zone;
+
     @Column(name = "total_price", nullable = false, precision = 12, scale = 2)
     private BigDecimal totalPrice;
 

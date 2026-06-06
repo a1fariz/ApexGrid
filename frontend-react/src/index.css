@@ -227,6 +227,21 @@ select:-webkit-autofill {
   50% { transform: scale(1.05); }
 }
 
+@keyframes toastSlideIn {
+  from { opacity: 0; transform: translateX(28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toastSlideOut {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(calc(100% + 28px)); }
+}
+
+@keyframes progressShrink {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+
 .animate-fade-in {
   animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -326,21 +341,91 @@ select:-webkit-autofill {
 }
 
 /* ============================================================
-   TOAST — Premium notifications
+   TOAST — Premium notification system
    ============================================================ */
+.toast-wrapper {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.25);
+  pointer-events: auto;
+}
+
+/* Enter / Exit Animations */
+.toast-enter {
+  animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.toast-exit {
+  animation: toastSlideOut 0.35s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+}
+
+/* Type variants */
 .toast-success {
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  color: #34D399;
-  backdrop-filter: blur(12px);
+  background: rgba(16, 185, 129, 0.10);
+  border: 1px solid rgba(16, 185, 129, 0.22);
 }
 
 .toast-error {
-  background: rgba(225, 6, 0, 0.12);
-  border: 1px solid rgba(225, 6, 0, 0.25);
-  color: #ff6b6b;
-  backdrop-filter: blur(12px);
+  background: rgba(225, 6, 0, 0.10);
+  border: 1px solid rgba(225, 6, 0, 0.22);
 }
+
+.toast-warning {
+  background: rgba(245, 158, 11, 0.10);
+  border: 1px solid rgba(245, 158, 11, 0.22);
+}
+
+.toast-info {
+  background: rgba(56, 189, 248, 0.10);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+}
+
+/* Icon colors per type */
+.toast-icon-success { color: #34D399; }
+.toast-icon-error   { color: #FF6B6B; }
+.toast-icon-warning { color: #FBBF24; }
+.toast-icon-info    { color: #38BDF8; }
+
+/* Dismiss (X) button */
+.toast-dismiss {
+  color: rgba(255, 255, 255, 0.25);
+  transition: color 0.2s ease;
+  line-height: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 4px;
+}
+
+.toast-dismiss:hover {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* Progress bar track */
+.toast-progress-track {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Progress bar fill — animates width from 100 → 0 */
+.toast-progress-fill {
+  height: 100%;
+  animation: progressShrink linear forwards;
+  border-radius: 0 0 14px 14px;
+}
+
+.toast-progress-success { background: #34D399; }
+.toast-progress-error   { background: #FF6B6B; }
+.toast-progress-warning { background: #FBBF24; }
+.toast-progress-info    { background: #38BDF8; }
 
 /* ============================================================
    LOADING SPINNER

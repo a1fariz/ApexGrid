@@ -124,7 +124,7 @@ export default function Home() {
             <div className="flex flex-wrap items-center justify-center gap-4 animate-fade-in"
                  style={{ animationDelay: '0.3s' }}>
               <a href="#races" className="btn-primary px-8 py-3.5 text-base">
-                Browse Races 🏎️
+                Browse Races
               </a>
               <Link to="/register" className="btn-outline px-8 py-3.5 text-base">
                 Get Started

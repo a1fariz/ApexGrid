@@ -40,15 +40,19 @@ public class BookingController {
     }
 
     @PutMapping("/{id}/confirm")
-    public ResponseEntity<BookingResponse> confirmBooking(@PathVariable("id") Integer id) {
-        return ResponseEntity.ok(bookingService.confirmBooking(id));
+    public ResponseEntity<BookingResponse> confirmBooking(@PathVariable("id") Integer id,
+                                                          HttpServletRequest httpRequest) {
+        Integer userId = extractUserId(httpRequest);
+        return ResponseEntity.ok(bookingService.confirmBooking(id, userId));
     }
 
     @PutMapping("/{id}/cancel")
     public ResponseEntity<BookingResponse> cancelBooking(@PathVariable("id") Integer id,
-                                                          @RequestBody(required = false) Map<String, String> body) {
+                                                          @RequestBody(required = false) Map<String, String> body,
+                                                          HttpServletRequest httpRequest) {
+        Integer userId = extractUserId(httpRequest);
         String reason = body != null ? body.get("reason") : "Cancelled by user";
-        return ResponseEntity.ok(bookingService.cancelBooking(id, reason));
+        return ResponseEntity.ok(bookingService.cancelBooking(id, reason, userId));
     }
 
     private Integer extractUserId(HttpServletRequest request) {

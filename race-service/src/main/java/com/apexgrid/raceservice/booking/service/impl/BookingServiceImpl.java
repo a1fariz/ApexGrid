@@ -33,6 +33,13 @@ public class BookingServiceImpl implements BookingService {
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final SecureRandom random = new SecureRandom();
 
+    // Zone price multipliers — mirrors frontend TICKET_ZONES
+    private static final java.util.Map<String, Double> ZONE_MULTIPLIERS = java.util.Map.of(
+            "GA",  1.0,
+            "GS",  2.5,
+            "VIP", 6.0
+    );
+
     @Override
     @Transactional
     public BookingResponse createBooking(BookingRequest request, Integer userId) {
@@ -57,8 +64,12 @@ public class BookingServiceImpl implements BookingService {
         // 3. Generate unique booking code (format: APEX-XXXXXX)
         String bookingCode = generateUniqueBookingCode();
 
-        // 4. Calculate total price
-        BigDecimal totalPrice = race.getTicketPrice().multiply(BigDecimal.valueOf(request.getQuantity()));
+        // 4. Determine zone and calculate total price on the backend
+        String zone = (request.getZone() != null) ? request.getZone().toUpperCase() : "GA";
+        double multiplier = ZONE_MULTIPLIERS.getOrDefault(zone, 1.0);
+        BigDecimal totalPrice = race.getTicketPrice()
+                .multiply(BigDecimal.valueOf(multiplier))
+                .multiply(BigDecimal.valueOf(request.getQuantity()));
 
         // 5. Save booking with PENDING status
         // NOTE: PostgreSQL trigger will:
@@ -70,6 +81,7 @@ public class BookingServiceImpl implements BookingService {
                 .userId(userId)
                 .race(race)
                 .quantity(request.getQuantity())
+                .zone(zone)
                 .totalPrice(totalPrice)
                 .status("PENDING")
                 .build();
@@ -100,9 +112,14 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingResponse confirmBooking(Integer bookingId) {
+    public BookingResponse confirmBooking(Integer bookingId, Integer requestingUserId) {
         Booking booking = bookingRepository.findByIdWithRace(bookingId)
                 .orElseThrow(() -> new ApiException("Booking not found with id: " + bookingId, HttpStatus.NOT_FOUND));
+
+        // Security fix: only the booking owner can confirm
+        if (!booking.getUserId().equals(requestingUserId)) {
+            throw new ApiException("You are not authorized to confirm this booking", HttpStatus.FORBIDDEN);
+        }
 
         if (!"PENDING".equals(booking.getStatus())) {
             throw new ApiException("Only PENDING bookings can be confirmed. Current status: " + booking.getStatus(),
@@ -127,9 +144,14 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingResponse cancelBooking(Integer bookingId, String reason) {
+    public BookingResponse cancelBooking(Integer bookingId, String reason, Integer requestingUserId) {
         Booking booking = bookingRepository.findByIdWithRace(bookingId)
                 .orElseThrow(() -> new ApiException("Booking not found with id: " + bookingId, HttpStatus.NOT_FOUND));
+
+        // Security fix: only the booking owner can cancel
+        if (!booking.getUserId().equals(requestingUserId)) {
+            throw new ApiException("You are not authorized to cancel this booking", HttpStatus.FORBIDDEN);
+        }
 
         if ("CANCELLED".equals(booking.getStatus())) {
             throw new ApiException("Booking is already cancelled", HttpStatus.BAD_REQUEST);
@@ -187,6 +209,7 @@ public class BookingServiceImpl implements BookingService {
                 .country(country)
                 .raceDate(race != null ? race.getRaceDate() : null)
                 .quantity(booking.getQuantity())
+                .zone(booking.getZone() != null ? booking.getZone() : "GA")
                 .totalPrice(booking.getTotalPrice())
                 .status(booking.getStatus())
                 .createdAt(booking.getCreatedAt())

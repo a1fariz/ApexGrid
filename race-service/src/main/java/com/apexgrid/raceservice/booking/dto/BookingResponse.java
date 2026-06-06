@@ -23,6 +23,7 @@ public class BookingResponse {
     private String country;
     private LocalDateTime raceDate;
     private Integer quantity;
+    private String zone;
     private BigDecimal totalPrice;
     private String status;
     private LocalDateTime createdAt;

@@ -98,15 +98,12 @@ export default function RaceDetail() {
     setBooking(true)
     setBookingError('')
     try {
-      // NOTE: Backend database only supports the base race ticket price,
-      // so this booking sends the quantity. The total price created in the DB
-      // will be standard base price, but we will visually present the simulated tier.
-      const res = await api.post('/bookings', { raceId: race.id, quantity })
-      setBookingSuccess({
-        ...res.data,
-        simulatedZone: zoneInfo.name,
-        simulatedTotalPrice: totalPrice,
+      const res = await api.post('/bookings', {
+        raceId: race.id,
+        quantity,
+        zone: selectedZone,
       })
+      setBookingSuccess(res.data)
     } catch (err) {
       setBookingError(err.response?.data?.message || 'Booking failed. Please try again.')
     } finally {

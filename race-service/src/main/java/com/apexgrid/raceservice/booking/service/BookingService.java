@@ -9,6 +9,6 @@ public interface BookingService {
     BookingResponse createBooking(BookingRequest request, Integer userId);
     List<BookingResponse> getUserBookings(Integer userId);
     BookingResponse getBookingByCode(String code);
-    BookingResponse confirmBooking(Integer bookingId);
-    BookingResponse cancelBooking(Integer bookingId, String reason);
+    BookingResponse confirmBooking(Integer bookingId, Integer requestingUserId);
+    BookingResponse cancelBooking(Integer bookingId, String reason, Integer requestingUserId);
 }
