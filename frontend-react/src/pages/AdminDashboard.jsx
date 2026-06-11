@@ -7,6 +7,39 @@ import { useAuth } from '../hooks/useAuth'
 import api from '../services/api'
 import f1Dashboard from '../assets/f1_dashboard.png'
 
+function AnimatedCounter({ value, duration = 800, formatter }) {
+  const [count, setCount] = useState(0)
+
+  useEffect(() => {
+    let start = 0
+    const end = parseFloat(value) || 0
+    if (end === 0) {
+      setCount(0)
+      return
+    }
+
+    const totalTicks = 30
+    const stepTime = duration / totalTicks
+    const increment = end / totalTicks
+    
+    let tick = 0
+    const timer = setInterval(() => {
+      tick++
+      start += increment
+      if (tick >= totalTicks) {
+        clearInterval(timer)
+        setCount(end)
+      } else {
+        setCount(Math.floor(start))
+      }
+    }, stepTime)
+
+    return () => clearInterval(timer)
+  }, [value, duration])
+
+  return formatter ? formatter(count) : count.toLocaleString()
+}
+
 export default function AdminDashboard() {
   const { user } = useAuth()
   const navigate = useNavigate()
@@ -87,22 +120,30 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
               <div className="card p-5 text-center">
                 <div className="text-3xl mb-2">💰</div>
-                <div className="text-2xl font-bold text-green-400">{formatCurrency(stats?.totalRevenue)}</div>
+                <div className="text-2xl font-bold text-green-400">
+                  <AnimatedCounter value={stats?.totalRevenue} formatter={formatCurrency} />
+                </div>
                 <div className="text-xs text-gray-500 mt-1">Total Revenue</div>
               </div>
               <div className="card p-5 text-center">
                 <div className="text-3xl mb-2">🎫</div>
-                <div className="text-2xl font-bold text-f1-red">{stats?.totalTicketsSold || 0}</div>
+                <div className="text-2xl font-bold text-f1-red">
+                  <AnimatedCounter value={stats?.totalTicketsSold} />
+                </div>
                 <div className="text-xs text-gray-500 mt-1">Tickets Sold</div>
               </div>
               <div className="card p-5 text-center">
                 <div className="text-3xl mb-2">✅</div>
-                <div className="text-2xl font-bold text-blue-400">{stats?.totalConfirmedBookings || 0}</div>
+                <div className="text-2xl font-bold text-blue-400">
+                  <AnimatedCounter value={stats?.totalConfirmedBookings} />
+                </div>
                 <div className="text-xs text-gray-500 mt-1">Confirmed Bookings</div>
               </div>
               <div className="card p-5 text-center">
                 <div className="text-3xl mb-2">👥</div>
-                <div className="text-2xl font-bold text-amber-400">{stats?.totalUniqueCustomers || 0}</div>
+                <div className="text-2xl font-bold text-amber-400">
+                  <AnimatedCounter value={stats?.totalUniqueCustomers} />
+                </div>
                 <div className="text-xs text-gray-500 mt-1">Unique Customers</div>
               </div>
             </div>
@@ -111,19 +152,27 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
               <div className="card p-4 text-center">
                 <div className="text-sm text-gray-400">Pending</div>
-                <div className="text-xl font-bold text-amber-400 mt-1">{stats?.totalPendingBookings || 0}</div>
+                <div className="text-xl font-bold text-amber-400 mt-1">
+                  <AnimatedCounter value={stats?.totalPendingBookings} />
+                </div>
               </div>
               <div className="card p-4 text-center">
                 <div className="text-sm text-gray-400">Cancelled</div>
-                <div className="text-xl font-bold text-red-400 mt-1">{stats?.totalCancelledBookings || 0}</div>
+                <div className="text-xl font-bold text-red-400 mt-1">
+                  <AnimatedCounter value={stats?.totalCancelledBookings} />
+                </div>
               </div>
               <div className="card p-4 text-center">
                 <div className="text-sm text-f1-light">Total Races</div>
-                <div className="text-xl font-bold text-f1-white mt-1">{stats?.totalRaces || 0}</div>
+                <div className="text-xl font-bold text-f1-white mt-1">
+                  <AnimatedCounter value={stats?.totalRaces} />
+                </div>
               </div>
               <div className="card p-4 text-center">
                 <div className="text-sm text-f1-light">Total Circuits</div>
-                <div className="text-xl font-bold text-f1-white mt-1">{stats?.totalCircuits || 0}</div>
+                <div className="text-xl font-bold text-f1-white mt-1">
+                  <AnimatedCounter value={stats?.totalCircuits} />
+                </div>
               </div>
             </div>
 

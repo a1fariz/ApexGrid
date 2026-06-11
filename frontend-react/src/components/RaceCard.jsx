@@ -81,7 +81,7 @@ export default function RaceCard({ race }) {
           </div>
         )}
         {isLowQuota && !isSoldOut && (
-          <div className="absolute top-3 right-3 z-20 px-3 py-1 rounded-full bg-amber-500/90 text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm">
+          <div className="absolute top-3 right-3 z-20 px-3 py-1 rounded-full bg-amber-500/90 text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm animate-pulse">
             🔥 Almost Gone
           </div>
         )}
@@ -126,7 +126,7 @@ export default function RaceCard({ race }) {
           </div>
           <div className="text-right">
             <div className="text-[10px] mb-1">
-              <span className={isLowQuota ? 'text-amber-400 font-semibold' : 'text-gray-500'}>
+              <span className={isLowQuota ? 'text-amber-400 font-semibold animate-pulse' : 'text-gray-500'}>
                 {race.availableQuota.toLocaleString()} left
               </span>
             </div>
