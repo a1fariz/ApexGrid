@@ -57,6 +57,12 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.cancelBooking(id, reason, userId, userEmail));
     }
 
+    @PostMapping("/{code}/scan")
+    public ResponseEntity<BookingResponse> scanBooking(@PathVariable("code") String code) {
+        // This endpoint verifies and marks the ticket as scanned.
+        return ResponseEntity.ok(bookingService.scanBooking(code));
+    }
+
     private Integer extractUserId(HttpServletRequest request) {
         Object userId = request.getAttribute("userId");
         if (userId == null) {

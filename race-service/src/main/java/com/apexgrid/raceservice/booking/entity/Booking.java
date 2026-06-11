@@ -56,6 +56,9 @@ public class Booking {
     @Column(name = "cancelled_at")
     private LocalDateTime cancelledAt;
 
+    @Column(name = "scanned_at")
+    private LocalDateTime scannedAt;
+
     @Column(name = "cancellation_reason", length = 255)
     private String cancellationReason;
 

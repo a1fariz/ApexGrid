@@ -159,6 +159,7 @@ CREATE TABLE bookings (
     expired_at TIMESTAMP,
     confirmed_at TIMESTAMP,
     cancelled_at TIMESTAMP,
+    scanned_at TIMESTAMP,
     cancellation_reason VARCHAR(255),
 
     CONSTRAINT fk_bookings_race FOREIGN KEY (race_id) REFERENCES races(id) ON DELETE RESTRICT,

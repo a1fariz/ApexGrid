@@ -30,6 +30,7 @@ public class BookingResponse {
     private LocalDateTime expiredAt;
     private LocalDateTime confirmedAt;
     private LocalDateTime cancelledAt;
+    private LocalDateTime scannedAt;
     private String cancellationReason;
     private Boolean hasTicket;
 }

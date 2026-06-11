@@ -173,6 +173,28 @@ public class BookingServiceImpl implements BookingService {
         return mapToBookingResponse(cancelled);
     }
 
+    @Override
+    @Transactional
+    public BookingResponse scanBooking(String bookingCode) {
+        Booking booking = bookingRepository.findByBookingCode(bookingCode)
+                .orElseThrow(() -> new ApiException("Invalid QR Code: Booking not found with code " + bookingCode, HttpStatus.NOT_FOUND));
+
+        if (!"CONFIRMED".equals(booking.getStatus())) {
+            throw new ApiException("Ticket is invalid. Booking status is: " + booking.getStatus(), HttpStatus.BAD_REQUEST);
+        }
+
+        if (booking.getScannedAt() != null) {
+            throw new ApiException("Ticket has already been scanned on " + booking.getScannedAt(), HttpStatus.BAD_REQUEST);
+        }
+
+        // Mark as scanned
+        booking.setScannedAt(LocalDateTime.now());
+        Booking scanned = bookingRepository.save(booking);
+
+        log.info("Ticket successfully scanned and verified: {}", scanned.getBookingCode());
+        return mapToBookingResponse(scanned);
+    }
+
     private String generateUniqueBookingCode() {
         String code;
         int attempts = 0;
@@ -216,6 +238,7 @@ public class BookingServiceImpl implements BookingService {
                 .expiredAt(booking.getExpiredAt())
                 .confirmedAt(booking.getConfirmedAt())
                 .cancelledAt(booking.getCancelledAt())
+                .scannedAt(booking.getScannedAt())
                 .cancellationReason(booking.getCancellationReason())
                 .hasTicket("CONFIRMED".equals(booking.getStatus()))
                 .build();

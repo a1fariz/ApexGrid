@@ -11,4 +11,6 @@ public interface BookingService {
     BookingResponse getBookingByCode(String code);
     BookingResponse confirmBooking(Integer bookingId, Integer requestingUserId);
     BookingResponse cancelBooking(Integer bookingId, String reason, Integer requestingUserId, String userEmail);
+
+    BookingResponse scanBooking(String bookingCode);
 }
