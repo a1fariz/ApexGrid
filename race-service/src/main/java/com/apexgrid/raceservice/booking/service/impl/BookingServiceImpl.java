@@ -42,7 +42,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingResponse createBooking(BookingRequest request, Integer userId) {
+    public BookingResponse createBooking(BookingRequest request, Integer userId, String userEmail) {
         // 1. Check race exists and is UPCOMING
         Race race = raceRepository.findByIdWithCircuit(request.getRaceId())
                 .orElseThrow(
@@ -89,7 +89,7 @@ public class BookingServiceImpl implements BookingService {
         Booking savedBooking = bookingRepository.save(booking);
 
         // 6. Send async email confirmation
-        emailService.sendBookingConfirmation(savedBooking, null);
+        emailService.sendBookingConfirmation(savedBooking, userEmail);
 
         log.info("Booking created: {} for userId: {} — raceId: {}", bookingCode, userId, race.getId());
         return mapToBookingResponse(savedBooking);
@@ -144,7 +144,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingResponse cancelBooking(Integer bookingId, String reason, Integer requestingUserId) {
+    public BookingResponse cancelBooking(Integer bookingId, String reason, Integer requestingUserId, String userEmail) {
         Booking booking = bookingRepository.findByIdWithRace(bookingId)
                 .orElseThrow(() -> new ApiException("Booking not found with id: " + bookingId, HttpStatus.NOT_FOUND));
 
@@ -167,7 +167,7 @@ public class BookingServiceImpl implements BookingService {
         Booking cancelled = bookingRepository.save(booking);
 
         // Send async cancellation email
-        emailService.sendBookingCancellation(cancelled, null);
+        emailService.sendBookingCancellation(cancelled, userEmail);
 
         log.info("Booking cancelled: {} — reason: {}", cancelled.getBookingCode(), reason);
         return mapToBookingResponse(cancelled);

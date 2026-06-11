@@ -76,8 +76,8 @@ export default function UserProfile() {
         {/* Header */}
         <div className="mb-8">
           <div className="f1-stripe mb-3" />
-          <h1 className="text-3xl font-bold text-white">My Profile</h1>
-          <p className="text-gray-400 mt-1">Account information & booking history</p>
+          <h1 className="text-3xl font-bold text-f1-white">My Profile</h1>
+          <p className="text-f1-light mt-1">Account information & booking history</p>
         </div>
 
         {/* User Info Card */}
@@ -87,9 +87,9 @@ export default function UserProfile() {
               {user?.username?.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-white">{user?.fullName || user?.username}</h2>
-              <div className="text-gray-400 text-sm mt-1">@{user?.username}</div>
-              <div className="flex flex-wrap gap-4 mt-3 text-sm text-gray-400">
+              <h2 className="text-xl font-bold text-f1-white">{user?.fullName || user?.username}</h2>
+              <div className="text-f1-light text-sm mt-1">@{user?.username}</div>
+              <div className="flex flex-wrap gap-4 mt-3 text-sm text-f1-light">
                 <span>📧 {user?.email}</span>
                 <span className="px-2 py-0.5 rounded-full bg-f1-red/10 text-f1-red text-xs font-semibold border border-f1-red/20">
                   {user?.role}
@@ -103,23 +103,23 @@ export default function UserProfile() {
         <div className="grid grid-cols-3 gap-4 mb-8">
           <div className="card p-4 text-center">
             <div className="text-2xl font-bold text-green-400">{confirmedCount}</div>
-            <div className="text-xs text-gray-500 mt-1">Confirmed</div>
+            <div className="text-xs text-f1-light mt-1">Confirmed</div>
           </div>
           <div className="card p-4 text-center">
             <div className="text-2xl font-bold text-amber-400">{pendingCount}</div>
-            <div className="text-xs text-gray-500 mt-1">Pending</div>
+            <div className="text-xs text-f1-light mt-1">Pending</div>
           </div>
           <div className="card p-4 text-center">
             <div className="text-2xl font-bold text-red-400">{cancelledCount}</div>
-            <div className="text-xs text-gray-500 mt-1">Cancelled</div>
+            <div className="text-xs text-f1-light mt-1">Cancelled</div>
           </div>
         </div>
 
         {/* Booking History */}
         <div className="card overflow-hidden">
-          <div className="p-5 border-b border-white/5">
-            <h2 className="font-semibold text-white">Booking History</h2>
-            <p className="text-xs text-gray-500 mt-1">{bookings.length} total bookings</p>
+          <div className="p-5 border-b border-f1-border">
+            <h2 className="font-semibold text-f1-white">Booking History</h2>
+            <p className="text-xs text-f1-light mt-1">{bookings.length} total bookings</p>
           </div>
 
           {loading ? (
@@ -129,7 +129,7 @@ export default function UserProfile() {
           ) : bookings.length === 0 ? (
             <div className="text-center py-16">
               <div className="text-4xl mb-3">🎫</div>
-              <p className="text-gray-400">No bookings yet</p>
+              <p className="text-f1-light">No bookings yet</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -150,11 +150,11 @@ export default function UserProfile() {
                     <tr key={booking.id}>
                       <td>
                         <div className="font-mono font-semibold text-f1-red text-sm">{booking.bookingCode}</div>
-                        <div className="text-xs text-gray-500">{formatDate(booking.createdAt)}</div>
+                        <div className="text-xs text-f1-light">{formatDate(booking.createdAt)}</div>
                       </td>
                       <td>
-                        <div className="font-medium text-white text-sm">{booking.raceName}</div>
-                        <div className="text-xs text-gray-500">{booking.circuitName}, {booking.country}</div>
+                        <div className="font-medium text-f1-white text-sm">{booking.raceName}</div>
+                        <div className="text-xs text-f1-light">{booking.circuitName}, {booking.country}</div>
                       </td>
                       <td className="text-sm">{formatDate(booking.raceDate)}</td>
                       <td className="text-sm text-center">{booking.quantity}</td>
@@ -170,7 +170,7 @@ export default function UserProfile() {
                             {downloading === booking.id ? '⏳...' : '🎫 Download'}
                           </button>
                         ) : (
-                          <span className="text-xs text-gray-600">—</span>
+                          <span className="text-xs text-f1-light">—</span>
                         )}
                       </td>
                     </tr>

@@ -72,7 +72,7 @@ export default function BookingHistory() {
   }
 
   const filterConfig = {
-    ALL: { color: 'text-white', activeColor: 'border-white/20' },
+    ALL: { color: 'text-f1-white', activeColor: 'border-f1-border/80' },
     PENDING: { color: 'text-amber-400', activeColor: 'border-amber-400/40' },
     CONFIRMED: { color: 'text-green-400', activeColor: 'border-green-400/40' },
     CANCELLED: { color: 'text-red-400', activeColor: 'border-f1-red/40' },
@@ -88,8 +88,8 @@ export default function BookingHistory() {
           {/* Header */}
           <div className="mb-8">
             <div className="f1-stripe mb-3" />
-            <h1 className="text-3xl font-bold text-white">My Bookings</h1>
-            <p className="text-gray-500 mt-1">Track and manage your F1 ticket bookings</p>
+            <h1 className="text-3xl font-bold text-f1-white">My Bookings</h1>
+            <p className="text-f1-light mt-1">Track and manage your F1 ticket bookings</p>
           </div>
 
           {/* Stats Summary */}
@@ -103,11 +103,11 @@ export default function BookingHistory() {
                   className={`card-static p-4 text-center transition-all duration-300 rounded-2xl border ${
                     filter === status
                       ? filterConfig[status].activeColor
-                      : 'border-white/[0.04] hover:border-white/[0.08]'
+                      : 'border-f1-border hover:border-f1-border/80'
                   }`}
                 >
                   <div className={`text-2xl font-bold ${filterConfig[status].color}`}>{count}</div>
-                  <div className="text-[10px] text-gray-500 mt-1 uppercase tracking-wider font-semibold">{status}</div>
+                  <div className="text-[10px] text-f1-light mt-1 uppercase tracking-wider font-semibold">{status}</div>
                 </button>
               ))}
             </div>
@@ -124,20 +124,24 @@ export default function BookingHistory() {
             </div>
           ) : error ? (
             <div className="text-center py-24 animate-fade-in">
-              <div className="text-5xl mb-4">⚠️</div>
-              <p className="text-red-400 mb-2">{error}</p>
-              <p className="text-gray-500 text-sm mb-6">Please check your connection and try again.</p>
+              <div className="flex justify-center mb-4">
+                <svg className="w-12 h-12 text-red-500 animate-pulse" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+              </div>
+              <p className="text-red-400 mb-2 font-semibold">{error}</p>
+              <p className="text-f1-light text-sm mb-6">Please check your connection and try again.</p>
               <button onClick={fetchBookings} className="btn-primary">Retry</button>
             </div>
           ) : filteredBookings.length === 0 ? (
             <div className="text-center py-24 animate-fade-in">
-              <div className="w-20 h-20 bg-white/[0.03] rounded-3xl flex items-center justify-center mx-auto mb-6">
+              <div className="w-20 h-20 bg-f1-surface border border-f1-border rounded-3xl flex items-center justify-center mx-auto mb-6">
                 <span className="text-5xl">🎫</span>
               </div>
-              <h2 className="text-xl font-semibold text-white mb-2">
+              <h2 className="text-xl font-semibold text-f1-white mb-2">
                 {filter === 'ALL' ? 'No bookings yet' : `No ${filter.toLowerCase()} bookings`}
               </h2>
-              <p className="text-gray-500 mb-6 text-sm max-w-sm mx-auto">
+              <p className="text-f1-light mb-6 text-sm max-w-sm mx-auto">
                 {filter === 'ALL'
                   ? 'Start your Formula 1 journey by booking your first race!'
                   : `You don't have any ${filter.toLowerCase()} bookings.`}

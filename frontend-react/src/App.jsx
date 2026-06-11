@@ -16,7 +16,7 @@ import AdminCircuitManagement from './pages/AdminCircuitManagement'
 function App() {
   return (
     <AuthProvider>
-      <div className="min-h-screen bg-f1-black text-white">
+      <div className="min-h-screen bg-f1-black text-f1-white">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />

@@ -5,6 +5,7 @@ import RaceCard from '../components/RaceCard'
 import RaceCardSkeleton from '../components/RaceCardSkeleton'
 import PageTransition from '../components/PageTransition'
 import api from '../services/api'
+import f1Backdrop from '../assets/f1_backdrop.png'
 
 export default function Home() {
   const [races, setRaces] = useState([])
@@ -15,6 +16,7 @@ export default function Home() {
   const [search, setSearch] = useState('')
   const [season, setSeason] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
+  const [sortBy, setSortBy] = useState('date-asc')
   const [seasons, setSeasons] = useState([])
 
   // Pagination state
@@ -22,6 +24,69 @@ export default function Home() {
   const [totalPages, setTotalPages] = useState(0)
   const [totalElements, setTotalElements] = useState(0)
   const PAGE_SIZE = 9
+
+  // Countdown Timer State & Hook
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+  const [countdownRace, setCountdownRace] = useState(null)
+
+  useEffect(() => {
+    const fetchCountdownRace = async () => {
+      try {
+        const res = await api.get('/races/upcoming')
+        const now = new Date()
+        
+        // Find future races sorted chronologically
+        const futureRaces = res.data
+          .filter(r => new Date(r.raceDate) > now)
+          .sort((a, b) => new Date(a.raceDate) - new Date(b.raceDate))
+
+        if (futureRaces.length > 0) {
+          setCountdownRace(futureRaces[0])
+        } else {
+          // Fallback to official 2026 Spanish Grand Prix (June 12-14, 2026)
+          setCountdownRace({
+            name: 'Spanish Grand Prix',
+            raceDate: '2026-06-14T15:00:00Z',
+            circuitName: 'Circuit de Barcelona-Catalunya',
+            location: 'Barcelona, Spain'
+          })
+        }
+      } catch (err) {
+        console.error('Failed to load upcoming race for countdown:', err)
+        // Fallback to official 2026 Spanish Grand Prix
+        setCountdownRace({
+          name: 'Spanish Grand Prix',
+          raceDate: '2026-06-14T15:00:00Z',
+          circuitName: 'Circuit de Barcelona-Catalunya',
+          location: 'Barcelona, Spain'
+        })
+      }
+    }
+    fetchCountdownRace()
+  }, [])
+
+  useEffect(() => {
+    const targetDateStr = countdownRace?.raceDate || '2026-06-14T15:00:00Z'
+    const target = new Date(targetDateStr).getTime()
+
+    const interval = setInterval(() => {
+      const now = new Date().getTime()
+      const difference = target - now
+
+      if (difference <= 0) {
+        clearInterval(interval)
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+      } else {
+        const d = Math.floor(difference / (1000 * 60 * 60 * 24))
+        const h = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+        const m = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60))
+        const s = Math.floor((difference % (1000 * 60)) / 1000)
+        setTimeLeft({ days: d, hours: h, minutes: m, seconds: s })
+      }
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [countdownRace])
 
   useEffect(() => {
     const fetchSeasons = async () => {
@@ -70,10 +135,29 @@ export default function Home() {
     setSearch('')
     setSeason('')
     setStatusFilter('')
+    setSortBy('date-asc')
     setPage(0)
   }
 
-  const hasFilters = search || season || statusFilter
+  const getSortedRaces = () => {
+    const racesCopy = [...races]
+    switch (sortBy) {
+      case 'date-asc':
+        return racesCopy.sort((a, b) => new Date(a.raceDate) - new Date(b.raceDate))
+      case 'date-desc':
+        return racesCopy.sort((a, b) => new Date(b.raceDate) - new Date(a.raceDate))
+      case 'price-asc':
+        return racesCopy.sort((a, b) => (a.ticketPrice || 0) - (b.ticketPrice || 0))
+      case 'price-desc':
+        return racesCopy.sort((a, b) => (b.ticketPrice || 0) - (a.ticketPrice || 0))
+      case 'quota-desc':
+        return racesCopy.sort((a, b) => (b.availableQuota || 0) - (a.availableQuota || 0))
+      default:
+        return racesCopy
+    }
+  }
+
+  const hasFilters = search || season || statusFilter || sortBy !== 'date-asc'
 
   return (
     <PageTransition>
@@ -82,24 +166,37 @@ export default function Home() {
 
         {/* Hero Section */}
         <section className="relative overflow-hidden pt-20 pb-28 px-4"
-                 style={{ background: 'linear-gradient(180deg, #120505 0%, #0A0A0F 100%)' }}>
+                 style={{ background: 'var(--f1-hero-bg)' }}>
 
-          {/* Animated background elements */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-f1-red/[0.04] rounded-full blur-[120px]" />
-            <div className="absolute bottom-0 left-0 w-[600px] h-[400px] bg-f1-red/[0.02] rounded-full blur-[100px]" />
-            {/* Racing line grid */}
-            <div className="absolute inset-0 opacity-[0.03]">
-              {[...Array(10)].map((_, i) => (
+          {/* Background Image & Pattern Overlays */}
+          <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
+            <img 
+              src={f1Backdrop} 
+              alt="F1 Racetrack Backdrop" 
+              className="w-full h-full object-cover transition-opacity duration-500"
+              style={{ opacity: 'var(--f1-hero-opacity)' }}
+            />
+            {/* Telemetry/Dot grid pattern */}
+            <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.07]"
+                 style={{
+                   backgroundImage: `radial-gradient(var(--f1-white) 1px, transparent 1px)`,
+                   backgroundSize: '24px 24px'
+                 }}
+            />
+            {/* Diagonal racing lines */}
+            <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05]">
+              {[...Array(12)].map((_, i) => (
                 <div key={i}
-                  className="absolute h-px bg-gradient-to-r from-transparent via-f1-red to-transparent"
+                  className="absolute h-[2px] bg-gradient-to-r from-transparent via-f1-red to-transparent"
                   style={{
-                    top: `${8 + i * 10}%`, left: '-10%', right: '-10%',
-                    transform: `rotate(${-2 + i * 0.3}deg)`, opacity: 1 - i * 0.08,
+                    top: `${5 + i * 8}%`, left: '-10%', right: '-10%',
+                    transform: `rotate(${-5 + i * 0.4}deg)`, opacity: 1 - i * 0.08,
                   }}
                 />
               ))}
             </div>
+            {/* Smooth transition bottom gradient */}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-f1-black/50 to-f1-black" />
           </div>
 
           <div className="max-w-6xl mx-auto text-center relative z-10">
@@ -110,16 +207,47 @@ export default function Home() {
 
             <h1 className="font-f1 text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-6 animate-fade-in"
                 style={{ animationDelay: '0.1s' }}>
-              <span className="text-white">EXPERIENCE</span>
+              <span className="text-f1-white">EXPERIENCE</span>
               <br />
               <span className="bg-gradient-to-r from-f1-red to-red-400 bg-clip-text text-transparent">FORMULA 1</span>
             </h1>
 
-            <p className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto mb-12 animate-fade-in leading-relaxed"
+            <p className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto mb-8 animate-fade-in leading-relaxed"
                style={{ animationDelay: '0.2s' }}>
               Book your tickets to the most thrilling motorsport events in the world.
               From Monza to Singapore — feel the speed.
             </p>
+
+            {/* Live Ticking Countdown Timer */}
+            <div className="mb-10 max-w-xl mx-auto p-5 rounded-2xl bg-f1-surface/40 backdrop-blur-md border border-f1-border shadow-2xl flex flex-col sm:flex-row items-center justify-around text-f1-white animate-fade-in"
+                 style={{ animationDelay: '0.25s' }}>
+               <div className="text-center sm:text-left mb-4 sm:mb-0">
+                <span className="block font-f1 text-[10px] text-f1-red font-black uppercase tracking-widest mb-1">Upcoming Race</span>
+                <span className="block text-base font-bold truncate max-w-[200px]">{countdownRace ? countdownRace.name : 'Spanish Grand Prix'}</span>
+              </div>
+              <div className="hidden sm:block w-px h-10 bg-f1-border" />
+              <div className="flex gap-4 items-center">
+                <div className="text-center">
+                  <span className="block font-f1 text-2xl md:text-3xl font-black tracking-tight">{String(timeLeft.days).padStart(2, '0')}</span>
+                  <span className="text-[10px] text-gray-500 uppercase font-semibold">Days</span>
+                </div>
+                <span className="text-xl opacity-30">:</span>
+                <div className="text-center">
+                  <span className="block font-f1 text-2xl md:text-3xl font-black tracking-tight">{String(timeLeft.hours).padStart(2, '0')}</span>
+                  <span className="text-[10px] text-gray-500 uppercase font-semibold">Hrs</span>
+                </div>
+                <span className="text-xl opacity-30">:</span>
+                <div className="text-center">
+                  <span className="block font-f1 text-2xl md:text-3xl font-black tracking-tight">{String(timeLeft.minutes).padStart(2, '0')}</span>
+                  <span className="text-[10px] text-gray-500 uppercase font-semibold">Mins</span>
+                </div>
+                <span className="text-xl opacity-30">:</span>
+                <div className="text-center">
+                  <span className="block font-f1 text-2xl md:text-3xl font-black tracking-tight text-f1-red">{String(timeLeft.seconds).padStart(2, '0')}</span>
+                  <span className="text-[10px] text-gray-500 uppercase font-semibold">Secs</span>
+                </div>
+              </div>
+            </div>
 
             <div className="flex flex-wrap items-center justify-center gap-4 animate-fade-in"
                  style={{ animationDelay: '0.3s' }}>
@@ -138,14 +266,14 @@ export default function Home() {
           {/* Section Header */}
           <div className="mb-8">
             <div className="f1-stripe mb-3" />
-            <h2 className="text-3xl font-bold text-white">Race Calendar</h2>
+            <h2 className="text-3xl font-bold text-f1-white">Race Calendar</h2>
             <p className="text-gray-500 mt-1">
               {totalElements} race{totalElements !== 1 ? 's' : ''} found
             </p>
           </div>
 
           {/* Search & Filter Bar */}
-          <div className="card-static p-4 mb-8 rounded-2xl border border-white/[0.04]">
+          <div className="card-static p-4 mb-8 rounded-2xl border border-f1-border">
             <form onSubmit={handleSearchSubmit} className="flex flex-col md:flex-row gap-3">
               {/* Search Input */}
               <div className="flex-1 relative">
@@ -187,6 +315,20 @@ export default function Home() {
                 <option value="CANCELLED">CANCELLED</option>
               </select>
 
+              {/* Sort Filter */}
+              <select
+                id="sort-select"
+                className="form-input w-full md:w-44"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <option value="date-asc">Date: Earliest First</option>
+                <option value="date-desc">Date: Latest First</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+                <option value="quota-desc">Quota: Most Available</option>
+              </select>
+
               {hasFilters && (
                 <button
                   type="button"
@@ -210,15 +352,19 @@ export default function Home() {
             </div>
           ) : error ? (
             <div className="text-center py-24 animate-fade-in">
-              <div className="text-5xl mb-4">⚠️</div>
-              <p className="text-red-400 text-lg mb-2">{error}</p>
-              <p className="text-gray-500 text-sm mb-6">Please check your connection and try again.</p>
-              <button onClick={() => window.location.reload()} className="btn-primary">Retry</button>
+              <div className="flex justify-center mb-4">
+                <svg className="w-12 h-12 text-red-500 animate-pulse" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+              </div>
+              <p className="text-red-400 text-lg mb-2 font-semibold">{error}</p>
+              <p className="text-f1-light text-sm mb-6">Please check your connection and try again.</p>
+              <button onClick={fetchRaces} className="btn-primary">Retry</button>
             </div>
           ) : races.length === 0 ? (
             <div className="text-center py-24 animate-fade-in">
               <div className="text-6xl mb-4">🏁</div>
-              <h3 className="text-xl font-semibold text-white mb-2">No races found</h3>
+              <h3 className="text-xl font-semibold text-f1-white mb-2">No races found</h3>
               <p className="text-gray-500 mb-6">Try adjusting your search or filters.</p>
               {hasFilters && (
                 <button onClick={clearFilters} className="btn-primary">Clear Filters</button>
@@ -227,7 +373,7 @@ export default function Home() {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {races.map((race, index) => (
+                {getSortedRaces().map((race, index) => (
                   <div key={race.id} className="animate-fade-in" style={{ animationDelay: `${index * 0.06}s` }}>
                     <RaceCard race={race} />
                   </div>
@@ -240,7 +386,7 @@ export default function Home() {
                   <button
                     onClick={() => setPage(p => Math.max(0, p - 1))}
                     disabled={page === 0}
-                    className="px-4 py-2.5 rounded-xl text-sm font-medium bg-white/[0.03] text-gray-500 hover:bg-white/[0.06] hover:text-white disabled:opacity-25 disabled:cursor-not-allowed transition-all duration-300 border border-white/[0.04]"
+                    className="px-4 py-2.5 rounded-xl text-sm font-medium bg-f1-surface text-f1-light hover:bg-f1-surface hover:text-f1-white disabled:opacity-25 disabled:cursor-not-allowed transition-all duration-300 border border-f1-border"
                   >
                     ← Prev
                   </button>
@@ -252,7 +398,7 @@ export default function Home() {
                       className={`w-10 h-10 rounded-xl text-sm font-medium transition-all duration-300 ${
                         page === i
                           ? 'bg-f1-red text-white shadow-lg shadow-red-900/30'
-                          : 'bg-white/[0.03] text-gray-500 hover:bg-white/[0.06] hover:text-white border border-white/[0.04]'
+                          : 'bg-f1-surface text-f1-light hover:bg-f1-surface hover:text-f1-white border border-f1-border'
                       }`}
                     >
                       {i + 1}
@@ -262,7 +408,7 @@ export default function Home() {
                   <button
                     onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
                     disabled={page >= totalPages - 1}
-                    className="px-4 py-2.5 rounded-xl text-sm font-medium bg-white/[0.03] text-gray-500 hover:bg-white/[0.06] hover:text-white disabled:opacity-25 disabled:cursor-not-allowed transition-all duration-300 border border-white/[0.04]"
+                    className="px-4 py-2.5 rounded-xl text-sm font-medium bg-f1-surface text-f1-light hover:bg-f1-surface hover:text-f1-white disabled:opacity-25 disabled:cursor-not-allowed transition-all duration-300 border border-f1-border"
                   >
                     Next →
                   </button>
@@ -272,16 +418,17 @@ export default function Home() {
           )}
         </section>
 
-        {/* Footer */}
-        <footer className="footer-glow border-t border-white/[0.03] py-12 px-4">
+        <footer className="footer-glow border-t border-f1-border py-12 px-4">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-f1-red rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-black">F1</span>
+              <div className="flex items-center gap-3.5">
+                <div className="w-12 h-6 flex items-center justify-center">
+                  <svg viewBox="0 0 120 30" className="w-full h-full text-f1-red fill-current">
+                    <path d="M101.086812,30 L101.711812,30 L101.711812,27.106875 L101.722437,27.106875 L102.761812,30 L103.302437,30 L104.341812,27.106875 L104.352437,27.106875 L104.352437,30 L104.977437,30 L104.977437,26.25125 L104.063687,26.25125 L103.055562,29.18625 L103.044937,29.18625 L102.011187,26.25125 L101.086812,26.25125 L101.086812,30 Z M97.6274375,26.818125 L98.8136875,26.818125 L98.8136875,30 L99.4699375,30 L99.4699375,26.818125 L100.661812,26.818125 L100.661812,26.25125 L97.6274375,26.25125 L97.6274375,26.818125 Z M89.9999375,30 L119.999937,0 L101.943687,0 L71.9443125,30 L89.9999375,30 Z M85.6986875,13.065 L49.3818125,13.065 C38.3136875,13.065 36.3768125,13.651875 31.6361875,18.3925 C27.2024375,22.82625 20.0005625,30 20.0005625,30 L35.7324375,30 L39.4855625,26.246875 C41.9530625,23.779375 43.2255625,23.52375 48.4068125,23.52375 L75.2405625,23.52375 L85.6986875,13.065 Z M31.1518125,16.253125 C27.8774375,19.3425 20.7530625,26.263125 16.9130625,30 L-6.25e-05,30 C-6.25e-05,30 13.5524375,16.486875 21.0849375,9.0725 C28.8455625,1.685 32.7143125,0 46.9486875,0 L98.7643125,0 L87.5449375,11.21875 L48.0011875,11.21875 C37.9993125,11.21875 35.7518125,11.911875 31.1518125,16.253125 Z" />
+                  </svg>
                 </div>
-                <span className="font-f1 text-lg font-black text-white tracking-widest">
-                  APEX<span className="text-f1-red">GRID</span>
+                <span className="font-f1 text-lg font-black italic tracking-[0.12em] text-f1-white">
+                  APEX<span className="text-f1-red font-light">GRID</span>
                 </span>
               </div>
               <div className="flex items-center gap-6 text-sm text-gray-600">

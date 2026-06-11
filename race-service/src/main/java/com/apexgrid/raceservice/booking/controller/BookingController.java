@@ -25,7 +25,8 @@ public class BookingController {
     public ResponseEntity<BookingResponse> createBooking(@Valid @RequestBody BookingRequest request,
                                                           HttpServletRequest httpRequest) {
         Integer userId = extractUserId(httpRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.createBooking(request, userId));
+        String userEmail = (String) httpRequest.getAttribute("userEmail");
+        return ResponseEntity.status(HttpStatus.CREATED).body(bookingService.createBooking(request, userId, userEmail));
     }
 
     @GetMapping
@@ -51,8 +52,9 @@ public class BookingController {
                                                           @RequestBody(required = false) Map<String, String> body,
                                                           HttpServletRequest httpRequest) {
         Integer userId = extractUserId(httpRequest);
+        String userEmail = (String) httpRequest.getAttribute("userEmail");
         String reason = body != null ? body.get("reason") : "Cancelled by user";
-        return ResponseEntity.ok(bookingService.cancelBooking(id, reason, userId));
+        return ResponseEntity.ok(bookingService.cancelBooking(id, reason, userId, userEmail));
     }
 
     private Integer extractUserId(HttpServletRequest request) {

@@ -5,12 +5,36 @@ import { showToast } from './Toast'
 
 function StatusBadge({ status }) {
   const config = {
-    PENDING:   { cls: 'badge-pending',   icon: '⏳', label: 'Pending' },
-    CONFIRMED: { cls: 'badge-confirmed', icon: '✅', label: 'Confirmed' },
-    CANCELLED: { cls: 'badge-cancelled', icon: '❌', label: 'Cancelled' },
+    PENDING: {
+      cls: 'badge-pending',
+      icon: (
+        <svg className="w-3.5 h-3.5 mr-1.5 inline-block" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+      label: 'Pending'
+    },
+    CONFIRMED: {
+      cls: 'badge-confirmed',
+      icon: (
+        <svg className="w-3.5 h-3.5 mr-1.5 inline-block" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      ),
+      label: 'Confirmed'
+    },
+    CANCELLED: {
+      cls: 'badge-cancelled',
+      icon: (
+        <svg className="w-3.5 h-3.5 mr-1.5 inline-block" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M18 6L6 18M6 6l12 12" />
+        </svg>
+      ),
+      label: 'Cancelled'
+    },
   }
   const { cls, icon, label } = config[status] || config.PENDING
-  return <span className={cls}>{icon} {label}</span>
+  return <span className={`${cls} inline-flex items-center`}>{icon}{label}</span>
 }
 
 function ZoneBadge({ zone }) {

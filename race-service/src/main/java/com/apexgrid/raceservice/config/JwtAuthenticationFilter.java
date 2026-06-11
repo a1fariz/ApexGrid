@@ -29,23 +29,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         try {
-            String jwt = parseJwt(request);
+            String headerUserId = request.getHeader("X-User-Id");
+            
+            if (StringUtils.hasText(headerUserId)) {
+                // Trust the headers injected by API Gateway
+                Integer userId = Integer.parseInt(headerUserId);
+                String role = request.getHeader("X-User-Role");
+                String username = request.getHeader("X-User-Name");
+                String fullName = request.getHeader("X-User-FullName");
+                String email = request.getHeader("X-User-Email");
 
-            if (jwt != null && jwtUtils.validateToken(jwt)) {
-                String username = jwtUtils.extractUsername(jwt);
-                String role = jwtUtils.extractRole(jwt);
-                Integer userId = jwtUtils.extractUserId(jwt);
-
-                // Set userId and role as request attributes for controllers to use
                 request.setAttribute("userId", userId);
                 request.setAttribute("userRole", role);
                 request.setAttribute("username", username);
-
-                String fullName = jwtUtils.extractFullName(jwt);
-                if (fullName != null) request.setAttribute("fullName", fullName);
-
-                String email = jwtUtils.extractEmail(jwt);
-                if (email != null) request.setAttribute("userEmail", email);
+                if (StringUtils.hasText(fullName)) request.setAttribute("fullName", fullName);
+                if (StringUtils.hasText(email)) request.setAttribute("userEmail", email);
 
                 List<SimpleGrantedAuthority> authorities = List.of(
                         new SimpleGrantedAuthority("ROLE_" + role)
@@ -56,6 +54,37 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                
+            } else {
+                // Fallback to parsing JWT directly (e.g., if bypassing gateway during local dev)
+                String jwt = parseJwt(request);
+
+                if (jwt != null && jwtUtils.validateToken(jwt)) {
+                    String username = jwtUtils.extractUsername(jwt);
+                    String role = jwtUtils.extractRole(jwt);
+                    Integer userId = jwtUtils.extractUserId(jwt);
+
+                    // Set userId and role as request attributes for controllers to use
+                    request.setAttribute("userId", userId);
+                    request.setAttribute("userRole", role);
+                    request.setAttribute("username", username);
+
+                    String fullName = jwtUtils.extractFullName(jwt);
+                    if (fullName != null) request.setAttribute("fullName", fullName);
+
+                    String email = jwtUtils.extractEmail(jwt);
+                    if (email != null) request.setAttribute("userEmail", email);
+
+                    List<SimpleGrantedAuthority> authorities = List.of(
+                            new SimpleGrantedAuthority("ROLE_" + role)
+                    );
+
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(username, null, authorities);
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             }
         } catch (Exception e) {
             log.error("Cannot set user authentication in Race Service: {}", e.getMessage());

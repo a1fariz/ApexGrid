@@ -5,8 +5,8 @@ export default function PageTransition({ children }) {
 
   useEffect(() => {
     // Small delay to trigger CSS transition
-    const timer = requestAnimationFrame(() => setMounted(true))
-    return () => cancelAnimationFrame(timer)
+    const timer = setTimeout(() => setMounted(true), 25)
+    return () => clearTimeout(timer)
   }, [])
 
   return (

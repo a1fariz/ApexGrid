@@ -40,6 +40,15 @@ export default function AdminRaceManagement() {
 
   useEffect(() => { fetchData() }, [])
 
+  useEffect(() => {
+    if (showModal) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [showModal])
+
   const openCreate = () => {
     setForm(EMPTY_FORM)
     setEditing(null)
@@ -65,6 +74,7 @@ export default function AdminRaceManagement() {
     setShowModal(true)
     setError('')
   }
+
 
   const handleDelete = async (race) => {
     setDeleteTarget(null)
@@ -171,12 +181,30 @@ export default function AdminRaceManagement() {
                         </td>
                         <td className="text-sm">{formatDate(race.raceDate)}</td>
                         <td>
-                          <div className="text-sm">{race.availableQuota}/{race.totalQuota}</div>
-                          <div className="w-16 h-1 bg-gray-700 rounded-full mt-1 overflow-hidden">
+                          <div className="text-sm font-semibold text-white">
+                            {race.availableQuota} left
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            {race.totalQuota - race.availableQuota} sold / {race.totalQuota} total
+                          </div>
+                          <div className="w-24 h-1.5 bg-gray-700 rounded-full mt-1.5 overflow-hidden">
                             <div
-                              className="h-full bg-f1-green rounded-full"
+                              className={`h-full rounded-full ${
+                                race.availableQuota === 0 ? 'bg-red-500' :
+                                race.availableQuota <= race.totalQuota * 0.1 ? 'bg-amber-400' : 'bg-f1-green'
+                              }`}
                               style={{ width: `${Math.round((race.availableQuota / race.totalQuota) * 100)}%` }}
                             />
+                          </div>
+                          {/* Ticket Status Badge */}
+                          <div className="mt-1">
+                            {race.availableQuota === 0 ? (
+                              <span className="px-1.5 py-0.5 bg-red-500/10 border border-red-500/25 text-red-500 text-[10px] font-bold rounded">SOLD OUT</span>
+                            ) : race.availableQuota <= race.totalQuota * 0.1 ? (
+                              <span className="px-1.5 py-0.5 bg-amber-400/10 border border-amber-400/25 text-amber-400 text-[10px] font-bold rounded">LOW STOCK</span>
+                            ) : (
+                              <span className="px-1.5 py-0.5 bg-green-500/10 border border-green-500/25 text-green-500 text-[10px] font-bold rounded text-f1-green">AVAILABLE</span>
+                            )}
                           </div>
                         </td>
                         <td className="font-semibold text-f1-red">{formatPrice(race.ticketPrice)}</td>
@@ -232,8 +260,11 @@ export default function AdminRaceManagement() {
 
             <form onSubmit={handleSave} className="p-6 space-y-4">
               {error && (
-                <div className="px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-                  ⚠️ {error}
+                <div className="px-4 py-3 rounded-xl bg-red-500/[0.08] border border-red-500/15 text-red-400 text-sm flex items-center gap-2.5">
+                  <svg className="w-5 h-5 text-red-500 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                  </svg>
+                  <span>{error}</span>
                 </div>
               )}
 

@@ -23,6 +23,34 @@
   --f1-green: #00D2BE;
   --f1-yellow: #FFD700;
   --f1-surface: rgba(255, 255, 255, 0.03);
+  --f1-border: rgba(255, 255, 255, 0.04);
+  --f1-navbar-bg: rgba(10, 10, 15, 0.92);
+  --f1-glass-bg: rgba(20, 20, 30, 0.85);
+  --f1-glass-border: rgba(255, 255, 255, 0.06);
+  --f1-confirm-bg: linear-gradient(145deg, #1a1a28, #12121c);
+  --f1-confirm-icon-bg: rgba(255, 255, 255, 0.03);
+  --f1-hero-bg: linear-gradient(180deg, #120505 0%, #0A0A0F 100%);
+  --f1-hero-opacity: 0.18;
+}
+
+:root.light {
+  --f1-black: #F8F8F8;
+  --f1-dark: #FFFFFF;
+  --f1-darker: #E4E4E4;
+  --f1-card: #FFFFFF;
+  --f1-card-hover: #F1F1F1;
+  --f1-gray: #E4E4E4;
+  --f1-light: #9B9B9B;
+  --f1-white: #1A1A1A;
+  --f1-surface: rgba(0, 0, 0, 0.02);
+  --f1-border: #E4E4E4;
+  --f1-navbar-bg: rgba(248, 248, 248, 0.92);
+  --f1-glass-bg: rgba(255, 255, 255, 0.85);
+  --f1-glass-border: rgba(0, 0, 0, 0.06);
+  --f1-confirm-bg: linear-gradient(145deg, #ffffff, #f5f5f5);
+  --f1-confirm-icon-bg: rgba(0, 0, 0, 0.02);
+  --f1-hero-bg: linear-gradient(180deg, #FFF5F5 0%, #F8F8F8 100%);
+  --f1-hero-opacity: 0.08;
 }
 
 * {
@@ -69,9 +97,9 @@ body {
 }
 
 .btn-secondary {
-  @apply px-6 py-3 bg-white/5 text-white font-semibold rounded-xl transition-all duration-300;
-  @apply hover:bg-white/10 active:scale-95;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  @apply px-6 py-3 bg-f1-surface text-f1-white font-semibold rounded-xl transition-all duration-300;
+  @apply hover:bg-f1-surface active:scale-95;
+  border: 1px solid var(--f1-border);
 }
 
 .btn-outline {
@@ -80,8 +108,8 @@ body {
 }
 
 .btn-ghost {
-  @apply px-4 py-2 text-gray-400 font-medium rounded-xl transition-all duration-200;
-  @apply hover:text-white hover:bg-white/[0.06] active:scale-95;
+  @apply px-4 py-2 text-f1-light font-medium rounded-xl transition-all duration-200;
+  @apply hover:text-f1-white hover:bg-f1-surface active:scale-95;
 }
 
 /* ============================================================
@@ -89,7 +117,7 @@ body {
    ============================================================ */
 .card {
   background: var(--f1-card);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--f1-border);
   border-radius: 16px;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -104,17 +132,17 @@ body {
 }
 
 .glass-card {
-  background: rgba(20, 20, 30, 0.85);
+  background: var(--f1-glass-bg);
   backdrop-filter: blur(20px) saturate(1.2);
   -webkit-backdrop-filter: blur(20px) saturate(1.2);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--f1-glass-border);
   border-radius: 20px;
 }
 
 /* Static card (no hover effect) — for inner panels */
 .card-static {
   background: var(--f1-card);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--f1-border);
   border-radius: 16px;
 }
 
@@ -122,12 +150,22 @@ body {
    FORMS — Refined inputs
    ============================================================ */
 .form-input {
-  @apply w-full px-4 py-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-white placeholder-gray-600;
+  @apply w-full px-4 py-3 rounded-xl bg-f1-surface border border-f1-border text-f1-white placeholder-gray-500;
   @apply focus:outline-none focus:border-f1-red/60 focus:ring-2 focus:ring-f1-red/20 transition-all duration-300;
 }
 
 .form-label {
-  @apply block text-sm font-medium text-gray-400 mb-2;
+  @apply block text-sm font-medium text-f1-light mb-2;
+}
+
+/* Hide number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 
 /* Fix browser autofill white background on dark theme */
@@ -136,10 +174,10 @@ input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active,
 select:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0 1000px #14141E inset !important;
-  -webkit-text-fill-color: #FFFFFF !important;
-  border-color: rgba(255, 255, 255, 0.06) !important;
-  caret-color: #FFFFFF;
+  -webkit-box-shadow: 0 0 0 1000px var(--f1-card) inset !important;
+  -webkit-text-fill-color: var(--f1-white) !important;
+  border-color: var(--f1-border) !important;
+  caret-color: var(--f1-white);
   transition: background-color 5000s ease-in-out 0s;
 }
 
@@ -280,24 +318,76 @@ select:-webkit-autofill {
    ============================================================ */
 .page-transition {
   opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: blur(8px);
+  transform: translateY(12px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .page-transition-enter {
   opacity: 1;
-  transform: translateY(0);
+  filter: blur(0);
+  transform: none;
+}
+
+/* ============================================================
+   ALERTS / NOTIFICATIONS — High Contrast & Premium
+   ============================================================ */
+.f1-alert-error {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(225, 6, 0, 0.07);
+  border: 1px solid rgba(225, 6, 0, 0.25);
+  border-left: 4px solid var(--f1-red);
+  color: #FFA5A5;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(225, 6, 0, 0.05);
+}
+
+:root.light .f1-alert-error {
+  background: rgba(225, 6, 0, 0.04);
+  border: 1px solid rgba(225, 6, 0, 0.15);
+  border-left: 4px solid var(--f1-red);
+  color: #C10000;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.f1-alert-success {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.07);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-left: 4px solid #10B981;
+  color: #A7F3D0;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.05);
+}
+
+:root.light .f1-alert-success {
+  background: rgba(16, 185, 129, 0.04);
+  border: 1px solid rgba(16, 185, 129, 0.15);
+  border-left: 4px solid #10B981;
+  color: #065F46;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 /* ============================================================
    NAVBAR — Deeper blur
    ============================================================ */
 .navbar-blur {
-  background: rgba(10, 10, 15, 0.92);
+  background: var(--f1-navbar-bg);
   backdrop-filter: blur(20px) saturate(1.5);
   -webkit-backdrop-filter: blur(20px) saturate(1.5);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--f1-border);
 }
 
 /* ============================================================
@@ -319,25 +409,25 @@ select:-webkit-autofill {
 }
 
 .data-table th {
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--f1-surface);
   padding: 12px 16px;
   text-align: left;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #6b6b78;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: var(--f1-light);
+  border-bottom: 1px solid var(--f1-border);
 }
 
 .data-table td {
   padding: 14px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--f1-border);
   font-size: 14px;
 }
 
 .data-table tr:hover td {
-  background: rgba(255, 255, 255, 0.015);
+  background: var(--f1-surface);
 }
 
 /* ============================================================
@@ -364,23 +454,51 @@ select:-webkit-autofill {
 
 /* Type variants */
 .toast-success {
-  background: rgba(16, 185, 129, 0.10);
-  border: 1px solid rgba(16, 185, 129, 0.22);
+  background: rgba(10, 25, 20, 0.85);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-left: 4px solid #10B981;
+}
+
+:root.light .toast-success {
+  background: rgba(240, 253, 244, 0.95);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-left: 4px solid #10B981;
 }
 
 .toast-error {
-  background: rgba(225, 6, 0, 0.10);
-  border: 1px solid rgba(225, 6, 0, 0.22);
+  background: rgba(25, 10, 10, 0.85);
+  border: 1px solid rgba(225, 6, 0, 0.3);
+  border-left: 4px solid var(--f1-red);
+}
+
+:root.light .toast-error {
+  background: rgba(254, 242, 242, 0.95);
+  border: 1px solid rgba(225, 6, 0, 0.3);
+  border-left: 4px solid var(--f1-red);
 }
 
 .toast-warning {
-  background: rgba(245, 158, 11, 0.10);
-  border: 1px solid rgba(245, 158, 11, 0.22);
+  background: rgba(25, 20, 10, 0.85);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-left: 4px solid #F59E0B;
+}
+
+:root.light .toast-warning {
+  background: rgba(255, 251, 235, 0.95);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-left: 4px solid #F59E0B;
 }
 
 .toast-info {
-  background: rgba(56, 189, 248, 0.10);
-  border: 1px solid rgba(56, 189, 248, 0.22);
+  background: rgba(10, 20, 25, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-left: 4px solid #38BDF8;
+}
+
+:root.light .toast-info {
+  background: rgba(240, 249, 255, 0.95);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-left: 4px solid #38BDF8;
 }
 
 /* Icon colors per type */
@@ -461,8 +579,8 @@ select:-webkit-autofill {
   max-width: 400px;
   padding: 2rem;
   border-radius: 24px;
-  background: linear-gradient(145deg, #1a1a28, #12121c);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--f1-confirm-bg);
+  border: 1px solid var(--f1-border);
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(225, 6, 0, 0.05);
   animation: modalIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   display: flex;
@@ -474,7 +592,7 @@ select:-webkit-autofill {
   width: 64px;
   height: 64px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--f1-confirm-icon-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -490,7 +608,7 @@ select:-webkit-autofill {
 
 .countdown-ring-bg {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.06);
+  stroke: var(--f1-border);
   stroke-width: 3;
 }
 

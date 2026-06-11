@@ -20,11 +20,6 @@ public interface RaceRepository extends JpaRepository<Race, Integer> {
     @Query("SELECT r FROM Race r JOIN FETCH r.circuit")
     List<Race> findAllWithCircuit();
 
-    List<Race> findByStatusOrderByRaceDateAsc(String status);
-
-    List<Race> findBySeasonOrderByRoundAsc(Integer season);
-
-    List<Race> findByRaceDateAfterOrderByRaceDateAsc(LocalDateTime date);
 
     @Query("SELECT r FROM Race r JOIN FETCH r.circuit WHERE r.id = :id")
     Optional<Race> findByIdWithCircuit(@Param("id") Integer id);
