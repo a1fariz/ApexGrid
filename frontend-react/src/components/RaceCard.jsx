@@ -147,7 +147,16 @@ export default function RaceCard({ race }) {
             ? 'bg-white/[0.03] text-gray-500 cursor-not-allowed'
             : 'btn-primary group-hover:shadow-lg group-hover:shadow-red-900/30'
         }`}>
-          {isSoldOut ? 'Sold Out' : 'Book Tickets →'}
+          {isSoldOut ? (
+            'Sold Out'
+          ) : (
+            <span>
+              Book Tickets{' '}
+              <span className="inline-block transition-transform duration-300 group-hover:translate-x-1.5">
+                →
+              </span>
+            </span>
+          )}
         </button>
       </div>
     </div>

@@ -245,7 +245,7 @@ export default function BookingCard({ booking, onUpdate }) {
                 onClick={() => setConfirmModal({ open: true, type: 'confirm' })}
                 disabled={loading}
                 id={`confirm-btn-${booking.id}`}
-                className="flex-1 py-2.5 text-sm bg-green-600/90 hover:bg-green-500 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 hover:shadow-lg hover:shadow-green-900/30"
+                className="flex-1 py-2.5 text-sm bg-green-600/90 hover:bg-green-500 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 hover:shadow-lg hover:shadow-green-900/30 hover:scale-[1.02] active:scale-[0.98]"
               >
                 {loading ? '...' : 'Confirm'}
               </button>
@@ -253,7 +253,7 @@ export default function BookingCard({ booking, onUpdate }) {
                 onClick={() => setConfirmModal({ open: true, type: 'cancel' })}
                 disabled={loading}
                 id={`cancel-btn-${booking.id}`}
-                className="flex-1 py-2.5 text-sm bg-white/[0.04] hover:bg-red-900/30 hover:text-f1-red text-gray-400 font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 border border-white/[0.04] hover:border-f1-red/20"
+                className="flex-1 py-2.5 text-sm bg-white/[0.04] hover:bg-red-900/30 hover:text-f1-red text-gray-400 font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 border border-white/[0.04] hover:border-f1-red/20 hover:scale-[1.02] active:scale-[0.98]"
               >
                 {loading ? '...' : 'Cancel Booking'}
               </button>
@@ -266,7 +266,7 @@ export default function BookingCard({ booking, onUpdate }) {
               onClick={handleDownloadTicket}
               disabled={downloading}
               id={`download-ticket-${booking.id}`}
-              className="w-full py-2.5 text-sm bg-f1-red/[0.08] hover:bg-f1-red/[0.15] text-f1-red font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 border border-f1-red/10 hover:border-f1-red/25"
+              className="w-full py-2.5 text-sm bg-f1-red/[0.08] hover:bg-f1-red/[0.15] text-f1-red font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 border border-f1-red/10 hover:border-f1-red/25 hover:scale-[1.01] active:scale-[0.99]"
             >
               {downloading ? (
                 <>
