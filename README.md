@@ -19,7 +19,7 @@
   <img src="https://img.shields.io/badge/Gateway-Spring_Cloud-6DB33F?style=flat-square" />
   <img src="https://img.shields.io/badge/API_Docs-Swagger_UI-85EA2D?style=flat-square" />
   <img src="https://img.shields.io/badge/Status-Production_Ready-brightgreen?style=flat-square" />
-  <img src="https://img.shields.io/badge/Last_Updated-May_20,_2026-blue?style=flat-square" />
+  <img src="https://img.shields.io/badge/Last_Updated-June_11,_2026-blue?style=flat-square" />
 </p>
 
 ---
@@ -33,7 +33,9 @@
 - 🔐 **JWT Authentication** — Secure stateless auth with role-based access control (USER & ADMIN)
 - 🏁 **Real-time Quota** — Database-triggered quota management (auto-decrements on booking)
 - 🎟️ **Booking Lifecycle** — PENDING → CONFIRMED → CANCELLED with auto-expiry (30 min)
+- 📱 **QR Code E-Tickets** — Auto-generated PDF tickets with embedded QR codes upon confirmation
 - 👨‍💼 **Admin Panel** — Full CRUD race management for administrators
+- 📊 **System Monitoring** — Real-time microservice health checks via Admin Dashboard
 - 🌐 **API Gateway** — Centralized routing with Spring Cloud Gateway
 - 📧 **Async Email** — Non-blocking email notifications with retry logging
 - 📋 **Swagger UI** — Interactive API documentation for both services
@@ -283,6 +285,9 @@
 - ✅ **Deep Dark Theme** — Ultra-premium dark theme (#0A0A0F + #E10600) with neon-glow card borders
 - ✅ **Interactive Seating Zone Map** — Clickable SVG racetrack segments (GA, Grandstand, VIP) with real-time multiplier calculations
 - ✅ **Custom Glassmorphism Modals** — Replaced native browser popups with beautiful floating dialogs (`ConfirmModal`)
+- ✅ **Real-Time Health Checks** — Browser-native pinging to monitor microservice connection statuses (API Gateway, User, Race)
+- ✅ **Animated Statistics & Staggered Elements** — Custom count-up stat animations, urgency pulse effects, and fluid delayed list entrances
+- ✅ **Tactile Micro-Interactions** — Hover-lift elements, sliding arrow CTAs, and active-press scaling on action buttons
 - ✅ **Skeleton Loaders** — Layout-preserving skeleton cards preventing content shifts during fetch
 - ✅ **Page Transitions** — Fluid fade & slide animations for Router navigation
 - ✅ **SVG Image Fallbacks** — Checkered flag start-grid SVG fallback handling for invalid URLs
@@ -647,5 +652,5 @@ This project is developed for educational purposes as part of a university/portf
 
 <p align="center">
   Built with me and my ☕ by <strong>ApexGrid Team</strong><br/>
-  Last updated: May 20, 2026
+  Last updated: June 11, 2026
 </p>
