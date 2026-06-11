@@ -48,6 +48,60 @@ export default function AdminDashboard() {
   const [upcomingRaces, setUpcomingRaces] = useState([])
   const [loading, setLoading] = useState(true)
 
+  const [serviceStatus, setServiceStatus] = useState({
+    gateway: 'checking',
+    userService: 'checking',
+    raceService: 'checking'
+  })
+
+  useEffect(() => {
+    const checkHealth = async () => {
+      let gatewayStatus = 'down'
+      let userServiceStatus = 'down'
+      let raceServiceStatus = 'down'
+
+      try {
+        const userRes = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({})
+        })
+        if (userRes.status !== 502 && userRes.status !== 504) {
+          gatewayStatus = 'up'
+          userServiceStatus = 'up'
+        } else {
+          gatewayStatus = 'up'
+          userServiceStatus = 'down'
+        }
+      } catch (err) {
+        userServiceStatus = 'down'
+      }
+
+      try {
+        const raceRes = await fetch('/api/statistics/overview')
+        if (raceRes.status !== 502 && raceRes.status !== 504) {
+          gatewayStatus = 'up'
+          raceServiceStatus = 'up'
+        } else {
+          gatewayStatus = 'up'
+          raceServiceStatus = 'down'
+        }
+      } catch (err) {
+        raceServiceStatus = 'down'
+      }
+
+      setServiceStatus({
+        gateway: gatewayStatus,
+        userService: userServiceStatus,
+        raceService: raceServiceStatus
+      })
+    }
+
+    checkHealth()
+    const interval = setInterval(checkHealth, 8000)
+    return () => clearInterval(interval)
+  }, [])
+
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -370,19 +424,29 @@ export default function AdminDashboard() {
           <h2 className="font-semibold text-f1-white mb-4">System Architecture</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             {[
-              { name: 'User Service', port: '8082', desc: 'JWT Auth, User Management' },
-              { name: 'Race Service', port: '8081', desc: 'Races, Bookings, Email, Tickets, Statistics' },
-              { name: 'API Gateway', port: '8080', desc: 'Routing, CORS, Load Balancing' },
-            ].map(svc => (
-              <div key={svc.name} className="bg-f1-surface border border-f1-border rounded-xl p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                  <span className="font-medium text-f1-white">{svc.name}</span>
+              { id: 'userService', name: 'User Service', port: '8082', desc: 'JWT Auth, User Management' },
+              { id: 'raceService', name: 'Race Service', port: '8081', desc: 'Races, Bookings, Email, Tickets, Statistics' },
+              { id: 'gateway', name: 'API Gateway', port: '8080', desc: 'Routing, CORS, Load Balancing' },
+            ].map(svc => {
+              const status = serviceStatus[svc.id]
+              const statusColor = status === 'up' ? 'bg-green-500' : status === 'down' ? 'bg-f1-red animate-pulse' : 'bg-amber-400 animate-pulse'
+              const statusLabel = status === 'up' ? 'ONLINE' : status === 'down' ? 'OFFLINE' : 'CHECKING...'
+              return (
+                <div key={svc.name} className="bg-f1-surface border border-f1-border rounded-xl p-4 transition-all duration-300">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className={`w-2.5 h-2.5 rounded-full ${statusColor}`} />
+                      <span className="font-medium text-f1-white">{svc.name}</span>
+                    </div>
+                    <span className={`text-[10px] font-bold tracking-wider ${status === 'up' ? 'text-green-400' : status === 'down' ? 'text-f1-red' : 'text-amber-400'}`}>
+                      {statusLabel}
+                    </span>
+                  </div>
+                  <div className="text-gray-500 text-xs">Port: {svc.port}</div>
+                  <div className="text-f1-light text-xs mt-1">{svc.desc}</div>
                 </div>
-                <div className="text-gray-500 text-xs">Port: {svc.port}</div>
-                <div className="text-f1-light text-xs mt-1">{svc.desc}</div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </div>
