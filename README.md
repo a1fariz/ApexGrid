@@ -19,23 +19,24 @@
   <img src="https://img.shields.io/badge/Gateway-Spring_Cloud-6DB33F?style=flat-square" />
   <img src="https://img.shields.io/badge/API_Docs-Swagger_UI-85EA2D?style=flat-square" />
   <img src="https://img.shields.io/badge/Status-Production_Ready-brightgreen?style=flat-square" />
-  <img src="https://img.shields.io/badge/Last_Updated-June_11,_2026-blue?style=flat-square" />
+  <img src="https://img.shields.io/badge/Last_Updated-June_13,_2026-blue?style=flat-square" />
 </p>
 
 ---
 
 ## 📖 About
 
-**ApexGrid** is a comprehensive F1 race ticket booking platform that allows fans to browse upcoming Grand Prix events, book tickets with real-time quota management, and manage their reservations. Built as a microservices architecture to demonstrate scalable enterprise application design.
+**ApexGrid** is a comprehensive F1 race ticket booking platform that allows fans to browse all 25 Grand Prix events of the 2026 season, book tickets with real-time quota management, and manage their reservations. Built as a microservices architecture to demonstrate scalable enterprise application design.
 
 ### ✨ Key Highlights
 
 - 🔐 **JWT Authentication** — Secure stateless auth with role-based access control (USER & ADMIN)
-- 🏁 **Real-time Quota** — Database-triggered quota management (auto-decrements on booking)
+- 🏁 **Real-time Quota** — Database-triggered quota management (auto-decrements on booking confirmation)
 - 🎟️ **Booking Lifecycle** — PENDING → CONFIRMED → CANCELLED with auto-expiry (30 min)
 - 📱 **QR Code E-Tickets** — Auto-generated PDF tickets with embedded QR codes upon confirmation
-- 👨‍💼 **Admin Panel** — Full CRUD race management for administrators
+- 👨‍💼 **Admin Panel** — Full CRUD race & circuit management for administrators
 - 📊 **System Monitoring** — Real-time microservice health checks via Admin Dashboard
+- 🗺️ **Interactive Circuit Map** — Clickable SVG seating zone map per race (GA, Grandstand, VIP)
 - 🌐 **API Gateway** — Centralized routing with Spring Cloud Gateway
 - 📧 **Async Email** — Non-blocking email notifications with retry logging
 - 📋 **Swagger UI** — Interactive API documentation for both services
@@ -73,7 +74,7 @@
 │  • Role Management     │   │  • Email Service (Async)     │
 │  • Password Hashing    │   │  • Booking Scheduler         │
 │    (BCrypt)            │   │  • JWT Validation            │
-│  • Swagger UI (:8082)  │   │  • Swagger UI (:8081)       │
+│  • Swagger UI (:8082)  │   │  • Swagger UI (:8081)        │
 └──────────┬─────────────┘   └──────────────┬───────────────┘
            │                                │
            └────────────┬───────────────────┘
@@ -81,14 +82,15 @@
           ┌──────────────────────────┐
           │   PostgreSQL Database    │
           │   localhost:5432         │
-          │   apexgrid_db           │
-          │                         │
-          │  • users & roles        │
-          │  • races & circuits     │
-          │  • bookings             │
-          │  • email_logs           │
-          │  • triggers & views     │
-          └─────────────────────────┘
+          │   apexgrid_db            │
+          │                          │
+          │  • users & roles         │
+          │  • 25 circuits           │
+          │  • 25 races (2026)       │
+          │  • bookings              │
+          │  • email_logs            │
+          │  • triggers & 4 views    │
+          └──────────────────────────┘
 ```
 
 ---
@@ -100,14 +102,14 @@
 <details open>
 <summary><strong>Login Page</strong></summary>
 <br/>
-<img src="docs/login.png" alt="Login Page" width="100%" />
+<img src="docs/images/login.png" alt="Login Page" width="100%" />
 <p><em>F1-themed login page with dark gradient background — supports username or email authentication with JWT token generation.</em></p>
 </details>
 
 <details>
 <summary><strong>Register Page</strong></summary>
 <br/>
-<img src="docs/register.png" alt="Register Page" width="100%" />
+<img src="docs/images/register.png" alt="Register Page" width="100%" />
 <p><em>User registration form with full name, username, email, password and confirm password fields — includes input validation.</em></p>
 </details>
 
@@ -116,38 +118,31 @@
 ### 🏠 User Features
 
 <details open>
-<summary><strong>Home Page — Hero, Search & Pagination (Level 1)</strong></summary>
+<summary><strong>Home Page — Hero, Search & Pagination</strong></summary>
 <br/>
-<img src="docs/images/home.png" alt="Home Page" width="100%" />
+<img src="docs/images/home-page-user.png" alt="Home Page" width="100%" />
 <p><em>Landing page with "Experience Formula 1" hero section, advanced search bar, season/status filters, and paginated race cards.</em></p>
 </details>
 
 <details>
-<summary><strong>Race Calendar — Browse Races</strong></summary>
+<summary><strong>Race Calendar — Browse All 25 Races</strong></summary>
 <br/>
-<img src="docs/raceBookings.png" alt="Race Calendar" width="100%" />
-<p><em>Browse all upcoming F1 Grand Prix events with race cards showing date, location, price, ticket availability bar, and status badges (UPCOMING).</em></p>
+<img src="docs/images/raceBookings.png" alt="Race Calendar" width="100%" />
+<p><em>Browse all 25 2026 F1 Grand Prix events with race cards showing date, location, price, ticket availability bar, and status badges.</em></p>
 </details>
 
 <details>
 <summary><strong>Race Detail & Ticket Booking</strong></summary>
 <br/>
-<img src="docs/bookings.png" alt="Race Detail & Booking" width="100%" />
-<p><em>Detailed race information (date, season, circuit, country, track length) with real-time ticket booking — dynamic price calculation, quantity selector, and 30-minute booking expiry notice.</em></p>
+<img src="docs/images/bookings.png" alt="Race Detail & Booking" width="100%" />
+<p><em>Detailed race information (date, season, circuit, country, track length) with interactive seating zone map, real-time ticket booking — dynamic price calculation, quantity selector, and 30-minute booking expiry notice.</em></p>
 </details>
 
 <details>
 <summary><strong>My Bookings — Booking History</strong></summary>
 <br/>
-<img src="docs/mybookings.png" alt="My Bookings" width="100%" />
+<img src="docs/images/mybookings.png" alt="My Bookings" width="100%" />
 <p><em>Personal booking dashboard with summary stats (All, Pending, Confirmed, Cancelled) and booking cards showing unique booking codes (APEX-XXXXXX), status badges, race details, and total price.</em></p>
-</details>
-
-<details>
-<summary><strong>User Profile & E-Tickets (Level 2)</strong></summary>
-<br/>
-<img src="docs/images/user_profile.png" alt="User Profile" width="100%" />
-<p><em>User profile showing account details, booking statistics, and the ability to download PDF e-tickets with QR codes for confirmed F1 bookings.</em></p>
 </details>
 
 ---
@@ -155,38 +150,31 @@
 ### 👨‍💼 Admin Panel
 
 <details open>
-<summary><strong>Admin Dashboard — Analytics (Level 2)</strong></summary>
+<summary><strong>Admin Dashboard — Analytics</strong></summary>
 <br/>
-<img src="docs/images/admin_dashboard.png" alt="Admin Dashboard" width="100%" />
-<p><em>Admin overview featuring real-time statistics (Revenue, Tickets Sold, Unique Customers) powered by database views, booking status breakdown, and race popularity charts.</em></p>
+<img src="docs/images/admin-dashboard.png" alt="Admin Dashboard" width="100%" />
+<p><em>Admin overview featuring real-time statistics (Revenue, Tickets Sold, Unique Customers) powered by database views, booking status breakdown, race popularity charts, and live microservice health monitoring.</em></p>
 </details>
 
 <details>
 <summary><strong>Race Management — Data Table</strong></summary>
 <br/>
-<img src="docs/race-manajement.png" alt="Race Management Table" width="100%" />
+<img src="docs/images/race-manajement.png" alt="Race Management Table" width="100%" />
 <p><em>Full race management table with columns for Race, Circuit, Date, Quota (available/total), Price, Status badges, and Edit/Delete action buttons.</em></p>
 </details>
 
 <details>
 <summary><strong>Add New Race — Create Form</strong></summary>
 <br/>
-<img src="docs/add-new-race-admin.png" alt="Add New Race" width="100%" />
+<img src="docs/images/add-new-race-admin.png" alt="Add New Race" width="100%" />
 <p><em>Modal form for creating a new race — includes Race Name, Circuit selector, Status, Date & Time, Season, Round Number, Total Quota, Ticket Price, Description, and Image URL fields.</em></p>
 </details>
 
 <details>
 <summary><strong>Edit Race — Update Form</strong></summary>
 <br/>
-<img src="docs/edit-race.png" alt="Edit Race" width="100%" />
+<img src="docs/images/edit-race.png" alt="Edit Race" width="100%" />
 <p><em>Pre-filled edit form for updating existing race details — same fields as create with current data loaded for modification.</em></p>
-</details>
-
-<details>
-<summary><strong>Circuit Management (Level 1)</strong></summary>
-<br/>
-<img src="docs/images/circuit_management.png" alt="Circuit Management Table" width="100%" />
-<p><em>Full CRUD interface for managing F1 circuits. Includes track length, lap records, and location data which acts as the foundation for F1 races.</em></p>
 </details>
 
 ---
@@ -196,15 +184,15 @@
 <details>
 <summary><strong>Race Service API — Swagger UI</strong></summary>
 <br/>
-<img src="docs/swagger-ui1.png" alt="Race Service Swagger" width="100%" />
-<p><em>Interactive Swagger UI for Race Service (port 8081) — documents all race-controller and booking-controller endpoints with request/response schemas (RaceRequest, BookingResponse, etc.).</em></p>
+<img src="docs/images/swagger-ui1.png" alt="Race Service Swagger" width="100%" />
+<p><em>Interactive Swagger UI for Race Service (port 8081) — documents all race-controller and booking-controller endpoints with request/response schemas.</em></p>
 </details>
 
 <details>
 <summary><strong>User Service API — Swagger UI</strong></summary>
 <br/>
-<img src="docs/swagger-ui2.png" alt="User Service Swagger" width="100%" />
-<p><em>Interactive Swagger UI for User Service (port 8082) — documents auth-controller endpoints (register, login, me) with schemas (RegisterRequest, LoginRequest, JwtResponse, UserResponse).</em></p>
+<img src="docs/images/swagger-ui2.png" alt="User Service Swagger" width="100%" />
+<p><em>Interactive Swagger UI for User Service (port 8082) — documents auth-controller endpoints (register, login, me) with schemas.</em></p>
 </details>
 
 ---
@@ -214,8 +202,8 @@
 <details>
 <summary><strong>Entity Relationship Diagram</strong></summary>
 <br/>
-<img src="docs/diagram-schema.png" alt="Database ER Diagram" width="100%" />
-<p><em>Complete database schema showing all 6 tables (users, roles, races, circuits, bookings, email_logs) and 2 views (v_race_summary, v_booking_summary) with their relationships and column definitions.</em></p>
+<img src="docs/images/diagram-schema.png" alt="Database ER Diagram" width="100%" />
+<p><em>Complete database schema showing all 6 tables (users, roles, races, circuits, bookings, email_logs) and 4 views with their relationships and column definitions.</em></p>
 </details>
 
 ---
@@ -269,8 +257,9 @@
 - ✅ Create new races linked to circuits
 - ✅ Update race details (name, date, price, quota)
 - ✅ Delete races
+- ✅ Full circuit CRUD management
 - ✅ View all races with circuit information
-- ✅ Filter upcoming races
+- ✅ Filter & search races by name, season, status
 
 ### Booking System
 - ✅ Book tickets with quantity selection
@@ -280,21 +269,21 @@
 - ✅ Booking lifecycle: PENDING → CONFIRMED / CANCELLED
 - ✅ Auto-expiry (30 minutes via DB trigger)
 - ✅ Quota auto-restore on cancellation (DB trigger)
+- ✅ PDF e-ticket with embedded QR code on confirmation
 
-### Frontend & UI/UX (Premium UAS Edition)
-- ✅ **Deep Dark Theme** — Ultra-premium dark theme (#0A0A0F + #E10600) with neon-glow card borders
-- ✅ **Interactive Seating Zone Map** — Clickable SVG racetrack segments (GA, Grandstand, VIP) with real-time multiplier calculations
+### Frontend & UI/UX
+- ✅ **Deep Dark Theme** — Ultra-premium dark theme (`#0A0A0F` + `#E10600`) with neon-glow card borders
+- ✅ **Interactive Seating Zone Map** — Clickable SVG circuit segments (GA, Grandstand, VIP) with real-time multiplier calculations
 - ✅ **Custom Glassmorphism Modals** — Replaced native browser popups with beautiful floating dialogs (`ConfirmModal`)
-- ✅ **Real-Time Health Checks** — Browser-native pinging to monitor microservice connection statuses (API Gateway, User, Race)
-- ✅ **Animated Statistics & Staggered Elements** — Custom count-up stat animations, urgency pulse effects, and fluid delayed list entrances
-- ✅ **Tactile Micro-Interactions** — Hover-lift elements, sliding arrow CTAs, and active-press scaling on action buttons
+- ✅ **Real-Time Health Checks** — Browser-native pinging to monitor microservice statuses (API Gateway, User, Race)
+- ✅ **Animated Statistics** — Custom count-up animations, urgency pulse effects, and staggered list entrances
 - ✅ **Skeleton Loaders** — Layout-preserving skeleton cards preventing content shifts during fetch
 - ✅ **Page Transitions** — Fluid fade & slide animations for Router navigation
-- ✅ **SVG Image Fallbacks** — Checkered flag start-grid SVG fallback handling for invalid URLs
+- ✅ **SVG Image Fallbacks** — Checkered flag SVG fallback handling for invalid race image URLs
 - ✅ **Protected Routes** — Auth-guarded navigation for users and admin dashboards
-- ✅ **Autofill Overrides** — Prevented browser input-autofill from breaking the dark theme background
 - ✅ **Circular Progress Countdowns** — SVG circular countdown timer for pending booking expiries
-- ✅ **Toast Notifications** — Beautiful alerts for system messages and user feedback
+- ✅ **Toast Notifications** — Beautiful dismissible alerts for system messages and user feedback
+- ✅ **Autofill Overrides** — Prevented browser autofill from breaking the dark theme
 
 ### API Documentation
 - ✅ Swagger UI for Race Service (port 8081)
@@ -324,7 +313,7 @@ psql -U postgres -c "CREATE DATABASE apexgrid_db;"
 # Create application user
 psql -U postgres -f database/setup-user.sql
 
-# Run full schema (tables, triggers, views, sample data)
+# Run full schema (tables, triggers, views, 25 circuits & 25 races seeded)
 psql -U postgres -d apexgrid_db -f database/schema.sql
 ```
 
@@ -455,11 +444,20 @@ curl -X PUT http://localhost:8080/api/bookings/1/confirm \
 | Table | Description |
 |-------|-------------|
 | `roles` | User roles (USER, ADMIN) |
-| `users` | User accounts with hashed passwords |
-| `circuits` | F1 circuit information (6 real circuits) |
-| `races` | Race events with quota & pricing |
-| `bookings` | Ticket bookings with lifecycle status |
-| `email_logs` | Async email audit trail |
+| `users` | User accounts with BCrypt-hashed passwords |
+| `circuits` | 25 real F1 circuits with lap records & location data |
+| `races` | 25 race events (2026 season) with quota & pricing |
+| `bookings` | Ticket bookings with full lifecycle status |
+| `email_logs` | Async email audit trail with retry count |
+
+### Indexes
+| Index | Column(s) | Purpose |
+|-------|-----------|---------|
+| `idx_users_email` | `users.email` | Fast email lookup |
+| `idx_users_username` | `users.username` | Fast username lookup |
+| `idx_races_status` | `races.status` | Filter upcoming races |
+| `idx_bookings_code` | `bookings.booking_code` | Fast booking lookup |
+| `idx_bookings_expired` | `bookings.expired_at` (PENDING) | Partial index for scheduler |
 
 ### Triggers
 | Trigger | Function |
@@ -474,6 +472,8 @@ curl -X PUT http://localhost:8080/api/bookings/1/confirm \
 |------|-------------|
 | `v_race_summary` | Race + circuit info joined |
 | `v_booking_summary` | Booking + race + circuit info joined |
+| `v_admin_statistics` | Aggregate totals: revenue, tickets sold, unique customers |
+| `v_race_popularity` | Tickets sold & revenue per race, ordered by popularity |
 
 ---
 
@@ -485,17 +485,19 @@ apexgrid-project/
 ├── 📂 api-gateway/                    # Spring Cloud Gateway
 │   └── src/main/java/.../gateway/
 │       ├── ApiGatewayApplication.java
-│       └── config/
-│           └── GatewayConfig.java     # CORS configuration
+│       ├── config/
+│       │   └── GatewayConfig.java     # Routes & CORS configuration
+│       └── filter/
+│           └── AuthenticationFilter.java
 │
 ├── 📂 user-service/                   # Authentication & User Management
 │   └── src/main/java/.../userservice/
 │       ├── controller/
 │       │   └── AuthController.java    # Register, Login, Me
-│       ├── service/
-│       │   └── impl/AuthServiceImpl.java
+│       ├── service/impl/
+│       │   └── AuthServiceImpl.java
 │       ├── security/
-│       │   ├── JwtUtils.java          # JWT token operations
+│       │   ├── JwtUtils.java
 │       │   ├── JwtAuthenticationFilter.java
 │       │   ├── UserDetailsImpl.java
 │       │   └── UserDetailsServiceImpl.java
@@ -504,8 +506,7 @@ apexgrid-project/
 │       │   └── Role.java
 │       ├── dto/                       # Request/Response DTOs
 │       ├── repository/
-│       ├── config/
-│       │   └── SecurityConfig.java
+│       ├── config/SecurityConfig.java
 │       └── exception/
 │
 ├── 📂 race-service/                   # Races, Bookings & Email
@@ -538,29 +539,35 @@ apexgrid-project/
 │       ├── pages/
 │       │   ├── Login.jsx
 │       │   ├── Register.jsx
-│       │   ├── Home.jsx               # Race listing
-│       │   ├── RaceDetail.jsx         # Detail + booking form
+│       │   ├── Home.jsx               # Race listing + search + pagination
+│       │   ├── RaceDetail.jsx         # Detail + interactive booking
 │       │   ├── BookingHistory.jsx
-│       │   ├── AdminDashboard.jsx
-│       │   └── AdminRaceManagement.jsx
+│       │   ├── UserProfile.jsx        # Profile + e-ticket download
+│       │   ├── AdminDashboard.jsx     # Stats + health checks
+│       │   ├── AdminRaceManagement.jsx
+│       │   └── AdminCircuitManagement.jsx
 │       ├── components/
 │       │   ├── Navbar.jsx
 │       │   ├── RaceCard.jsx
+│       │   ├── RaceCardSkeleton.jsx   # Skeleton loading state
 │       │   ├── BookingCard.jsx
+│       │   ├── CircuitOutline.jsx     # SVG interactive seating map
+│       │   ├── ConfirmModal.jsx       # Glassmorphism confirm dialog
+│       │   ├── PageTransition.jsx
 │       │   ├── ProtectedRoute.jsx
 │       │   ├── Toast.jsx
 │       │   └── LoadingSpinner.jsx
-│       ├── context/AuthContext.jsx     # JWT auth state
+│       ├── context/AuthContext.jsx    # JWT auth state
 │       ├── services/api.js            # Axios + interceptors
 │       ├── hooks/useAuth.js
 │       ├── App.jsx                    # Routes
 │       └── index.css                  # F1 dark theme
 │
 ├── 📂 database/
-│   ├── schema.sql                     # Full schema + triggers + views + seeds
+│   ├── schema.sql                     # Full schema + triggers + views + 25 races seeded
 │   └── setup-user.sql                 # DB user creation
 │
-├── 📂 docs/                           # Screenshots & documentation
+├── 📂 docs/images/                    # Screenshots & documentation
 │   ├── login.png
 │   ├── register.png
 │   ├── home-page-user.png
@@ -618,7 +625,7 @@ spring.mail.password=your-16-char-app-password
 
 ---
 
-##  Business Flow
+## 🔄 Business Flow
 
 ```
 User Registration                Admin Creates Race
@@ -640,6 +647,10 @@ User Registration                Admin Creates Race
                          ▼                      ▼
                   Quota Decremented     Quota Restored
                   (DB Trigger)         (DB Trigger)
+                         │
+                         ▼
+                  PDF E-Ticket + QR
+                  Code Generated
 ```
 
 ---
@@ -651,6 +662,6 @@ This project is developed for educational purposes as part of a university/portf
 ---
 
 <p align="center">
-  Built with me and my ☕ by <strong>ApexGrid Team</strong><br/>
-  Last updated: June 11, 2026
+  Built with 💻 and ☕ by <strong>Muhammad Alfarizi</strong><br/>
+  Last updated: June 13, 2026
 </p>

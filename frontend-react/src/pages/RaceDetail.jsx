@@ -67,7 +67,7 @@ export default function RaceDetail() {
           const pVip = node.getPointAtLength(length * 0.92)
           setVipPin({ x: pVip.x, y: pVip.y })
         } catch (e) {
-          console.error("Error calculating path geometry: ", e)
+          // silently ignore SVG path calculation errors
         }
       }, 50)
     }

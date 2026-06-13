@@ -74,6 +74,7 @@ export default function AdminDashboard() {
           userServiceStatus = 'down'
         }
       } catch (err) {
+        gatewayStatus = 'down'
         userServiceStatus = 'down'
       }
 
@@ -113,8 +114,8 @@ export default function AdminDashboard() {
         setStats(statsRes.data)
         setPopular(popularRes.data)
         setUpcomingRaces(upcomingRes.data || [])
-      } catch (err) {
-        console.error('Failed to load statistics:', err)
+      } catch {
+        // silently handle statistics load failure
       } finally {
         setLoading(false)
       }

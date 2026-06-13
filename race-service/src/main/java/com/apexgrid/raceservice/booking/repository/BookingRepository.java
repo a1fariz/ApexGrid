@@ -25,7 +25,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     @Query("SELECT b FROM Booking b JOIN FETCH b.race r JOIN FETCH r.circuit WHERE b.id = :id")
     Optional<Booking> findByIdWithRace(@Param("id") Integer id);
 
-    @Query("SELECT b FROM Booking b WHERE b.status = 'PENDING' AND b.expiredAt < :now")
+    @Query("SELECT b FROM Booking b JOIN FETCH b.race r JOIN FETCH r.circuit WHERE b.status = 'PENDING' AND b.expiredAt < :now")
     List<Booking> findExpiredPendingBookings(@Param("now") LocalDateTime now);
 
     @Query("SELECT COUNT(b) FROM Booking b WHERE b.race.id = :raceId AND b.status IN ('PENDING', 'CONFIRMED')")
