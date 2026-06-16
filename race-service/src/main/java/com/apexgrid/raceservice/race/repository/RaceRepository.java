@@ -32,11 +32,18 @@ public interface RaceRepository extends JpaRepository<Race, Integer> {
     @Query(value = "SELECT r FROM Race r JOIN FETCH r.circuit c WHERE " +
            "(:searchPattern IS NULL OR LOWER(r.name) LIKE :searchPattern OR LOWER(c.name) LIKE :searchPattern OR LOWER(c.country) LIKE :searchPattern) AND " +
            "(:season IS NULL OR r.season = :season) AND " +
-           "(:status IS NULL OR r.status = :status)",
+           "(:status IS NULL OR " +
+           "  (:status = 'COMPLETED' AND (r.status = 'COMPLETED' OR r.raceDate < CURRENT_TIMESTAMP)) OR " +
+           "  (:status != 'COMPLETED' AND r.status = :status AND r.raceDate >= CURRENT_TIMESTAMP) " +
+           ") " +
+           "ORDER BY CASE WHEN r.raceDate < CURRENT_TIMESTAMP THEN 1 ELSE 0 END ASC, r.raceDate ASC",
            countQuery = "SELECT COUNT(r) FROM Race r JOIN r.circuit c WHERE " +
            "(:searchPattern IS NULL OR LOWER(r.name) LIKE :searchPattern OR LOWER(c.name) LIKE :searchPattern OR LOWER(c.country) LIKE :searchPattern) AND " +
            "(:season IS NULL OR r.season = :season) AND " +
-           "(:status IS NULL OR r.status = :status)")
+           "(:status IS NULL OR " +
+           "  (:status = 'COMPLETED' AND (r.status = 'COMPLETED' OR r.raceDate < CURRENT_TIMESTAMP)) OR " +
+           "  (:status != 'COMPLETED' AND r.status = :status AND r.raceDate >= CURRENT_TIMESTAMP) " +
+           ")")
     Page<Race> searchRaces(@Param("searchPattern") String searchPattern,
                            @Param("season") Integer season,
                            @Param("status") String status,

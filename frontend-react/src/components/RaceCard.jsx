@@ -36,6 +36,7 @@ export default function RaceCard({ race }) {
   const quotaPercent = Math.round((race.availableQuota / race.totalQuota) * 100)
   const isLowQuota = quotaPercent < 20
   const isSoldOut = race.availableQuota === 0
+  const isPastEvent = race.raceDate ? new Date(race.raceDate) < new Date() : false
   const displayImageUrl = getRaceImage(race)
 
   const formatDate = (dateStr) => {
@@ -51,7 +52,7 @@ export default function RaceCard({ race }) {
 
   return (
     <div
-      className="card cursor-pointer overflow-hidden group"
+      className={`card cursor-pointer overflow-hidden group transition-all duration-500 ${isPastEvent ? 'opacity-60 grayscale hover:grayscale-0 hover:opacity-100' : ''}`}
       onClick={() => navigate(`/race/${race.id}`)}
       role="button"
       tabIndex={0}
@@ -75,16 +76,19 @@ export default function RaceCard({ race }) {
           <RaceFallbackImage name={race.name} />
         )}
         {/* Low quota / sold out overlay badge */}
-        {isSoldOut && (
+        {isPastEvent ? (
+          <div className="absolute top-3 right-3 z-20 px-3 py-1 rounded-full bg-gray-600/90 text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm">
+            Ended
+          </div>
+        ) : isSoldOut ? (
           <div className="absolute top-3 right-3 z-20 px-3 py-1 rounded-full bg-f1-red/90 text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm">
             Sold Out
           </div>
-        )}
-        {isLowQuota && !isSoldOut && (
+        ) : isLowQuota ? (
           <div className="absolute top-3 right-3 z-20 px-3 py-1 rounded-full bg-amber-500/90 text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm animate-pulse">
             🔥 Almost Gone
           </div>
-        )}
+        ) : null}
         {/* Track Outline Overlay */}
         <div className="absolute right-3 bottom-3 z-20 w-14 h-14 opacity-35 group-hover:opacity-100 text-f1-light group-hover:text-f1-red transition-all duration-500 transform group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(225,6,0,0.8)]">
           <CircuitOutline circuitName={race.name} country={race.country} />
@@ -143,11 +147,13 @@ export default function RaceCard({ race }) {
 
         {/* CTA */}
         <button className={`w-full mt-4 text-sm py-2.5 rounded-xl font-semibold transition-all duration-300 ${
-          isSoldOut
+          isPastEvent || isSoldOut
             ? 'bg-white/[0.03] text-gray-500 cursor-not-allowed'
             : 'btn-primary group-hover:shadow-lg group-hover:shadow-red-900/30'
         }`}>
-          {isSoldOut ? (
+          {isPastEvent ? (
+            'Event Ended'
+          ) : isSoldOut ? (
             'Sold Out'
           ) : (
             <span>

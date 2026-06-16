@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { createPortal } from 'react-dom'
 import Navbar from '../components/Navbar'
 import LoadingSpinner from '../components/LoadingSpinner'
 import PageTransition from '../components/PageTransition'
@@ -253,22 +254,22 @@ export default function AdminRaceManagement() {
       </div>
 
       {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
-             style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(4px)' }}>
-          <div className="glass-card w-full max-w-2xl flex flex-col animate-fade-in overflow-hidden" style={{ maxHeight: 'calc(100vh - 2rem)' }}>
+      {showModal && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8"
+             style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}>
+          <div className="glass-card w-full max-w-3xl flex flex-col animate-fade-in overflow-hidden shadow-2xl border border-white/10 relative max-h-[90dvh] sm:max-h-[85vh]">
             
-            <div className="flex items-center justify-between p-5 sm:p-6 border-b border-f1-border shrink-0">
-              <h2 className="text-xl font-bold text-f1-white">
-                {editing ? 'Edit Race' : 'Add New Race'}
+            <div className="flex items-center justify-between p-6 sm:px-8 sm:py-6 border-b border-white/10 shrink-0 bg-white/[0.02]">
+              <h2 className="text-2xl font-bold text-f1-white tracking-tight">
+                {editing ? 'Edit Race Details' : 'Add New Race'}
               </h2>
-              <button onClick={() => setShowModal(false)} className="text-f1-light hover:text-f1-red text-2xl leading-none transition-colors">
+              <button type="button" onClick={() => setShowModal(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-f1-red text-f1-light hover:text-white transition-all">
                 ✕
               </button>
             </div>
 
-            <div className="p-5 sm:p-6 overflow-y-auto flex-1">
-              <form id="race-form" onSubmit={handleSave} className="space-y-4">
+            <div className="p-6 sm:p-8 overflow-y-auto flex-1 custom-scrollbar">
+              <form id="race-form" onSubmit={handleSave} className="space-y-6">
               {error && (
                 <div className="px-4 py-3 rounded-xl bg-red-500/[0.08] border border-red-500/15 text-red-400 text-sm flex items-center gap-2.5">
                   <svg className="w-5 h-5 text-red-500 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -278,7 +279,7 @@ export default function AdminRaceManagement() {
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="md:col-span-2">
                   <label className="form-label">Race Name *</label>
                   <input id="race-name-input" className="form-input" required
@@ -358,8 +359,11 @@ export default function AdminRaceManagement() {
               </form>
             </div>
 
-            <div className="p-5 sm:p-6 border-t border-f1-border shrink-0 flex gap-3">
-              <button type="submit" form="race-form" id="save-race-btn" disabled={saving} className="flex-1 btn-primary py-3">
+            <div className="p-6 sm:px-8 sm:py-6 border-t border-white/10 shrink-0 flex items-center justify-end gap-4 bg-white/[0.02]">
+              <button type="button" onClick={() => setShowModal(false)} className="px-6 py-2.5 rounded-xl text-f1-light hover:text-white hover:bg-white/5 transition-colors font-semibold">
+                Cancel
+              </button>
+              <button type="submit" form="race-form" id="save-race-btn" disabled={saving} className="btn-primary min-w-[160px] py-2.5 shadow-lg shadow-red-900/20">
                 {saving ? (
                   <span className="flex items-center justify-center gap-2">
                     <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full spin-f1" />
@@ -369,13 +373,10 @@ export default function AdminRaceManagement() {
                   editing ? 'Update Race' : 'Create Race'
                 )}
               </button>
-              <button type="button" onClick={() => setShowModal(false)} className="flex-1 btn-secondary py-3">
-                Cancel
-              </button>
             </div>
           </div>
         </div>
-      )}
+      , document.body)}
 
       {/* Delete Confirmation Modal */}
       <ConfirmModal

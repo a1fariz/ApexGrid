@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -134,7 +135,7 @@ public class RaceServiceImpl implements RaceService {
 
     @Override
     public Page<RaceResponse> searchRaces(String search, Integer season, String status, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("raceDate").ascending());
+        PageRequest pageRequest = PageRequest.of(page, size);
         
         String searchPattern = (search != null && !search.trim().isEmpty()) 
                 ? "%" + search.trim().toLowerCase() + "%" 
@@ -159,6 +160,11 @@ public class RaceServiceImpl implements RaceService {
 
     private RaceResponse mapToRaceResponse(Race race) {
         Circuit circuit = race.getCircuit();
+        String effectiveStatus = race.getStatus();
+        if (!"CANCELLED".equals(effectiveStatus) && race.getRaceDate() != null && race.getRaceDate().isBefore(LocalDateTime.now())) {
+            effectiveStatus = "COMPLETED";
+        }
+
         return RaceResponse.builder()
                 .id(race.getId())
                 .name(race.getName())
@@ -175,7 +181,7 @@ public class RaceServiceImpl implements RaceService {
                 .totalQuota(race.getTotalQuota())
                 .ticketPrice(race.getTicketPrice())
                 .currency(race.getCurrency())
-                .status(race.getStatus())
+                .status(effectiveStatus)
                 .description(race.getDescription())
                 .imageUrl(race.getImageUrl())
                 .circuitImageUrl(circuit != null ? circuit.getImageUrl() : null)

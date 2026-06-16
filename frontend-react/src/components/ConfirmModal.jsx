@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { createPortal } from 'react-dom'
 
 function renderModalIcon(icon) {
   if (icon === '⚠️') {
@@ -63,7 +64,7 @@ export default function ConfirmModal({
     ? 'bg-green-600 hover:bg-green-500 shadow-green-900/30'
     : 'bg-f1-red hover:bg-red-700 shadow-red-900/30'
 
-  return (
+  return createPortal(
     <div className="confirm-modal-overlay" onClick={onCancel}>
       <div
         className="confirm-modal-content"
@@ -101,6 +102,7 @@ export default function ConfirmModal({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }

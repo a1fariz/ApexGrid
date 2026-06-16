@@ -144,7 +144,7 @@ export default function Home() {
     const racesCopy = [...races]
     switch (sortBy) {
       case 'date-asc':
-        return racesCopy.sort((a, b) => new Date(a.raceDate) - new Date(b.raceDate))
+        return racesCopy // Backend already sorts date-asc with upcoming first, ended last
       case 'date-desc':
         return racesCopy.sort((a, b) => new Date(b.raceDate) - new Date(a.raceDate))
       case 'price-asc':

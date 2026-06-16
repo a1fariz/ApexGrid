@@ -53,6 +53,10 @@ public class BookingServiceImpl implements BookingService {
                     HttpStatus.BAD_REQUEST);
         }
 
+        if (race.getRaceDate() != null && race.getRaceDate().isBefore(LocalDateTime.now())) {
+            throw new ApiException("Cannot book tickets for an event that has already occurred.", HttpStatus.BAD_REQUEST);
+        }
+
         // 2. Check available quota
         if (race.getAvailableQuota() < request.getQuantity()) {
             throw new ApiException(

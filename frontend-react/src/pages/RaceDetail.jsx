@@ -173,6 +173,7 @@ export default function RaceDetail() {
   const flag = CIRCUIT_FLAGS[race.country] || '🏳️'
   const quotaPercent = Math.round((race.availableQuota / race.totalQuota) * 100)
   const isLowQuota = quotaPercent < 20
+  const isPastEvent = race.raceDate ? new Date(race.raceDate) < new Date() : false
 
   const normKey = normalizeCircuitName(race.circuitName, race.country)
   const track = normKey ? TRACK_PATHS[normKey] : null
@@ -549,8 +550,9 @@ export default function RaceDetail() {
                         min="1"
                         max={Math.min(race.availableQuota, 10)}
                         value={quantity}
+                        disabled={isPastEvent}
                         onChange={(e) => setQuantity(Math.min(Math.min(race.availableQuota, 10), Math.max(1, parseInt(e.target.value) || 1)))}
-                        className="bg-transparent text-center text-f1-white font-bold text-lg focus:outline-none w-16"
+                        className="bg-transparent text-center text-f1-white font-bold text-lg focus:outline-none w-16 disabled:opacity-50"
                       />
                       <button
                         type="button"
@@ -588,7 +590,7 @@ export default function RaceDetail() {
                   <button
                     onClick={handleBook}
                     id="book-now-btn"
-                    disabled={booking || race.availableQuota === 0}
+                    disabled={booking || race.availableQuota === 0 || isPastEvent}
                     className="w-full btn-primary py-3.5 text-base disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {booking ? (
@@ -596,6 +598,8 @@ export default function RaceDetail() {
                         <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full spin-f1" />
                         Processing...
                       </span>
+                    ) : isPastEvent ? (
+                      '🏁 Event Ended'
                     ) : race.availableQuota === 0 ? (
                       'Sold Out'
                     ) : !isAuthenticated() ? (

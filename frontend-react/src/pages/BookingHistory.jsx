@@ -87,20 +87,19 @@ export default function BookingHistory() {
         <div className="max-w-6xl mx-auto px-4 py-10">
 
           {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-2">
-              <Link to="/" className="text-f1-light hover:text-f1-red transition-colors text-sm flex items-center gap-1 font-semibold">
+          <div className="mb-10 flex flex-col items-center text-center">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <Link to="/" className="text-f1-light hover:text-f1-white transition-colors text-sm flex items-center gap-2 font-semibold bg-white/5 hover:bg-f1-red px-4 py-1.5 rounded-full backdrop-blur-sm border border-white/10 hover:border-f1-red shadow-lg">
                 ← Back to Home
               </Link>
-              <div className="f1-stripe" />
             </div>
-            <h1 className="text-3xl font-bold text-f1-white">My Bookings</h1>
-            <p className="text-f1-light mt-1">Track and manage your F1 ticket bookings</p>
+            <h1 className="text-4xl md:text-5xl font-bold text-f1-white tracking-tight">My Bookings</h1>
+            <p className="text-f1-light mt-3 text-lg">Track and manage your F1 ticket bookings</p>
           </div>
 
           {/* Stats Summary */}
           {!loading && !error && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 max-w-4xl mx-auto">
               {Object.entries(counts).map(([status, count]) => (
                 <button
                   key={status}
@@ -159,9 +158,9 @@ export default function BookingHistory() {
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 ${filteredBookings.length >= 3 ? 'xl:grid-cols-3' : ''} justify-items-center max-w-6xl mx-auto`}>
               {filteredBookings.map((booking, index) => (
-                <div key={booking.id} className="animate-fade-in" style={{ animationDelay: `${index * 0.06}s` }}>
+                <div key={booking.id} className="animate-fade-in w-full max-w-[400px]" style={{ animationDelay: `${index * 0.06}s` }}>
                   <BookingCard booking={booking} onUpdate={fetchBookings} />
                 </div>
               ))}

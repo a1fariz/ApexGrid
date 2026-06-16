@@ -154,6 +154,12 @@ body {
   @apply focus:outline-none focus:border-f1-red/60 focus:ring-2 focus:ring-f1-red/20 transition-all duration-300;
 }
 
+/* Fix dropdown option clashing */
+select.form-input option {
+  background-color: var(--f1-card);
+  color: var(--f1-white);
+}
+
 .form-label {
   @apply block text-sm font-medium text-f1-light mb-2;
 }
