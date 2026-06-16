@@ -40,6 +40,10 @@ public class User {
     @Column(name = "is_active")
     private Boolean isActive = true;
 
+    @Builder.Default
+    @Column(name = "is_verified")
+    private Boolean isVerified = false;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 

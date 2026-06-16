@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 import BookingCard from '../components/BookingCard'
 import PageTransition from '../components/PageTransition'
 import api from '../services/api'
@@ -80,14 +81,19 @@ export default function BookingHistory() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen">
+      <div className="min-h-screen flex flex-col">
         <Navbar />
 
         <div className="max-w-6xl mx-auto px-4 py-10">
 
           {/* Header */}
           <div className="mb-8">
-            <div className="f1-stripe mb-3" />
+            <div className="flex items-center gap-3 mb-2">
+              <Link to="/" className="text-f1-light hover:text-f1-red transition-colors text-sm flex items-center gap-1 font-semibold">
+                ← Back to Home
+              </Link>
+              <div className="f1-stripe" />
+            </div>
             <h1 className="text-3xl font-bold text-f1-white">My Bookings</h1>
             <p className="text-f1-light mt-1">Track and manage your F1 ticket bookings</p>
           </div>
@@ -162,6 +168,8 @@ export default function BookingHistory() {
             </div>
           )}
         </div>
+        
+        <Footer />
       </div>
     </PageTransition>
   )

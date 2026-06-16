@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 import LoadingSpinner from '../components/LoadingSpinner'
 import PageTransition from '../components/PageTransition'
 import { useAuth } from '../hooks/useAuth'
@@ -156,14 +157,15 @@ export default function RaceDetail() {
 
   if (!race) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen flex flex-col">
         <Navbar />
-        <div className="text-center py-24 animate-fade-in">
+        <div className="text-center py-24 animate-fade-in flex-1">
           <div className="text-6xl mb-4">🏁</div>
           <h2 className="text-xl text-white mb-2">Race not found</h2>
-          <p className="text-gray-500 mb-6 text-sm">The race you're looking for doesn't exist or has been removed.</p>
+          <p className="text-f1-light mb-6 text-sm">The race you're looking for doesn't exist or has been removed.</p>
           <button onClick={() => navigate('/')} className="btn-primary mt-4">Back to Races</button>
         </div>
+        <Footer />
       </div>
     )
   }
@@ -193,9 +195,9 @@ export default function RaceDetail() {
 
   if (bookingSuccess) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen flex flex-col">
         <Navbar />
-        <div className="max-w-lg mx-auto px-4 py-20 text-center animate-fade-in">
+        <div className="max-w-lg mx-auto px-4 py-20 text-center animate-fade-in flex-1">
           <div className="glass-card p-10">
             {/* Success checkmark */}
             <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-500/20">
@@ -221,13 +223,14 @@ export default function RaceDetail() {
             </div>
           </div>
         </div>
+        <Footer />
       </div>
     )
   }
 
   return (
     <PageTransition>
-      <div className="min-h-screen">
+      <div className="min-h-screen flex flex-col">
         <Navbar />
 
         {/* Hero Banner */}
@@ -255,15 +258,15 @@ export default function RaceDetail() {
 
           {/* Content */}
           <div className="relative z-10 max-w-7xl mx-auto px-4 h-full flex flex-col justify-end pb-8">
-            <button onClick={() => navigate('/')} className="text-gray-500 hover:text-white text-sm transition-colors duration-300 mb-3 w-fit">
+            <button onClick={() => navigate('/')} className="text-f1-light hover:text-f1-white text-sm transition-colors duration-300 mb-3 w-fit">
               ← Back to Races
             </button>
             <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight">{race.name}</h1>
-            <p className="text-gray-400 mt-2 text-lg">{race.circuitName} · {race.location}, {race.country}</p>
+            <p className="text-f1-light mt-2 text-lg">{race.circuitName} · {race.location}, {race.country}</p>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 py-10">
+        <div className="max-w-7xl mx-auto px-4 py-10 flex-1">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
             {/* Left: Race Info & Seating Selection */}
@@ -612,6 +615,8 @@ export default function RaceDetail() {
             </div>
           </div>
         </div>
+
+        <Footer />
       </div>
     </PageTransition>
   )

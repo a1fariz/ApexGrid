@@ -23,9 +23,9 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  // Initialize from localStorage on mount
+  // Initialize from storage on mount
   useEffect(() => {
-    const token = localStorage.getItem('apexgrid_token')
+    const token = localStorage.getItem('apexgrid_token') || sessionStorage.getItem('apexgrid_token')
     if (token) {
       const decoded = decodeToken(token)
       if (decoded && decoded.exp * 1000 > Date.now()) {
@@ -40,13 +40,26 @@ export function AuthProvider({ children }) {
         // Token expired
         localStorage.removeItem('apexgrid_token')
         localStorage.removeItem('apexgrid_user')
+        sessionStorage.removeItem('apexgrid_token')
+        sessionStorage.removeItem('apexgrid_user')
       }
     }
     setLoading(false)
   }, [])
 
-  const login = useCallback((token) => {
-    localStorage.setItem('apexgrid_token', token)
+  const login = useCallback((token, rememberMe = true) => {
+    const storage = rememberMe ? localStorage : sessionStorage;
+    
+    // Clear other storage to avoid conflicts
+    if (rememberMe) {
+        sessionStorage.removeItem('apexgrid_token');
+        sessionStorage.removeItem('apexgrid_user');
+    } else {
+        localStorage.removeItem('apexgrid_token');
+        localStorage.removeItem('apexgrid_user');
+    }
+
+    storage.setItem('apexgrid_token', token)
     const decoded = decodeToken(token)
     if (decoded) {
       const userData = {
@@ -57,18 +70,20 @@ export function AuthProvider({ children }) {
         fullName: decoded.fullName,
       }
       setUser(userData)
-      localStorage.setItem('apexgrid_user', JSON.stringify(userData))
+      storage.setItem('apexgrid_user', JSON.stringify(userData))
     }
   }, [])
 
   const logout = useCallback(() => {
     localStorage.removeItem('apexgrid_token')
     localStorage.removeItem('apexgrid_user')
+    sessionStorage.removeItem('apexgrid_token')
+    sessionStorage.removeItem('apexgrid_user')
     setUser(null)
   }, [])
 
   const isAuthenticated = useCallback(() => {
-    const token = localStorage.getItem('apexgrid_token')
+    const token = localStorage.getItem('apexgrid_token') || sessionStorage.getItem('apexgrid_token')
     if (!token) return false
     const decoded = decodeToken(token)
     return decoded && decoded.exp * 1000 > Date.now()

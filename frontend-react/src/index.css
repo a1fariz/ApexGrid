@@ -687,3 +687,11 @@ select:-webkit-autofill {
     radial-gradient(ellipse at center bottom, rgba(225, 6, 0, 0.03) 0%, transparent 60%),
     var(--f1-black);
 }
+
+.bg-grid-pattern {
+  background-size: 24px 24px;
+  background-image: 
+    linear-gradient(to right, rgba(225, 6, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(225, 6, 0, 0.04) 1px, transparent 1px);
+}
+

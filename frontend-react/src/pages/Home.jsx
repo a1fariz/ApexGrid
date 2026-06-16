@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 import RaceCard from '../components/RaceCard'
 import RaceCardSkeleton from '../components/RaceCardSkeleton'
 import PageTransition from '../components/PageTransition'
@@ -212,7 +213,7 @@ export default function Home() {
               <span className="bg-gradient-to-r from-f1-red to-red-400 bg-clip-text text-transparent">FORMULA 1</span>
             </h1>
 
-            <p className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto mb-8 animate-fade-in leading-relaxed"
+            <p className="text-lg md:text-xl text-f1-light max-w-2xl mx-auto mb-8 animate-fade-in leading-relaxed"
                style={{ animationDelay: '0.2s' }}>
               Book your tickets to the most thrilling motorsport events in the world.
               From Monza to Singapore — feel the speed.
@@ -229,22 +230,22 @@ export default function Home() {
               <div className="flex gap-4 items-center">
                 <div className="text-center">
                   <span className="block font-f1 text-2xl md:text-3xl font-black tracking-tight">{String(timeLeft.days).padStart(2, '0')}</span>
-                  <span className="text-[10px] text-gray-500 uppercase font-semibold">Days</span>
+                  <span className="text-[10px] text-f1-light uppercase font-semibold">Days</span>
                 </div>
                 <span className="text-xl opacity-30">:</span>
                 <div className="text-center">
                   <span className="block font-f1 text-2xl md:text-3xl font-black tracking-tight">{String(timeLeft.hours).padStart(2, '0')}</span>
-                  <span className="text-[10px] text-gray-500 uppercase font-semibold">Hrs</span>
+                  <span className="text-[10px] text-f1-light uppercase font-semibold">Hrs</span>
                 </div>
                 <span className="text-xl opacity-30">:</span>
                 <div className="text-center">
                   <span className="block font-f1 text-2xl md:text-3xl font-black tracking-tight">{String(timeLeft.minutes).padStart(2, '0')}</span>
-                  <span className="text-[10px] text-gray-500 uppercase font-semibold">Mins</span>
+                  <span className="text-[10px] text-f1-light uppercase font-semibold">Mins</span>
                 </div>
                 <span className="text-xl opacity-30">:</span>
                 <div className="text-center">
                   <span className="block font-f1 text-2xl md:text-3xl font-black tracking-tight text-f1-red">{String(timeLeft.seconds).padStart(2, '0')}</span>
-                  <span className="text-[10px] text-gray-500 uppercase font-semibold">Secs</span>
+                  <span className="text-[10px] text-f1-light uppercase font-semibold">Secs</span>
                 </div>
               </div>
             </div>
@@ -267,7 +268,7 @@ export default function Home() {
           <div className="mb-8">
             <div className="f1-stripe mb-3" />
             <h2 className="text-3xl font-bold text-f1-white">Race Calendar</h2>
-            <p className="text-gray-500 mt-1">
+            <p className="text-f1-light mt-1">
               {totalElements} race{totalElements !== 1 ? 's' : ''} found
             </p>
           </div>
@@ -277,7 +278,7 @@ export default function Home() {
             <form onSubmit={handleSearchSubmit} className="flex flex-col md:flex-row gap-3">
               {/* Search Input */}
               <div className="flex-1 relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 text-sm">🔍</span>
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-f1-light text-sm">🔍</span>
                 <input
                   id="race-search-input"
                   type="text"
@@ -333,7 +334,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="btn-ghost text-sm text-gray-500 hover:text-white"
+                  className="btn-ghost text-sm text-f1-light hover:text-f1-white"
                 >
                   ✕ Clear
                 </button>
@@ -365,7 +366,7 @@ export default function Home() {
             <div className="text-center py-24 animate-fade-in">
               <div className="text-6xl mb-4">🏁</div>
               <h3 className="text-xl font-semibold text-f1-white mb-2">No races found</h3>
-              <p className="text-gray-500 mb-6">Try adjusting your search or filters.</p>
+              <p className="text-f1-light mb-6">Try adjusting your search or filters.</p>
               {hasFilters && (
                 <button onClick={clearFilters} className="btn-primary">Clear Filters</button>
               )}
@@ -418,28 +419,7 @@ export default function Home() {
           )}
         </section>
 
-        <footer className="footer-glow border-t border-f1-border py-12 px-4">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="flex items-center gap-3.5">
-                <div className="w-12 h-6 flex items-center justify-center">
-                  <svg viewBox="0 0 120 30" className="w-full h-full text-f1-red fill-current">
-                    <path d="M101.086812,30 L101.711812,30 L101.711812,27.106875 L101.722437,27.106875 L102.761812,30 L103.302437,30 L104.341812,27.106875 L104.352437,27.106875 L104.352437,30 L104.977437,30 L104.977437,26.25125 L104.063687,26.25125 L103.055562,29.18625 L103.044937,29.18625 L102.011187,26.25125 L101.086812,26.25125 L101.086812,30 Z M97.6274375,26.818125 L98.8136875,26.818125 L98.8136875,30 L99.4699375,30 L99.4699375,26.818125 L100.661812,26.818125 L100.661812,26.25125 L97.6274375,26.25125 L97.6274375,26.818125 Z M89.9999375,30 L119.999937,0 L101.943687,0 L71.9443125,30 L89.9999375,30 Z M85.6986875,13.065 L49.3818125,13.065 C38.3136875,13.065 36.3768125,13.651875 31.6361875,18.3925 C27.2024375,22.82625 20.0005625,30 20.0005625,30 L35.7324375,30 L39.4855625,26.246875 C41.9530625,23.779375 43.2255625,23.52375 48.4068125,23.52375 L75.2405625,23.52375 L85.6986875,13.065 Z M31.1518125,16.253125 C27.8774375,19.3425 20.7530625,26.263125 16.9130625,30 L-6.25e-05,30 C-6.25e-05,30 13.5524375,16.486875 21.0849375,9.0725 C28.8455625,1.685 32.7143125,0 46.9486875,0 L98.7643125,0 L87.5449375,11.21875 L48.0011875,11.21875 C37.9993125,11.21875 35.7518125,11.911875 31.1518125,16.253125 Z" />
-                  </svg>
-                </div>
-                <span className="font-f1 text-lg font-black italic tracking-[0.12em] text-f1-white">
-                  APEX<span className="text-f1-red font-light">GRID</span>
-                </span>
-              </div>
-              <div className="flex items-center gap-6 text-sm text-gray-600">
-                <Link to="/" className="hover:text-gray-400 transition-colors">Races</Link>
-                <Link to="/login" className="hover:text-gray-400 transition-colors">Login</Link>
-                <Link to="/register" className="hover:text-gray-400 transition-colors">Register</Link>
-              </div>
-              <p className="text-gray-600 text-xs">© 2026 ApexGrid — The Ultimate F1 Ticket Experience</p>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </PageTransition>
   )

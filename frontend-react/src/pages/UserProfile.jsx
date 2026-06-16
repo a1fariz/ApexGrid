@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 import LoadingSpinner from '../components/LoadingSpinner'
 import PageTransition from '../components/PageTransition'
 import { showToast } from '../components/Toast'
@@ -11,6 +13,9 @@ export default function UserProfile() {
   const [bookings, setBookings] = useState([])
   const [loading, setLoading] = useState(true)
   const [downloading, setDownloading] = useState(null)
+  const [isEditing, setIsEditing] = useState(false)
+  const [editForm, setEditForm] = useState({ fullName: '', password: '' })
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -67,15 +72,40 @@ export default function UserProfile() {
     return `px-2 py-0.5 text-xs font-semibold rounded-full border ${map[status] || 'bg-gray-500/10 text-gray-400'}`
   }
 
+  const handleEditClick = () => {
+    setEditForm({ fullName: user?.fullName || '', password: '' })
+    setIsEditing(true)
+  }
+
+  const handleSaveProfile = async (e) => {
+    e.preventDefault()
+    setSaving(true)
+    try {
+      await api.put('/users/profile', editForm)
+      showToast('Profile updated successfully', 'success')
+      // reload page to fetch fresh user data
+      setTimeout(() => window.location.reload(), 1500)
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to update profile', 'error')
+    } finally {
+      setSaving(false)
+    }
+  }
+
   return (
     <PageTransition>
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
 
-      <div className="max-w-5xl mx-auto px-4 py-10">
+      <div className="max-w-5xl mx-auto px-4 py-10 flex-1 w-full">
         {/* Header */}
         <div className="mb-8">
-          <div className="f1-stripe mb-3" />
+          <div className="flex items-center gap-3 mb-2">
+            <Link to="/" className="text-f1-light hover:text-f1-red transition-colors text-sm flex items-center gap-1 font-semibold">
+              ← Back to Home
+            </Link>
+            <div className="f1-stripe" />
+          </div>
           <h1 className="text-3xl font-bold text-f1-white">My Profile</h1>
           <p className="text-f1-light mt-1">Account information & booking history</p>
         </div>
@@ -87,8 +117,15 @@ export default function UserProfile() {
               {user?.username?.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-f1-white">{user?.fullName || user?.username}</h2>
-              <div className="text-f1-light text-sm mt-1">@{user?.username}</div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-f1-white">{user?.fullName || user?.username}</h2>
+                  <div className="text-f1-light text-sm mt-1">@{user?.username}</div>
+                </div>
+                <button onClick={handleEditClick} className="btn-secondary text-xs px-3 py-1.5">
+                  ✏️ Edit Profile
+                </button>
+              </div>
               <div className="flex flex-wrap gap-4 mt-3 text-sm text-f1-light">
                 <span>📧 {user?.email}</span>
                 <span className="px-2 py-0.5 rounded-full bg-f1-red/10 text-f1-red text-xs font-semibold border border-f1-red/20">
@@ -181,6 +218,53 @@ export default function UserProfile() {
           )}
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      {isEditing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+          <div className="bg-f1-card border border-f1-border rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-scale-in">
+            <div className="p-5 border-b border-f1-border flex items-center justify-between">
+              <h3 className="font-bold text-f1-white">Edit Profile</h3>
+              <button onClick={() => setIsEditing(false)} className="text-f1-light hover:text-white transition-colors">✕</button>
+            </div>
+            <form onSubmit={handleSaveProfile} className="p-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="form-label text-f1-light">Full Name</label>
+                  <input
+                    type="text"
+                    value={editForm.fullName}
+                    onChange={(e) => setEditForm({...editForm, fullName: e.target.value})}
+                    className="form-input"
+                    placeholder="Enter your full name"
+                  />
+                </div>
+                <div>
+                  <label className="form-label text-f1-light">New Password</label>
+                  <input
+                    type="password"
+                    value={editForm.password}
+                    onChange={(e) => setEditForm({...editForm, password: e.target.value})}
+                    className="form-input"
+                    placeholder="Leave blank to keep current password"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Minimum 6 characters if you want to change it.</p>
+                </div>
+              </div>
+              <div className="mt-8 flex gap-3">
+                <button type="button" onClick={() => setIsEditing(false)} className="flex-1 btn-ghost border border-f1-border text-sm py-2">
+                  Cancel
+                </button>
+                <button type="submit" disabled={saving} className="flex-1 btn-primary text-sm py-2">
+                  {saving ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      
+      <Footer />
     </div>
     </PageTransition>
   )

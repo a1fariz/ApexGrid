@@ -34,10 +34,24 @@ CREATE TABLE users (
     full_name VARCHAR(100),
     role_id INTEGER NOT NULL DEFAULT 1,
     is_active BOOLEAN DEFAULT TRUE,
+    is_verified BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_users_role FOREIGN KEY (role_id) REFERENCES roles(id)
+);
+
+-- ============================================================
+-- 2.5. VERIFICATION TOKENS
+-- ============================================================
+CREATE TABLE verification_tokens (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    expired_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_verif_token_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- ============================================================
@@ -161,6 +175,7 @@ CREATE TABLE bookings (
     cancelled_at TIMESTAMP,
     scanned_at TIMESTAMP,
     cancellation_reason VARCHAR(255),
+    zone VARCHAR(10) DEFAULT 'GA',
 
     CONSTRAINT fk_bookings_race FOREIGN KEY (race_id) REFERENCES races(id) ON DELETE RESTRICT,
     CONSTRAINT chk_quantity CHECK (quantity > 0),

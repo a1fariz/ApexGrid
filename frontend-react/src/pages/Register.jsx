@@ -58,7 +58,6 @@ export default function Register() {
         password: form.password,
       })
       setSuccess(true)
-      setTimeout(() => navigate('/login'), 2000)
     } catch (err) {
       const msg = err.response?.data?.message || 'Registration failed'
       setErrors({ general: msg })
@@ -70,15 +69,26 @@ export default function Register() {
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4 bg-f1-black text-f1-white">
-        <div className="text-center animate-fade-in">
-          <div className="w-16 h-16 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-5">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="10" stroke="#34D399" strokeWidth="1.5"/>
-              <path d="M7.5 12l3 3 6-6" stroke="#34D399" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <div className="text-center animate-fade-in card p-8 border border-f1-border bg-f1-card max-w-md w-full shadow-2xl">
+          <div className="w-20 h-20 bg-green-500/10 border border-green-500/30 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-f1-white mb-2">Registration Successful</h2>
-          <p className="text-f1-light">Redirecting to login...</p>
+          <h2 className="text-2xl font-bold text-f1-white mb-2">Check Your Email</h2>
+          <p className="text-f1-light mb-6">
+            We've sent a magic link to <span className="text-white font-semibold">{form.email}</span>.
+            <br />Please click the link to verify your account.
+          </p>
+          <p className="text-gray-500 text-sm mb-8">
+            You can close this tab and proceed to login after verifying.
+          </p>
+          <button 
+            onClick={() => navigate('/login')}
+            className="w-full bg-white/10 hover:bg-white/20 text-white py-3 rounded-lg font-semibold transition-colors border border-white/10"
+          >
+            Go to Login
+          </button>
         </div>
       </div>
     )

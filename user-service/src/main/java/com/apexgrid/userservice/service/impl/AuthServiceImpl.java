@@ -20,6 +20,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apexgrid.userservice.entity.VerificationToken;
+import com.apexgrid.userservice.repository.VerificationTokenRepository;
+import com.apexgrid.userservice.service.UserEmailService;
+import java.util.UUID;
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -27,18 +33,20 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final VerificationTokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+    private final UserEmailService userEmailService;
 
     @Override
     @Transactional
     public MessageResponse register(RegisterRequest request) {
-        if (userRepository.existsByUsername(request.getUsername())) {
+        if (userRepository.existsByUsernameIgnoreCase(request.getUsername())) {
             throw new ApiException("Username '" + request.getUsername() + "' is already taken", HttpStatus.CONFLICT);
         }
 
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmailIgnoreCase(request.getEmail())) {
             throw new ApiException("Email '" + request.getEmail() + "' is already registered", HttpStatus.CONFLICT);
         }
 
@@ -52,12 +60,26 @@ public class AuthServiceImpl implements AuthService {
                 .fullName(request.getFullName())
                 .role(userRole)
                 .isActive(true)
+                .isVerified(false)
                 .build();
 
         userRepository.save(user);
+        
+        // Generate and save token
+        String tokenStr = UUID.randomUUID().toString();
+        VerificationToken token = VerificationToken.builder()
+                .user(user)
+                .token(tokenStr)
+                .expiredAt(LocalDateTime.now().plusHours(24))
+                .build();
+        tokenRepository.save(token);
+        
+        // Send email
+        userEmailService.sendVerificationEmail(user, token);
+        
         log.info("User registered successfully: {}", request.getUsername());
 
-        return new MessageResponse("User registered successfully! Please login to continue.");
+        return new MessageResponse("Registration successful! Please check your email to verify your account.");
     }
 
     @Override
@@ -68,6 +90,10 @@ public class AuthServiceImpl implements AuthService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        if (userDetails.getIsVerified() != null && !userDetails.getIsVerified()) {
+            throw new ApiException("Please verify your email first", HttpStatus.FORBIDDEN);
+        }
 
         String jwt = jwtUtils.generateToken(userDetails);
         log.info("User logged in successfully: {}", userDetails.getUsername());
@@ -92,7 +118,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String username = jwtUtils.extractUsername(jwt);
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
 
         return UserResponse.builder()
@@ -103,5 +129,25 @@ public class AuthServiceImpl implements AuthService {
                 .role(user.getRole().getName())
                 .createdAt(user.getCreatedAt())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public MessageResponse verifyEmail(String tokenStr) {
+        VerificationToken token = tokenRepository.findByToken(tokenStr)
+                .orElseThrow(() -> new ApiException("Invalid or missing verification token", HttpStatus.BAD_REQUEST));
+
+        if (token.getExpiredAt().isBefore(LocalDateTime.now())) {
+            throw new ApiException("Verification token has expired", HttpStatus.BAD_REQUEST);
+        }
+
+        User user = token.getUser();
+        user.setIsVerified(true);
+        userRepository.save(user);
+        
+        tokenRepository.delete(token);
+        
+        log.info("User email verified successfully: {}", user.getEmail());
+        return new MessageResponse("Email verified successfully! You can now log in.");
     }
 }

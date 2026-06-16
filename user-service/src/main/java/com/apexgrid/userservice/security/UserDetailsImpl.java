@@ -20,6 +20,7 @@ public class UserDetailsImpl implements UserDetails {
     private String password;
     private String fullName;
     private String role;
+    private Boolean isVerified;
     private Collection<? extends GrantedAuthority> authorities;
 
     public static UserDetailsImpl build(User user) {
@@ -34,6 +35,7 @@ public class UserDetailsImpl implements UserDetails {
                 user.getPassword(),
                 user.getFullName(),
                 user.getRole().getName(),
+                user.getIsVerified(),
                 authorities
         );
     }

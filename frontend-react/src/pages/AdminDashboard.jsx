@@ -155,7 +155,12 @@ export default function AdminDashboard() {
 
         {/* Header */}
         <div className="mb-10">
-          <div className="f1-stripe mb-3" />
+          <div className="flex items-center gap-3 mb-2">
+            <Link to="/" className="text-f1-light hover:text-f1-red transition-colors text-sm flex items-center gap-1 font-semibold">
+              ← Back to Home
+            </Link>
+            <div className="f1-stripe" />
+          </div>
           <div className="flex items-center gap-3">
             <h1 className="text-3xl font-bold text-f1-white">Admin Dashboard</h1>
             <span className="px-3 py-1 bg-amber-400/10 border border-amber-400/20 text-amber-400 text-xs font-semibold rounded-full">
@@ -388,9 +393,9 @@ export default function AdminDashboard() {
         {/* Admin Action Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           {[
+            { title: 'User Management', desc: 'Monitor customers and suspend/activate accounts.', icon: '👥', link: '/admin/users', color: 'from-amber-400/20 to-transparent' },
             { title: 'Race Management', desc: 'Create, edit, and manage F1 race listings.', icon: '🏁', link: '/admin/races', color: 'from-f1-red/20 to-transparent' },
             { title: 'Circuit Management', desc: 'Manage circuit data for all F1 tracks.', icon: '🗺️', link: '/admin/circuits', color: 'from-blue-500/20 to-transparent' },
-            { title: 'System Status', desc: 'All services running. Scheduler active every 5 min.', icon: '⚙️', link: '#', color: 'from-green-500/20 to-transparent' },
           ].map(card => (
             <div
               key={card.title}
@@ -413,6 +418,7 @@ export default function AdminDashboard() {
         <div className="card p-6">
           <h2 className="font-semibold text-f1-white mb-4">Quick Actions</h2>
           <div className="flex flex-wrap gap-3">
+            <Link to="/admin/users" className="btn-primary text-sm py-2 px-4">👥 Manage Users</Link>
             <Link to="/admin/races" className="btn-primary text-sm py-2 px-4">🏁 Manage Races</Link>
             <Link to="/admin/circuits" className="btn-primary text-sm py-2 px-4">🗺️ Manage Circuits</Link>
             <Link to="/" className="btn-secondary text-sm py-2 px-4">👀 View Public Site</Link>

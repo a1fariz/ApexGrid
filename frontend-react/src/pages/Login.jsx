@@ -10,6 +10,7 @@ export default function Login() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
   const { login } = useAuth()
   const navigate = useNavigate()
 
@@ -21,7 +22,7 @@ export default function Login() {
     setLoading(true)
     try {
       const res = await api.post('/auth/login', form)
-      login(res.data.token)
+      login(res.data.token, rememberMe)
       navigate('/')
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please check your credentials.')
@@ -150,6 +151,8 @@ export default function Login() {
                   <label className="flex items-center gap-2 text-f1-light cursor-pointer select-none">
                     <input
                       type="checkbox"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
                       className="rounded border-f1-border bg-f1-black/50 text-f1-red focus:ring-f1-red"
                     />
                     <span>Remember Me</span>
