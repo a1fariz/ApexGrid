@@ -93,13 +93,16 @@ export default function AdminCircuitManagement() {
       }
       if (editing) {
         await api.put(`/circuits/${editing.id}`, payload)
+        showToast('Circuit updated successfully', 'success')
       } else {
         await api.post('/circuits', payload)
+        showToast('Circuit created successfully', 'success')
       }
       setShowModal(false)
       fetchCircuits()
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to save circuit')
+      showToast(err.response?.data?.message || 'Failed to save circuit', 'error')
     } finally {
       setSaving(false)
     }

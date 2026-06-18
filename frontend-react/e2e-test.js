@@ -53,6 +53,8 @@ async function runTests() {
     console.log(`✅ Retrieved ${racesRes.data.length} races.`);
     const raceId = racesRes.data[0].id;
     const raceName = racesRes.data[0].name;
+    const raceId2 = racesRes.data[1].id;
+    const raceName2 = racesRes.data[1].name;
 
     // 4. Create Booking
     console.log(`\n[4] Creating Booking for Race: ${raceName}`);
@@ -70,10 +72,10 @@ async function runTests() {
     const confirmRes = await api.put(`/bookings/${bookingId}/confirm`);
     console.log(`✅ Booking Confirmed! Status: ${confirmRes.data.status}`);
 
-    // 6. Cancel a New Booking
+    // 6. Testing Cancellation Flow
     console.log(`\n[6] Testing Cancellation Flow`);
     const bookToCancel = await api.post('/bookings', {
-      raceId: raceId,
+      raceId: raceId2,
       quantity: 1,
       zone: "GA"
     });

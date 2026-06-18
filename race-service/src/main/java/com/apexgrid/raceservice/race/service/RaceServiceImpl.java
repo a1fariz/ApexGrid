@@ -32,8 +32,8 @@ public class RaceServiceImpl implements RaceService {
 
     @Override
     public List<RaceResponse> getAllRaces() {
-        // Fix N+1: use JOIN FETCH to load all races + circuits in a single query
-        return raceRepository.findAllWithCircuit()
+        // M-04 Fix: cap to 200 results to prevent unbounded memory use; use searchRaces() for paginated access
+        return raceRepository.findAllWithCircuit(PageRequest.of(0, 200))
                 .stream()
                 .map(this::mapToRaceResponse)
                 .collect(Collectors.toList());
@@ -119,7 +119,8 @@ public class RaceServiceImpl implements RaceService {
 
     @Override
     public List<RaceResponse> getUpcomingRaces() {
-        return raceRepository.findByStatusWithCircuit("UPCOMING")
+        // M-04 Fix: cap at 50 upcoming races
+        return raceRepository.findByStatusWithCircuit("UPCOMING", PageRequest.of(0, 50))
                 .stream()
                 .map(this::mapToRaceResponse)
                 .collect(Collectors.toList());

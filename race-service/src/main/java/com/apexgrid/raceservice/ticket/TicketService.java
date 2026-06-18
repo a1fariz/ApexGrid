@@ -29,9 +29,15 @@ public class TicketService {
      * @param holderName the name of the ticket holder (from JWT)
      * @return PDF bytes
      */
-    public byte[] generateTicket(Integer bookingId, String holderName) {
+    public byte[] generateTicket(Integer bookingId, String holderName, Integer requestingUserId, String role) {
         Booking booking = bookingRepository.findByIdWithRace(bookingId)
                 .orElseThrow(() -> new ApiException("Booking not found with id: " + bookingId, HttpStatus.NOT_FOUND));
+
+        // FIX: Verify that the requesting user owns this booking (or is admin) to prevent IDOR
+        boolean isAdmin = "ADMIN".equals(role);
+        if (!isAdmin && !booking.getUserId().equals(requestingUserId)) {
+            throw new ApiException("You are not authorized to download this ticket", HttpStatus.FORBIDDEN);
+        }
 
         if (!"CONFIRMED".equals(booking.getStatus())) {
             throw new ApiException("Only CONFIRMED bookings can generate tickets. Current status: " + booking.getStatus(),

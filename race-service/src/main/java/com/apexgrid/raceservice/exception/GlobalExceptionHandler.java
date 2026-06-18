@@ -64,7 +64,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
         log.error("Unexpected error in Race Service: {}", ex.getMessage(), ex);
-        return buildErrorResponse("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+        return buildErrorResponse("An unexpected error occurred: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private ResponseEntity<Map<String, Object>> buildErrorResponse(String message, HttpStatus status) {

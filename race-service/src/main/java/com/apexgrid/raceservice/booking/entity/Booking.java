@@ -28,6 +28,15 @@ public class Booking {
     @Column(name = "user_id", nullable = false)
     private Integer userId;
 
+    @Column(name = "user_email", length = 100)
+    private String userEmail;
+
+    @Column(name = "username", length = 50)
+    private String username;
+
+    @Column(name = "user_full_name", length = 100)
+    private String userFullName;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "race_id", nullable = false)
     private Race race;

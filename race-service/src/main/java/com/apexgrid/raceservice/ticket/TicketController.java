@@ -28,7 +28,10 @@ public class TicketController {
             holderName = "ApexGrid User";
         }
 
-        byte[] pdfBytes = ticketService.generateTicket(id, holderName);
+        Integer requestingUserId = (Integer) request.getAttribute("userId");
+        String role = (String) request.getAttribute("userRole");
+
+        byte[] pdfBytes = ticketService.generateTicket(id, holderName, requestingUserId, role);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);

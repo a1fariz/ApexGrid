@@ -12,17 +12,17 @@ echo.
 set ROOT=%~dp0
 
 echo [1/4] Starting User Service (port 8082)...
-start "User Service :8082" cmd /k "cd /d %ROOT%user-service && mvn spring-boot:run --no-transfer-progress"
+start "User Service :8082" cmd /k "cd /d %ROOT%user-service && mvn spring-boot:run --no-transfer-progress < NUL"
 
 timeout /t 3 /nobreak >nul
 
 echo [2/4] Starting Race Service (port 8081)...
-start "Race Service :8081" cmd /k "cd /d %ROOT%race-service && mvn spring-boot:run --no-transfer-progress"
+start "Race Service :8081" cmd /k "cd /d %ROOT%race-service && mvn spring-boot:run --no-transfer-progress < NUL"
 
 timeout /t 3 /nobreak >nul
 
 echo [3/4] Starting API Gateway (port 8080)...
-start "API Gateway :8080" cmd /k "cd /d %ROOT%api-gateway && mvn spring-boot:run --no-transfer-progress"
+start "API Gateway :8080" cmd /k "cd /d %ROOT%api-gateway && mvn spring-boot:run --no-transfer-progress < NUL"
 
 timeout /t 3 /nobreak >nul
 

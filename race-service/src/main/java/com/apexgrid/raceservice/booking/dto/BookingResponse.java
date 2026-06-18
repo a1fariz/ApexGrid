@@ -17,6 +17,9 @@ public class BookingResponse {
     private Integer id;
     private String bookingCode;
     private Integer userId;
+    private String userEmail;
+    private String username;
+    private String userFullName;
     private Integer raceId;
     private String raceName;
     private String circuitName;

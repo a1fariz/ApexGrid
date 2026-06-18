@@ -1,19 +1,27 @@
 package com.apexgrid.gateway.filter;
 
 import com.apexgrid.gateway.util.JwtUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
+import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+
+import java.time.LocalDateTime;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -21,6 +29,13 @@ import reactor.core.publisher.Mono;
 public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     private final JwtUtil jwtUtil;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    // B-02 Fix: shared internal secret to authenticate requests from gateway to downstream services
+    @Value("${internal.secret:}")
+    private String internalSecret;
+
+    private static final String BEARER_PREFIX = "Bearer ";
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -32,17 +47,24 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
 
+        // Allow public GET requests to races and circuits, and Swagger UI
+        if (request.getMethod().matches("GET") && 
+           (path.startsWith("/api/races") || path.startsWith("/api/circuits") ||
+            path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs"))) {
+            return chain.filter(exchange);
+        }
+
         // For other routes, check Authorization header
         if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
             return onError(exchange, "Missing Authorization header", HttpStatus.UNAUTHORIZED);
         }
 
         String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
             return onError(exchange, "Invalid Authorization header format", HttpStatus.UNAUTHORIZED);
         }
 
-        String token = authHeader.substring(7);
+        String token = authHeader.substring(BEARER_PREFIX.length());
 
         if (!jwtUtil.validateToken(token)) {
             return onError(exchange, "Invalid or expired JWT token", HttpStatus.UNAUTHORIZED);
@@ -51,7 +73,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         try {
             Claims claims = jwtUtil.getAllClaimsFromToken(token);
             
-            String userId = claims.get("id") != null ? String.valueOf(claims.get("id")) : "";
+            Object userIdObj = claims.get("userId");
+            String userId = userIdObj != null ? String.valueOf(userIdObj) : "";
             String role = claims.get("role", String.class);
             String username = claims.getSubject();
             String fullName = claims.get("fullName", String.class);
@@ -64,6 +87,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
                     .header("X-User-Name", username != null ? username : "")
                     .header("X-User-FullName", fullName != null ? fullName : "")
                     .header("X-User-Email", email != null ? email : "")
+                    // B-02 Fix: inject internal secret so downstream services can verify gateway origin
+                    .header("X-Internal-Secret", internalSecret != null ? internalSecret : "")
                     .build();
 
             return chain.filter(exchange.mutate().request(mutatedRequest).build());
@@ -78,7 +103,20 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         log.warn("Authentication failed: {}", err);
         ServerHttpResponse response = exchange.getResponse();
         response.setStatusCode(httpStatus);
-        return response.setComplete();
+        response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+        Map<String, Object> body = Map.of(
+                "timestamp", LocalDateTime.now().toString(),
+                "status", httpStatus.value(),
+                "error", httpStatus.getReasonPhrase(),
+                "message", err
+        );
+        try {
+            byte[] bytes = objectMapper.writeValueAsBytes(body);
+            DataBuffer buffer = response.bufferFactory().wrap(bytes);
+            return response.writeWith(Mono.just(buffer));
+        } catch (JsonProcessingException e) {
+            return response.setComplete();
+        }
     }
 
     @Override

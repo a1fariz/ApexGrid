@@ -1,6 +1,8 @@
 package com.apexgrid.raceservice.booking.repository;
 
 import com.apexgrid.raceservice.booking.entity.Booking;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,8 +21,13 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     List<Booking> findByStatus(String status);
 
-    @Query("SELECT b FROM Booking b JOIN FETCH b.race r JOIN FETCH r.circuit WHERE b.userId = :userId ORDER BY b.createdAt DESC")
-    List<Booking> findByUserIdWithRace(@Param("userId") Integer userId);
+    @Query(value = "SELECT b FROM Booking b JOIN FETCH b.race r JOIN FETCH r.circuit WHERE b.userId = :userId",
+           countQuery = "SELECT COUNT(b) FROM Booking b WHERE b.userId = :userId")
+    Page<Booking> findByUserIdWithRace(@Param("userId") Integer userId, Pageable pageable);
+
+    @Query(value = "SELECT b FROM Booking b JOIN FETCH b.race r JOIN FETCH r.circuit WHERE b.userId = :userId AND (:status = 'ALL' OR b.status = :status)",
+           countQuery = "SELECT COUNT(b) FROM Booking b WHERE b.userId = :userId AND (:status = 'ALL' OR b.status = :status)")
+    Page<Booking> findByUserIdWithRaceAndStatus(@Param("userId") Integer userId, @Param("status") String status, Pageable pageable);
 
     @Query("SELECT b FROM Booking b JOIN FETCH b.race r JOIN FETCH r.circuit WHERE b.id = :id")
     Optional<Booking> findByIdWithRace(@Param("id") Integer id);
@@ -32,6 +39,21 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     Long countActiveBookingsByRaceId(@Param("raceId") Integer raceId);
 
     boolean existsByBookingCode(String bookingCode);
+
+    // Double-booking prevention check (missing feature fix)
+    @Query("SELECT COUNT(b) > 0 FROM Booking b WHERE b.userId = :userId AND b.race.id = :raceId AND b.status IN ('PENDING', 'CONFIRMED')")
+    boolean existsActiveBookingByUserAndRace(@Param("userId") Integer userId, @Param("raceId") Integer raceId);
+
+    // Admin: paginated view of all bookings with optional filters
+    @Query(value = "SELECT b FROM Booking b JOIN FETCH b.race r JOIN FETCH r.circuit " +
+           "WHERE (:status = 'ALL' OR b.status = :status) " +
+           "AND (:raceId = -1 OR b.race.id = :raceId)",
+           countQuery = "SELECT COUNT(b) FROM Booking b " +
+           "WHERE (:status = 'ALL' OR b.status = :status) " +
+           "AND (:raceId = -1 OR b.race.id = :raceId)")
+    Page<Booking> findAllWithFilters(@Param("status") String status,
+                                     @Param("raceId") Integer raceId,
+                                     Pageable pageable);
 
     // Statistics queries
     @Query("SELECT COUNT(b) FROM Booking b WHERE b.status = :status")
@@ -54,4 +76,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
            "GROUP BY r.id, r.name, c.name, c.country " +
            "ORDER BY COALESCE(SUM(CASE WHEN b.status = 'CONFIRMED' THEN b.quantity ELSE 0 END), 0) DESC")
     List<Object[]> findRacePopularity();
+
+    @Query("SELECT b.confirmedAt, b.totalPrice FROM Booking b WHERE b.status = 'CONFIRMED' AND b.confirmedAt IS NOT NULL")
+    List<Object[]> findConfirmedBookingsRevenueData();
 }

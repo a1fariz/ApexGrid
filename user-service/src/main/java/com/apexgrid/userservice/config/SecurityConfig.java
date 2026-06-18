@@ -55,11 +55,19 @@ public class SecurityConfig {
                     "/api/auth/register",
                     "/api/auth/login",
                     "/api/auth/verify",
+                    "/api/auth/resend-verification",
+                    "/api/auth/forgot-password",
+                    "/api/auth/reset-password",
+                    "/api/auth/refresh",
+                    "/api/auth/logout",
+                    "/api/auth/health"
+                ).permitAll()
+                .requestMatchers(
                     "/swagger-ui.html",
                     "/swagger-ui/**",
                     "/v3/api-docs",
                     "/v3/api-docs/**"
-                ).permitAll()
+                ).hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())

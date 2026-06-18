@@ -20,4 +20,5 @@ public class StatisticsResponse {
     private Long totalUniqueCustomers;
     private Long totalRaces;
     private Long totalCircuits;
+    private java.util.Map<String, BigDecimal> quarterlyRevenue;
 }

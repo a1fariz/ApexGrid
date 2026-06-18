@@ -55,6 +55,33 @@ CREATE TABLE verification_tokens (
 );
 
 -- ============================================================
+-- 2.6. PASSWORD RESET TOKENS
+-- ============================================================
+CREATE TABLE password_reset_tokens (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    expired_at TIMESTAMP NOT NULL,
+    used BOOLEAN DEFAULT FALSE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_reset_token_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- ============================================================
+-- 2.7. REFRESH TOKENS
+-- ============================================================
+CREATE TABLE refresh_tokens (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL UNIQUE,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    expiry_date TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_refresh_token_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- ============================================================
 -- 3. CIRCUITS
 -- ============================================================
 CREATE TABLE circuits (

@@ -20,6 +20,10 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @Service
 @RequiredArgsConstructor
@@ -42,11 +46,19 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingResponse createBooking(BookingRequest request, Integer userId, String userEmail) {
-        // 1. Check race exists and is UPCOMING
-        Race race = raceRepository.findByIdWithCircuit(request.getRaceId())
+    public BookingResponse createBooking(BookingRequest request, Integer userId, String userEmail, String username, String userFullName) {
+        // 1. Check race exists and is UPCOMING — B-01: use PESSIMISTIC_WRITE lock to prevent race condition
+        Race race = raceRepository.findByIdWithCircuitForUpdate(request.getRaceId())
                 .orElseThrow(
                         () -> new ApiException("Race not found with id: " + request.getRaceId(), HttpStatus.NOT_FOUND));
+
+        // Double-booking prevention: user cannot have two active bookings for the same race
+        boolean alreadyBooked = bookingRepository.existsActiveBookingByUserAndRace(userId, request.getRaceId());
+        if (alreadyBooked) {
+            throw new ApiException(
+                    "You already have an active booking (PENDING or CONFIRMED) for this race",
+                    HttpStatus.CONFLICT);
+        }
 
         if (!"UPCOMING".equals(race.getStatus())) {
             throw new ApiException("Race is not available for booking. Status: " + race.getStatus(),
@@ -83,6 +95,9 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = Booking.builder()
                 .bookingCode(bookingCode)
                 .userId(userId)
+                .userEmail(userEmail)
+                .username(username)
+                .userFullName(userFullName)
                 .race(race)
                 .quantity(request.getQuantity())
                 .zone(zone)
@@ -100,11 +115,12 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingResponse> getUserBookings(Integer userId) {
-        return bookingRepository.findByUserIdWithRace(userId)
-                .stream()
-                .map(this::mapToBookingResponse)
-                .collect(Collectors.toList());
+    public Page<BookingResponse> getUserBookings(Integer userId, int page, int size, String status) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        // M-03 Fix: support optional status filter for accurate per-status count
+        String statusFilter = (status != null && !status.isBlank()) ? status.toUpperCase() : "ALL";
+        return bookingRepository.findByUserIdWithRaceAndStatus(userId, statusFilter, pageable)
+                .map(this::mapToBookingResponse);
     }
 
     @Override
@@ -161,6 +177,13 @@ public class BookingServiceImpl implements BookingService {
             throw new ApiException("Booking is already cancelled", HttpStatus.BAD_REQUEST);
         }
 
+        // B-04 Fix: prevent cancelling a ticket that has already been scanned/used at the venue
+        if (booking.getScannedAt() != null) {
+            throw new ApiException(
+                    "Cannot cancel a booking that has already been scanned and used at the venue",
+                    HttpStatus.BAD_REQUEST);
+        }
+
         booking.setStatus("CANCELLED");
         booking.setCancelledAt(LocalDateTime.now());
         booking.setCancellationReason(reason != null ? reason : "Cancelled by user");
@@ -200,20 +223,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private String generateUniqueBookingCode() {
-        String code;
-        int attempts = 0;
-        do {
-            StringBuilder sb = new StringBuilder("APEX-");
-            for (int i = 0; i < 6; i++) {
-                sb.append(CHARACTERS.charAt(random.nextInt(CHARACTERS.length())));
-            }
-            code = sb.toString();
-            attempts++;
-            if (attempts > 10) {
-                throw new ApiException("Failed to generate unique booking code", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        } while (bookingRepository.existsByBookingCode(code));
-        return code;
+        // B-09 Fix: Use UUID to prevent collision and avoid N+1 DB queries
+        return "APEX-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
     private BookingResponse mapToBookingResponse(Booking booking) {
@@ -229,6 +240,9 @@ public class BookingServiceImpl implements BookingService {
                 .id(booking.getId())
                 .bookingCode(booking.getBookingCode())
                 .userId(booking.getUserId())
+                .userEmail(booking.getUserEmail())
+                .username(booking.getUsername())
+                .userFullName(booking.getUserFullName())
                 .raceId(race != null ? race.getId() : null)
                 .raceName(race != null ? race.getName() : null)
                 .circuitName(circuitName)
@@ -246,5 +260,38 @@ public class BookingServiceImpl implements BookingService {
                 .cancellationReason(booking.getCancellationReason())
                 .hasTicket("CONFIRMED".equals(booking.getStatus()))
                 .build();
+    }
+    // Admin: paginated view of all bookings with optional filters
+    @Override
+    @Transactional(readOnly = true)
+    public Page<BookingResponse> getAllBookings(String status, Integer raceId, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        String statusFilter = (status != null && !status.isBlank()) ? status.toUpperCase() : "ALL";
+        Integer raceIdFilter = (raceId != null) ? raceId : -1;
+        return bookingRepository.findAllWithFilters(statusFilter, raceIdFilter, pageRequest)
+                .map(this::mapToBookingResponse);
+    }
+
+    // Admin: force cancel any booking regardless of ownership
+    @Override
+    @Transactional
+    public BookingResponse adminCancelBooking(Integer bookingId, String reason) {
+        Booking booking = bookingRepository.findByIdWithRace(bookingId)
+                .orElseThrow(() -> new ApiException("Booking not found", HttpStatus.NOT_FOUND));
+
+        if ("CANCELLED".equals(booking.getStatus())) {
+            throw new ApiException("Booking is already cancelled", HttpStatus.BAD_REQUEST);
+        }
+
+        booking.setStatus("CANCELLED");
+        booking.setCancelledAt(LocalDateTime.now());
+        booking.setCancellationReason(reason != null ? reason : "Cancelled by administrator");
+        Booking cancelled = bookingRepository.save(booking);
+
+        // FIX: Notify user of administrative cancellation
+        emailService.sendBookingCancellation(cancelled, cancelled.getUserEmail());
+
+        log.info("Admin cancelled booking: {}", cancelled.getBookingCode());
+        return mapToBookingResponse(cancelled);
     }
 }

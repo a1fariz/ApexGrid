@@ -20,22 +20,94 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 )
 
-// Response interceptor — handle 401 (expired/invalid token) only
-// NOTE: 403 (Forbidden, e.g. unverified email) is intentionally NOT auto-redirected
-// so the calling page can display the specific error message.
+// Response interceptor — handle 401 (expired/invalid token)
+let isRefreshing = false
+let failedQueue = []
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error)
+    } else {
+      prom.resolve(token)
+    }
+  })
+  failedQueue = []
+}
+
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // Only clear token and redirect on true unauthorized (invalid/expired JWT)
-      const isAuthEndpoint = error.config?.url?.includes('/auth/login') || 
-                             error.config?.url?.includes('/auth/register');
-      if (!isAuthEndpoint) {
+  async (error) => {
+    const originalRequest = error.config
+    
+    const isAuthEndpoint = originalRequest.url?.includes('/auth/login') || 
+                           originalRequest.url?.includes('/auth/register') ||
+                           originalRequest.url?.includes('/auth/refresh') ||
+                           originalRequest.url?.includes('/auth/forgot-password') ||
+                           originalRequest.url?.includes('/auth/reset-password') ||
+                           originalRequest.url?.includes('/auth/resend-verification');
+
+    if (error.response?.status === 401 && !isAuthEndpoint && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject })
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`
+            return api(originalRequest)
+          })
+          .catch((err) => Promise.reject(err))
+      }
+
+      originalRequest._retry = true
+      isRefreshing = true
+
+      const refreshToken = localStorage.getItem('apexgrid_refresh_token') || sessionStorage.getItem('apexgrid_refresh_token')
+      
+      if (refreshToken) {
+        try {
+          // Use basic axios to avoid interceptor recursion
+          const res = await axios.post('/api/auth/refresh', { refreshToken })
+          const { accessToken, refreshToken: newRefreshToken } = res.data
+          
+          const isRemembered = !!localStorage.getItem('apexgrid_token')
+          const storage = isRemembered ? localStorage : sessionStorage
+          
+          storage.setItem('apexgrid_token', accessToken)
+          if (newRefreshToken) {
+            storage.setItem('apexgrid_refresh_token', newRefreshToken)
+          }
+
+          originalRequest.headers.Authorization = `Bearer ${accessToken}`
+          processQueue(null, accessToken)
+          return api(originalRequest)
+        } catch (refreshError) {
+          processQueue(refreshError, null)
+          
+          localStorage.removeItem('apexgrid_token')
+          localStorage.removeItem('apexgrid_refresh_token')
+          localStorage.removeItem('apexgrid_user')
+          sessionStorage.removeItem('apexgrid_token')
+          sessionStorage.removeItem('apexgrid_refresh_token')
+          sessionStorage.removeItem('apexgrid_user')
+          window.location.href = '/login'
+          
+          return Promise.reject(refreshError)
+        } finally {
+          isRefreshing = false
+        }
+      } else {
+        // No refresh token — clear storage and redirect
+        isRefreshing = false
+        processQueue(new Error('No refresh token'), null)
         localStorage.removeItem('apexgrid_token')
+        localStorage.removeItem('apexgrid_refresh_token')
         localStorage.removeItem('apexgrid_user')
         sessionStorage.removeItem('apexgrid_token')
+        sessionStorage.removeItem('apexgrid_refresh_token')
         sessionStorage.removeItem('apexgrid_user')
         window.location.href = '/login'
+        return Promise.reject(error)
       }
     }
     return Promise.reject(error)
@@ -43,3 +115,4 @@ api.interceptors.response.use(
 )
 
 export default api
+

@@ -52,16 +52,7 @@ export default function Home() {
             location: 'Barcelona, Spain'
           })
         }
-      } catch (err) {
-        console.error('Failed to load upcoming race for countdown:', err)
-        // Fallback to official 2026 Spanish Grand Prix
-        setCountdownRace({
-          name: 'Spanish Grand Prix',
-          raceDate: '2026-06-14T15:00:00Z',
-          circuitName: 'Circuit de Barcelona-Catalunya',
-          location: 'Barcelona, Spain'
-        })
-      }
+      } catch { /* silently ignore countdown load failure */ }
     }
     fetchCountdownRace()
   }, [])
@@ -94,9 +85,7 @@ export default function Home() {
       try {
         const res = await api.get('/races/seasons')
         setSeasons(res.data)
-      } catch (err) {
-        console.error('Failed to load seasons')
-      }
+      } catch { /* silently ignore season load failure */ }
     }
     fetchSeasons()
   }, [])

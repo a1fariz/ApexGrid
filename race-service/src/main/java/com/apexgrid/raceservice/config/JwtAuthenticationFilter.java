@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,15 +25,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
 
+    // B-02 Fix: Shared secret between API Gateway and downstream services.
+    // Only requests with this header are trusted to carry X-User-* headers.
+    @Value("${internal.secret:}")
+    private String internalSecret;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         try {
             String headerUserId = request.getHeader("X-User-Id");
-            
-            if (StringUtils.hasText(headerUserId)) {
-                // Trust the headers injected by API Gateway
+            String incomingSecret = request.getHeader("X-Internal-Secret");
+
+            // B-02 Fix: only trust X-User-* headers if:
+            // 1. X-User-Id is present, AND
+            // 2. The X-Internal-Secret matches our configured shared secret (gateway auth)
+            boolean trustedGatewayRequest = StringUtils.hasText(headerUserId)
+                    && StringUtils.hasText(internalSecret)
+                    && internalSecret.equals(incomingSecret);
+
+            if (trustedGatewayRequest) {
+                // Trust the headers injected by API Gateway (validated via shared secret)
                 Integer userId = Integer.parseInt(headerUserId);
                 String role = request.getHeader("X-User-Role");
                 String username = request.getHeader("X-User-Name");
@@ -54,9 +68,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                
+
             } else {
-                // Fallback to parsing JWT directly (e.g., if bypassing gateway during local dev)
+                // Fallback to parsing JWT directly (e.g., bypassing gateway during local dev, or secret not set)
                 String jwt = parseJwt(request);
 
                 if (jwt != null && jwtUtils.validateToken(jwt)) {
@@ -64,7 +78,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     String role = jwtUtils.extractRole(jwt);
                     Integer userId = jwtUtils.extractUserId(jwt);
 
-                    // Set userId and role as request attributes for controllers to use
                     request.setAttribute("userId", userId);
                     request.setAttribute("userRole", role);
                     request.setAttribute("username", username);
@@ -93,11 +106,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    private static final String BEARER_PREFIX = "Bearer ";
+
     private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
-        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
-            return headerAuth.substring(7);
+        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith(BEARER_PREFIX)) {
+            return headerAuth.substring(BEARER_PREFIX.length());
         }
         return null;
     }
 }
+

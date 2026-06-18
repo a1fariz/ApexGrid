@@ -3,17 +3,50 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import LoadingSpinner from '../components/LoadingSpinner'
 import PageTransition from '../components/PageTransition'
+import ConfirmModal from '../components/ConfirmModal'
 import { showToast } from '../components/Toast'
 import api from '../services/api'
 
 export default function AdminUserManagement() {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [searchInput, setSearchInput] = useState('')
+  const [search, setSearch] = useState('')
+  const [page, setPage] = useState(0)
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      setSearch(searchInput)
+    }, 500)
+
+    return () => clearTimeout(delayDebounceFn)
+  }, [searchInput])
+  const [totalPages, setTotalPages] = useState(0)
+  const [totalElements, setTotalElements] = useState(0)
+
+  // Actions states
+  const [resetPwdTarget, setResetPwdTarget] = useState(null)
+  const [newPassword, setNewPassword] = useState('')
+  const [resettingPwd, setResettingPwd] = useState(false)
+
+  const [roleChangeTarget, setRoleChangeTarget] = useState(null)
+  const [newRole, setNewRole] = useState('USER')
+  const [updatingRole, setUpdatingRole] = useState(false)
 
   const fetchUsers = async () => {
     try {
-      const res = await api.get('/users')
-      setUsers(res.data)
+      setLoading(true)
+      const params = new URLSearchParams()
+      params.append('page', page)
+      params.append('size', 10)
+      if (search) {
+        params.append('search', search)
+      }
+      const res = await api.get(`/users?${params.toString()}`)
+      
+      setUsers(res.data.content || [])
+      setTotalPages(res.data.totalPages || 0)
+      setTotalElements(res.data.totalElements || 0)
     } catch (err) {
       showToast('Failed to load users', 'error')
     } finally {
@@ -23,7 +56,7 @@ export default function AdminUserManagement() {
 
   useEffect(() => {
     fetchUsers()
-  }, [])
+  }, [page, search])
 
   const toggleUserStatus = async (userId, currentRole) => {
     if (currentRole === 'ADMIN') {
@@ -33,10 +66,40 @@ export default function AdminUserManagement() {
     
     try {
       const res = await api.put(`/users/${userId}/status`)
-      showToast(res.data.message, 'success')
+      showToast(res.data.message || 'Status updated successfully', 'success')
       fetchUsers()
     } catch (err) {
       showToast(err.response?.data?.message || 'Failed to update user status', 'error')
+    }
+  }
+
+  const handleResetPassword = async () => {
+    if (!resetPwdTarget || !newPassword) return
+    setResettingPwd(true)
+    try {
+      const res = await api.post(`/users/${resetPwdTarget.id}/reset-password`, { newPassword })
+      showToast(res.data.message || `Password for @${resetPwdTarget.username} updated successfully`, 'success')
+      setResetPwdTarget(null)
+      setNewPassword('')
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to reset password', 'error')
+    } finally {
+      setResettingPwd(false)
+    }
+  }
+
+  const handleChangeRole = async () => {
+    if (!roleChangeTarget) return
+    setUpdatingRole(true)
+    try {
+      const res = await api.put(`/users/${roleChangeTarget.id}/role`, { newRole })
+      showToast(res.data.message || `Role updated successfully`, 'success')
+      setRoleChangeTarget(null)
+      fetchUsers()
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to update role', 'error')
+    } finally {
+      setUpdatingRole(false)
     }
   }
 
@@ -51,7 +114,7 @@ export default function AdminUserManagement() {
         <Navbar />
 
         <div className="max-w-7xl mx-auto px-4 py-10">
-          <div className="mb-8 flex items-center justify-between">
+          <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <Link to="/admin" className="text-f1-light hover:text-white transition-colors">
@@ -70,21 +133,25 @@ export default function AdminUserManagement() {
               <p className="text-f1-light mt-2">Manage customer accounts, monitor activity, and handle suspensions.</p>
             </div>
             
-            <div className="bg-f1-surface border border-f1-border rounded-xl px-4 py-3 flex items-center gap-4">
+            <div className="bg-f1-surface border border-f1-border rounded-xl px-4 py-3 flex items-center gap-4 shrink-0">
               <div className="text-center">
-                <div className="text-2xl font-bold text-f1-white">{users.length}</div>
-                <div className="text-[10px] text-f1-light uppercase tracking-wider">Total Users</div>
+                <div className="text-2xl font-bold text-f1-white">{totalElements}</div>
+                <div className="text-[10px] text-f1-light uppercase tracking-wider font-semibold">Total Accounts</div>
               </div>
-              <div className="w-px h-8 bg-f1-border"></div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-400">{users.filter(u => u.isActive && u.role !== 'ADMIN').length}</div>
-                <div className="text-[10px] text-f1-light uppercase tracking-wider">Active</div>
-              </div>
-              <div className="w-px h-8 bg-f1-border"></div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-red-400">{users.filter(u => !u.isActive).length}</div>
-                <div className="text-[10px] text-f1-light uppercase tracking-wider">Suspended</div>
-              </div>
+            </div>
+          </div>
+
+          {/* Search bar */}
+          <div className="card-static p-4 mb-6 rounded-2xl border border-f1-border">
+            <div className="relative">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-f1-light text-sm">🔍</span>
+              <input
+                type="text"
+                placeholder="Search users by username, name, or email..."
+                value={searchInput}
+                onChange={(e) => { setSearchInput(e.target.value); setPage(0); }}
+                className="form-input pl-10 w-full"
+              />
             </div>
           </div>
 
@@ -145,18 +212,34 @@ export default function AdminUserManagement() {
                         </td>
                         <td className="text-sm text-f1-light">{formatDate(u.createdAt)}</td>
                         <td className="text-right">
-                          {u.role !== 'ADMIN' && (
-                            <button
-                              onClick={() => toggleUserStatus(u.id, u.role)}
-                              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                                u.isActive 
-                                  ? 'bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20' 
-                                  : 'bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-green-500/20'
-                              }`}
-                            >
-                              {u.isActive ? 'Suspend User' : 'Activate User'}
-                            </button>
-                          )}
+                          <div className="flex justify-end items-center gap-2">
+                            {u.role !== 'ADMIN' && (
+                              <>
+                                <button
+                                  onClick={() => { setRoleChangeTarget(u); setNewRole(u.role); }}
+                                  className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 text-gray-300 transition-colors border border-white/5"
+                                >
+                                  Change Role
+                                </button>
+                                <button
+                                  onClick={() => setResetPwdTarget(u)}
+                                  className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 text-gray-300 transition-colors border border-white/5"
+                                >
+                                  Reset Password
+                                </button>
+                                <button
+                                  onClick={() => toggleUserStatus(u.id, u.role)}
+                                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                                    u.isActive 
+                                      ? 'bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20' 
+                                      : 'bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-green-500/20'
+                                  }`}
+                                >
+                                  {u.isActive ? 'Suspend' : 'Activate'}
+                                </button>
+                              </>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -165,7 +248,123 @@ export default function AdminUserManagement() {
               </div>
             )}
           </div>
+
+          {/* Pagination Controls */}
+          {(() => {
+            const renderPageNumbers = () => {
+              const pages = []
+              const range = 1
+              for (let i = 0; i < totalPages; i++) {
+                if (i === 0 || i === totalPages - 1 || (i >= page - range && i <= page + range)) {
+                  pages.push(i)
+                } else if ((i === 1 && page - range > 1) || (i === totalPages - 2 && page + range < totalPages - 2)) {
+                  pages.push('ellipsis')
+                }
+              }
+              const uniquePages = pages.filter((item, index) => pages.indexOf(item) === index)
+              return uniquePages.map((p, idx) => {
+                if (p === 'ellipsis') {
+                  return (
+                    <span key={`ellipsis-${idx}`} className="px-2 text-f1-light text-xs font-semibold select-none">
+                      ...
+                    </span>
+                  )
+                }
+                return (
+                  <button
+                    key={p}
+                    onClick={() => setPage(p)}
+                    className={`w-9 h-9 rounded-xl text-xs font-semibold border transition-all ${
+                      page === p
+                        ? 'bg-f1-red border-f1-red text-white shadow-lg shadow-red-900/20'
+                        : 'bg-f1-surface border-f1-border text-f1-light hover:text-white'
+                    }`}
+                  >
+                    {p + 1}
+                  </button>
+                )
+              })
+            }
+
+            return !loading && totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-8">
+                <button
+                  onClick={() => setPage(p => Math.max(0, p - 1))}
+                  disabled={page === 0}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-f1-surface text-f1-light hover:text-white border border-f1-border disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                >
+                  ← Previous
+                </button>
+                {renderPageNumbers()}
+                <button
+                  onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                  disabled={page >= totalPages - 1}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-f1-surface text-f1-light hover:text-white border border-f1-border disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                >
+                  Next →
+                </button>
+              </div>
+            )
+          })()}
         </div>
+
+        {/* Reset Password Modal */}
+        {resetPwdTarget && (
+          <ConfirmModal
+            isOpen={!!resetPwdTarget}
+            title="Reset User Password"
+            message={`Set a new temporary password for user @${resetPwdTarget.username}.`}
+            icon="🔑"
+            confirmText="Reset Password"
+            confirmColor="green"
+            loading={resettingPwd}
+            onConfirm={handleResetPassword}
+            onCancel={() => { setResetPwdTarget(null); setNewPassword(''); }}
+          >
+            <div className="w-full mt-4">
+              <label className="block text-xs text-left font-semibold text-f1-light mb-1.5">
+                New Temporary Password:
+              </label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="form-input text-sm py-2 px-3 border border-f1-border"
+                placeholder="Minimum 6 characters"
+                required
+              />
+            </div>
+          </ConfirmModal>
+        )}
+
+        {/* Change Role Modal */}
+        {roleChangeTarget && (
+          <ConfirmModal
+            isOpen={!!roleChangeTarget}
+            title="Change User Role"
+            message={`Select a new system privilege level for user @${roleChangeTarget.username}.`}
+            icon="🛡️"
+            confirmText="Update Privilege"
+            confirmColor="green"
+            loading={updatingRole}
+            onConfirm={handleChangeRole}
+            onCancel={() => setRoleChangeTarget(null)}
+          >
+            <div className="w-full mt-4">
+              <label className="block text-xs text-left font-semibold text-f1-light mb-1.5">
+                System Role Privilege:
+              </label>
+              <select
+                value={newRole}
+                onChange={(e) => setNewRole(e.target.value)}
+                className="form-input text-sm py-2 px-3 border border-f1-border"
+              >
+                <option value="USER">USER (Standard Customer)</option>
+                <option value="ADMIN">ADMIN (Full System Access)</option>
+              </select>
+            </div>
+          </ConfirmModal>
+        )}
       </div>
     </PageTransition>
   )

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import BookingCard from '../components/BookingCard'
@@ -34,23 +34,46 @@ function BookingCardSkeleton() {
 }
 
 export default function BookingHistory() {
+  const navigate = useNavigate()
   const [bookings, setBookings] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [filter, setFilter] = useState('ALL')
-  const navigate = useNavigate()
+  const [page, setPage] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
+  const [totalElements, setTotalElements] = useState(0)
+  const [statusCounts, setStatusCounts] = useState({ ALL: 0, PENDING: 0, CONFIRMED: 0, CANCELLED: 0 })
 
   const fetchBookings = async () => {
     try {
       setLoading(true)
-      const res = await api.get('/bookings')
-      setBookings(res.data)
+      // Fetch current page with active filter applied
+      const statusParam = filter !== 'ALL' ? `&status=${filter}` : ''
+      const res = await api.get(`/bookings?page=${page}&size=20${statusParam}`)
+      const content = res.data.content || []
+      const totalEl = filter !== 'ALL' ? statusCounts.ALL : (res.data.totalElements || 0)
+      setBookings(content)
+      setTotalPages(res.data.totalPages || 0)
+      // Only update ALL count from the unfiltered total (on first load or when ALL is selected)
+      const newTotalEl = res.data.totalElements || 0
+      setTotalElements(newTotalEl)
+
+      // M-03 Fix: Fetch all-time counts per status using a single large summary request
+      // We use the page=0&size=1 trick per status to get totalElements (accurate total)
+      const [pendingRes, confirmedRes, cancelledRes] = await Promise.allSettled([
+        api.get('/bookings?page=0&size=1&status=PENDING'),
+        api.get('/bookings?page=0&size=1&status=CONFIRMED'),
+        api.get('/bookings?page=0&size=1&status=CANCELLED'),
+      ])
+      setStatusCounts(prev => ({
+        ...prev,
+        ALL: filter === 'ALL' ? newTotalEl : prev.ALL,
+        PENDING:   pendingRes.status   === 'fulfilled' ? pendingRes.value.data.totalElements   : prev.PENDING,
+        CONFIRMED: confirmedRes.status === 'fulfilled' ? confirmedRes.value.data.totalElements : prev.CONFIRMED,
+        CANCELLED: cancelledRes.status === 'fulfilled' ? cancelledRes.value.data.totalElements : prev.CANCELLED,
+      }))
     } catch (err) {
-      if (err.response?.status === 401) {
-        navigate('/login')
-      } else {
-        setError('Failed to load bookings')
-      }
+      setError('Failed to load bookings')
     } finally {
       setLoading(false)
     }
@@ -58,19 +81,10 @@ export default function BookingHistory() {
 
   useEffect(() => {
     fetchBookings()
-  }, [])
+  }, [page, filter])
 
-  const filteredBookings = bookings.filter(b => {
-    if (filter === 'ALL') return true
-    return b.status === filter
-  })
-
-  const counts = {
-    ALL: bookings.length,
-    PENDING: bookings.filter(b => b.status === 'PENDING').length,
-    CONFIRMED: bookings.filter(b => b.status === 'CONFIRMED').length,
-    CANCELLED: bookings.filter(b => b.status === 'CANCELLED').length,
-  }
+  // M-03 Fix: use real server-side counts, not page-scoped local filter
+  const filteredBookings = bookings
 
   const filterConfig = {
     ALL: { color: 'text-f1-white', activeColor: 'border-f1-border/80' },
@@ -100,19 +114,19 @@ export default function BookingHistory() {
           {/* Stats Summary */}
           {!loading && !error && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 max-w-4xl mx-auto">
-              {Object.entries(counts).map(([status, count]) => (
+              {Object.entries(statusCounts).map(([st, count]) => (
                 <button
-                  key={status}
-                  onClick={() => setFilter(status)}
-                  id={`filter-${status}`}
+                  key={st}
+                  onClick={() => { setFilter(st); setPage(0); }}
+                  id={`filter-${st}`}
                   className={`card-static p-4 text-center transition-all duration-300 rounded-2xl border ${
-                    filter === status
-                      ? filterConfig[status].activeColor
+                    filter === st
+                      ? filterConfig[st].activeColor
                       : 'border-f1-border hover:border-f1-border/80'
                   }`}
                 >
-                  <div className={`text-2xl font-bold ${filterConfig[status].color}`}>{count}</div>
-                  <div className="text-[10px] text-f1-light mt-1 uppercase tracking-wider font-semibold">{status}</div>
+                  <div className={`text-2xl font-bold ${filterConfig[st].color}`}>{count}</div>
+                  <div className="text-[10px] text-f1-light mt-1 uppercase tracking-wider font-semibold">{st}</div>
                 </button>
               ))}
             </div>
@@ -164,6 +178,29 @@ export default function BookingHistory() {
                   <BookingCard booking={booking} onUpdate={fetchBookings} />
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {!loading && !error && totalPages > 1 && (
+            <div className="flex items-center justify-center gap-3 mt-10">
+              <button
+                onClick={() => setPage(p => Math.max(0, p - 1))}
+                disabled={page === 0}
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-f1-surface text-f1-light hover:text-white border border-f1-border disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+              >
+                ← Prev
+              </button>
+              <span className="text-sm text-f1-light">
+                Page <span className="font-bold text-white">{page + 1}</span> of {totalPages}
+              </span>
+              <button
+                onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                disabled={page >= totalPages - 1}
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-f1-surface text-f1-light hover:text-white border border-f1-border disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+              >
+                Next →
+              </button>
             </div>
           )}
         </div>

@@ -6,6 +6,8 @@ import { Toast } from './components/Toast'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import VerifyAccount from './pages/VerifyAccount'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 import Home from './pages/Home'
 import RaceDetail from './pages/RaceDetail'
 import BookingHistory from './pages/BookingHistory'
@@ -14,6 +16,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import AdminRaceManagement from './pages/AdminRaceManagement'
 import AdminCircuitManagement from './pages/AdminCircuitManagement'
 import AdminUserManagement from './pages/AdminUserManagement'
+import AdminBookingManagement from './pages/AdminBookingManagement'
 
 function App() {
   return (
@@ -24,6 +27,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/verify" element={<VerifyAccount />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/race/:id" element={<RaceDetail />} />
           <Route
             path="/bookings"
@@ -70,6 +75,14 @@ function App() {
             element={
               <AdminRoute>
                 <AdminUserManagement />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/bookings"
+            element={
+              <AdminRoute>
+                <AdminBookingManagement />
               </AdminRoute>
             }
           />

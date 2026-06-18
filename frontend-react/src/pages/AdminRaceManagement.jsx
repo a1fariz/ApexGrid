@@ -106,13 +106,16 @@ export default function AdminRaceManagement() {
 
       if (editing) {
         await api.put(`/races/${editing.id}`, payload)
+        showToast('Race updated successfully', 'success')
       } else {
         await api.post('/races', payload)
+        showToast('Race created successfully', 'success')
       }
       setShowModal(false)
       fetchData()
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to save race')
+      showToast(err.response?.data?.message || 'Failed to save race', 'error')
     } finally {
       setSaving(false)
     }

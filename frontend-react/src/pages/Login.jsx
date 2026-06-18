@@ -13,16 +13,22 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false)
   const { login } = useAuth()
   const navigate = useNavigate()
+  
+  const [resendEmail, setResendEmail] = useState('')
+  const [showResendInput, setShowResendInput] = useState(false)
+  const [resendLoading, setResendLoading] = useState(false)
+  const [resendMessage, setResendMessage] = useState('')
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setResendMessage('')
     setLoading(true)
     try {
       const res = await api.post('/auth/login', form)
-      login(res.data.token, rememberMe)
+      login(res.data.token, res.data.refreshToken, rememberMe)
       navigate('/')
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please check your credentials.')
@@ -30,6 +36,34 @@ export default function Login() {
       setLoading(false)
     }
   }
+
+  const handleResendVerification = async (e) => {
+    e?.preventDefault()
+    setError('')
+    setResendMessage('')
+    
+    let emailToUse = resendEmail
+    if (!emailToUse && form.username.includes('@')) {
+      emailToUse = form.username
+    }
+
+    if (!emailToUse) {
+      setShowResendInput(true)
+      return
+    }
+
+    setResendLoading(true)
+    try {
+      const res = await api.post(`/auth/resend-verification?email=${encodeURIComponent(emailToUse)}`)
+      setResendMessage(res.data.message || 'Verification email sent!')
+      setShowResendInput(false)
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to resend verification email.')
+    } finally {
+      setResendLoading(false)
+    }
+  }
+
 
   return (
     <PageTransition>
@@ -147,7 +181,7 @@ export default function Login() {
                   </div>
                 </div>
 
-                <div className="flex items-center text-xs sm:text-sm">
+                <div className="flex items-center justify-between text-xs sm:text-sm">
                   <label className="flex items-center gap-2 text-f1-light cursor-pointer select-none">
                     <input
                       type="checkbox"
@@ -157,14 +191,64 @@ export default function Login() {
                     />
                     <span>Remember Me</span>
                   </label>
+                  <Link to="/forgot-password" className="text-f1-red hover:underline font-semibold">
+                    Forgot Password?
+                  </Link>
                 </div>
 
                 {error && (
-                  <div className="f1-alert-error animate-fade-in">
-                    <svg className="w-5 h-5 text-f1-red shrink-0" fill="none" stroke="currentColor" strokeWidth="2.0" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                  <div className="f1-alert-error animate-fade-in flex-col items-start gap-1">
+                    <div className="flex items-center gap-2">
+                      <svg className="w-5 h-5 text-f1-red shrink-0" fill="none" stroke="currentColor" strokeWidth="2.0" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                      </svg>
+                      <span>{error}</span>
+                    </div>
+                    {error.toLowerCase().includes('verify') && (
+                      <button
+                        type="button"
+                        onClick={() => handleResendVerification()}
+                        disabled={resendLoading}
+                        className="text-xs text-f1-red hover:underline mt-2 ml-7 font-bold text-left focus:outline-none"
+                      >
+                        {resendLoading ? 'Sending...' : 'Click here to resend verification email'}
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {showResendInput && (
+                  <div className="p-4 rounded-xl border border-f1-border bg-f1-surface animate-fade-in space-y-3">
+                    <label className="block text-xs font-semibold text-f1-light">
+                      Please enter your email to receive a new verification link:
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="email"
+                        placeholder="your-email@example.com"
+                        value={resendEmail}
+                        onChange={(e) => setResendEmail(e.target.value)}
+                        className="form-input text-xs py-2 px-3"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={handleResendVerification}
+                        disabled={resendLoading}
+                        className="btn-primary text-xs py-2 px-4 shrink-0"
+                      >
+                        Send
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {resendMessage && (
+                  <div className="f1-alert-success animate-fade-in">
+                    <svg className="w-5 h-5 text-green-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.0" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <span>{error}</span>
+                    <span>{resendMessage}</span>
                   </div>
                 )}
 

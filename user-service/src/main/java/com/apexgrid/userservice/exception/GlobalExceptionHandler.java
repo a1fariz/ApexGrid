@@ -51,6 +51,22 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex.getMessage(), ex.getStatus());
     }
 
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(org.springframework.dao.DataIntegrityViolationException ex) {
+        String message = "Database integrity constraint violation occurred.";
+        if (ex.getCause() != null && ex.getCause().getCause() != null) {
+            String sqlMsg = ex.getCause().getCause().getMessage();
+            if (sqlMsg != null) {
+                if (sqlMsg.contains("users_email_key")) {
+                    return buildErrorResponse("Email address is already registered.", HttpStatus.CONFLICT);
+                } else if (sqlMsg.contains("users_username_key")) {
+                    return buildErrorResponse("Username is already taken.", HttpStatus.CONFLICT);
+                }
+            }
+        }
+        return buildErrorResponse(message, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
         log.error("Unexpected error: {}", ex.getMessage(), ex);

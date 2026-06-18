@@ -26,8 +26,8 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                // Swagger UI - public
-                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**").permitAll()
+                // Swagger UI - protected for ADMIN only (B-15 Fix)
+                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**").hasRole("ADMIN")
                 // Public: GET races (list, detail, upcoming, circuits)
                 .requestMatchers(HttpMethod.GET, "/api/races/**").permitAll()
                 // Public: GET circuits
@@ -42,7 +42,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/api/circuits/**").hasRole("ADMIN")
                 // ADMIN only: statistics
                 .requestMatchers("/api/statistics/**").hasRole("ADMIN")
-                // All booking endpoints require authentication
+                // B-05 Fix: Scan endpoint must be ADMIN-only — placed BEFORE generic booking rule
+                .requestMatchers(HttpMethod.POST, "/api/bookings/*/scan").hasRole("ADMIN")
+                // All other booking endpoints require authentication
                 .requestMatchers("/api/bookings/**").authenticated()
                 .anyRequest().authenticated()
             )

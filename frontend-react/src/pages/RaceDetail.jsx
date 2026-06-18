@@ -82,17 +82,18 @@ export default function RaceDetail() {
   
   const displayImageUrl = race ? getRaceImage(race) : ''
 
-  useEffect(() => {
-    const fetchRace = async () => {
-      try {
-        const res = await api.get(`/races/${id}`)
-        setRace(res.data)
-      } catch {
-        setLoading(false)
-      } finally {
-        setLoading(false)
-      }
+  const fetchRace = async () => {
+    try {
+      const res = await api.get(`/races/${id}`)
+      setRace(res.data)
+    } catch {
+      setLoading(false)
+    } finally {
+      setLoading(false)
     }
+  }
+
+  useEffect(() => {
     fetchRace()
   }, [id])
 
@@ -131,6 +132,8 @@ export default function RaceDetail() {
         zone: selectedZone,
       })
       setBookingSuccess(res.data)
+      // L-05 Fix: refresh race data to update availableQuota after booking
+      fetchRace()
     } catch (err) {
       if (err.response?.data?.errors) {
         const fieldErrors = err.response.data.errors;

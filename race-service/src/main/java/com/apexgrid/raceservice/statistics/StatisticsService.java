@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,30 @@ public class StatisticsService {
         Long ticketsSold = bookingRepository.sumQuantityByStatus("CONFIRMED");
         long uniqueCustomers = bookingRepository.countDistinctUsers();
 
+        java.util.Map<String, BigDecimal> quarterlyRevenue = new java.util.HashMap<>();
+        quarterlyRevenue.put("Q1", BigDecimal.ZERO);
+        quarterlyRevenue.put("Q2", BigDecimal.ZERO);
+        quarterlyRevenue.put("Q3", BigDecimal.ZERO);
+        quarterlyRevenue.put("Q4", BigDecimal.ZERO);
+
+        List<Object[]> revenueData = bookingRepository.findConfirmedBookingsRevenueData();
+        for (Object[] row : revenueData) {
+            LocalDateTime confirmedAt = (LocalDateTime) row[0];
+            BigDecimal price = (BigDecimal) row[1];
+            if (confirmedAt != null && price != null) {
+                int month = confirmedAt.getMonthValue();
+                String quarter = "Q1";
+                if (month >= 4 && month <= 6) {
+                    quarter = "Q2";
+                } else if (month >= 7 && month <= 9) {
+                    quarter = "Q3";
+                } else if (month >= 10 && month <= 12) {
+                    quarter = "Q4";
+                }
+                quarterlyRevenue.put(quarter, quarterlyRevenue.get(quarter).add(price));
+            }
+        }
+
         return StatisticsResponse.builder()
                 .totalConfirmedBookings(confirmed)
                 .totalPendingBookings(pending)
@@ -37,6 +62,7 @@ public class StatisticsService {
                 .totalUniqueCustomers(uniqueCustomers)
                 .totalRaces(raceRepository.count())
                 .totalCircuits(circuitRepository.count())
+                .quarterlyRevenue(quarterlyRevenue)
                 .build();
     }
 

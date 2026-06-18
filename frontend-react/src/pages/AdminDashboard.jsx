@@ -46,6 +46,7 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState(null)
   const [popular, setPopular] = useState([])
   const [upcomingRaces, setUpcomingRaces] = useState([])
+  const [recentBookings, setRecentBookings] = useState([])
   const [loading, setLoading] = useState(true)
 
   const [serviceStatus, setServiceStatus] = useState({
@@ -61,11 +62,7 @@ export default function AdminDashboard() {
       let raceServiceStatus = 'down'
 
       try {
-        const userRes = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({})
-        })
+        const userRes = await fetch('/api/auth/health')
         if (userRes.status !== 502 && userRes.status !== 504) {
           gatewayStatus = 'up'
           userServiceStatus = 'up'
@@ -106,14 +103,16 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [statsRes, popularRes, upcomingRes] = await Promise.all([
+        const [statsRes, popularRes, upcomingRes, recentRes] = await Promise.all([
           api.get('/statistics/overview'),
           api.get('/statistics/popular'),
           api.get('/races/upcoming'),
+          api.get('/bookings/admin?page=0&size=5'),
         ])
         setStats(statsRes.data)
         setPopular(popularRes.data)
         setUpcomingRaces(upcomingRes.data || [])
+        setRecentBookings(recentRes.data?.content || [])
       } catch {
         // silently handle statistics load failure
       } finally {
@@ -307,21 +306,28 @@ export default function AdminDashboard() {
                 </div>
                 {/* Quarterly chart projection */}
                 <div className="flex items-end justify-between h-36 pt-4 px-2 border-t border-f1-border/40">
-                  {[
-                    { q: 'Q1', pct: 15, amt: (stats?.totalRevenue || 0) * 0.15 },
-                    { q: 'Q2', pct: 40, amt: (stats?.totalRevenue || 0) * 0.40 },
-                    { q: 'Q3', pct: 30, amt: (stats?.totalRevenue || 0) * 0.30 },
-                    { q: 'Q4', pct: 15, amt: (stats?.totalRevenue || 0) * 0.15 }
-                  ].map(quarter => (
-                    <div key={quarter.q} className="flex flex-col items-center justify-end h-28 flex-1 group">
-                      <div className="text-[10px] text-f1-red font-semibold opacity-0 group-hover:opacity-100 transition-opacity mb-1 shrink-0">
-                        {formatCurrency(quarter.amt)}
+                  {(() => {
+                    const q1Amt = stats?.quarterlyRevenue?.Q1 || 0
+                    const q2Amt = stats?.quarterlyRevenue?.Q2 || 0
+                    const q3Amt = stats?.quarterlyRevenue?.Q3 || 0
+                    const q4Amt = stats?.quarterlyRevenue?.Q4 || 0
+                    const maxAmt = Math.max(q1Amt, q2Amt, q3Amt, q4Amt, 1)
+                    return [
+                      { q: 'Q1', amt: q1Amt, pct: (q1Amt / maxAmt) * 100 },
+                      { q: 'Q2', amt: q2Amt, pct: (q2Amt / maxAmt) * 100 },
+                      { q: 'Q3', amt: q3Amt, pct: (q3Amt / maxAmt) * 100 },
+                      { q: 'Q4', amt: q4Amt, pct: (q4Amt / maxAmt) * 100 }
+                    ].map(quarter => (
+                      <div key={quarter.q} className="flex flex-col items-center justify-end h-28 flex-1 group">
+                        <div className="text-[10px] text-f1-red font-semibold opacity-0 group-hover:opacity-100 transition-opacity mb-1 shrink-0">
+                          {formatCurrency(quarter.amt)}
+                        </div>
+                        <div className="w-8 bg-gradient-to-t from-f1-red/80 to-f1-red rounded-t transition-all duration-500 hover:scale-x-110"
+                             style={{ height: `${Math.max(8, quarter.pct * 0.8)}px` }} />
+                        <span className="text-xs text-f1-light mt-2 shrink-0">{quarter.q}</span>
                       </div>
-                      <div className="w-8 bg-gradient-to-t from-f1-red/80 to-f1-red rounded-t transition-all duration-500 hover:scale-x-110"
-                           style={{ height: `${Math.max(8, quarter.pct * 1.8)}px` }} />
-                      <span className="text-xs text-f1-light mt-2 shrink-0">{quarter.q}</span>
-                    </div>
-                  ))}
+                    ))
+                  })()}
                 </div>
               </div>
 
@@ -371,31 +377,53 @@ export default function AdminDashboard() {
                 <span>⚡</span> Recent Activity Feed
               </h2>
               <div className="space-y-4">
-                {[
-                  { icon: '👤', text: 'Admin authenticated successfully', time: 'Just now', type: 'info' },
-                  { icon: '🎫', text: `Loaded statistics for ${stats?.totalConfirmedBookings || 0} confirmed bookings`, time: '5 mins ago', type: 'success' },
-                  { icon: '⚙️', text: 'Telemetry sync completed with User & Race microservices', time: '12 mins ago', type: 'info' },
-                  { icon: '✉️', text: 'Cron scheduler verified pending payment expiries', time: '30 mins ago', type: 'warn' }
-                ].map((act, i) => (
-                  <div key={i} className="flex items-start gap-3 text-sm">
-                    <span className="text-lg bg-f1-surface p-1.5 rounded-lg border border-f1-border/40">{act.icon}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-f1-white truncate">{act.text}</p>
-                      <p className="text-[10px] text-f1-light mt-0.5">{act.time}</p>
-                    </div>
-                  </div>
-                ))}
+                {recentBookings.length === 0 ? (
+                  <p className="text-sm text-f1-light py-4 text-center">No recent bookings activity</p>
+                ) : (
+                  recentBookings.map((booking) => {
+                    const statusColors = {
+                      PENDING: 'bg-amber-400/10 text-amber-400 border-amber-400/20',
+                      CONFIRMED: 'bg-green-400/10 text-green-400 border-green-400/20',
+                      CANCELLED: 'bg-red-400/10 text-f1-red border-f1-red/20'
+                    }
+                    return (
+                      <div key={booking.id} className="flex items-center justify-between gap-3 text-sm p-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+                        <div className="flex items-start gap-3 min-w-0">
+                          <span className="text-lg bg-f1-surface p-1.5 rounded-lg border border-f1-border/40 shrink-0">🎫</span>
+                          <div className="min-w-0">
+                            <p className="text-f1-white truncate">
+                              <span className="font-semibold text-white">{booking.userFullName || booking.username || `User #${booking.userId}`}</span>{' '}
+                              ordered {booking.quantity}x {booking.zone} ({formatCurrency(booking.totalPrice)})
+                            </p>
+                            <p className="text-xs text-f1-light mt-0.5 truncate">
+                              Race: <span className="font-medium text-f1-white">{booking.raceName}</span> · Code: <code className="text-f1-light">{booking.bookingCode}</code>
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end shrink-0">
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${statusColors[booking.status] || 'border-f1-border'}`}>
+                            {booking.status}
+                          </span>
+                          <span className="text-[10px] text-f1-light mt-1">
+                            {new Date(booking.createdAt).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                    )
+                  })
+                )}
               </div>
             </div>
           </>
         )}
 
         {/* Admin Action Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           {[
             { title: 'User Management', desc: 'Monitor customers and suspend/activate accounts.', icon: '👥', link: '/admin/users', color: 'from-amber-400/20 to-transparent' },
             { title: 'Race Management', desc: 'Create, edit, and manage F1 race listings.', icon: '🏁', link: '/admin/races', color: 'from-f1-red/20 to-transparent' },
             { title: 'Circuit Management', desc: 'Manage circuit data for all F1 tracks.', icon: '🗺️', link: '/admin/circuits', color: 'from-blue-500/20 to-transparent' },
+            { title: 'Booking Management', desc: 'Monitor ticket orders, audit logs, and cancel orders.', icon: '🎫', link: '/admin/bookings', color: 'from-green-500/20 to-transparent' },
           ].map(card => (
             <div
               key={card.title}
@@ -421,8 +449,9 @@ export default function AdminDashboard() {
             <Link to="/admin/users" className="btn-primary text-sm py-2 px-4">👥 Manage Users</Link>
             <Link to="/admin/races" className="btn-primary text-sm py-2 px-4">🏁 Manage Races</Link>
             <Link to="/admin/circuits" className="btn-primary text-sm py-2 px-4">🗺️ Manage Circuits</Link>
+            <Link to="/admin/bookings" className="btn-primary text-sm py-2 px-4">🎫 Manage Bookings</Link>
             <Link to="/" className="btn-secondary text-sm py-2 px-4">👀 View Public Site</Link>
-            <Link to="/bookings" className="btn-secondary text-sm py-2 px-4">🎫 View Bookings</Link>
+            <Link to="/bookings" className="btn-secondary text-sm py-2 px-4">🎫 View Personal Bookings</Link>
           </div>
         </div>
 

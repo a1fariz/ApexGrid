@@ -49,10 +49,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    private static final String BEARER_PREFIX = "Bearer ";
+
     private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");
-        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
-            return headerAuth.substring(7);
+        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith(BEARER_PREFIX)) {
+            return headerAuth.substring(BEARER_PREFIX.length());
         }
         return null;
     }

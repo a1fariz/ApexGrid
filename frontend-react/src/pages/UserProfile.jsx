@@ -14,16 +14,16 @@ export default function UserProfile() {
   const [loading, setLoading] = useState(true)
   const [downloading, setDownloading] = useState(null)
   const [isEditing, setIsEditing] = useState(false)
-  const [editForm, setEditForm] = useState({ fullName: '', password: '' })
+  const [editForm, setEditForm] = useState({ fullName: '', currentPassword: '', password: '' })
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const res = await api.get('/bookings')
-        setBookings(res.data)
+        const res = await api.get('/bookings?page=0&size=100')
+        setBookings(res.data.content || [])
       } catch (err) {
-        console.error('Failed to load bookings')
+        // Fail silently — booking stats will show 0
       } finally {
         setLoading(false)
       }
@@ -73,7 +73,7 @@ export default function UserProfile() {
   }
 
   const handleEditClick = () => {
-    setEditForm({ fullName: user?.fullName || '', password: '' })
+    setEditForm({ fullName: user?.fullName || '', currentPassword: '', password: '' })
     setIsEditing(true)
   }
 
@@ -81,10 +81,13 @@ export default function UserProfile() {
     e.preventDefault()
     setSaving(true)
     try {
-      await api.put('/users/profile', editForm)
-      showToast('Profile updated successfully', 'success')
-      // reload page to fetch fresh user data
-      setTimeout(() => window.location.reload(), 1500)
+      await api.put('/users/profile', {
+        fullName: editForm.fullName,
+        currentPassword: editForm.currentPassword || undefined,
+        password: editForm.password || undefined,
+      })
+      showToast('Profile updated successfully! Refreshing...', 'success')
+      setTimeout(() => window.location.reload(), 1200)
     } catch (err) {
       showToast(err.response?.data?.message || 'Failed to update profile', 'error')
     } finally {
@@ -237,6 +240,16 @@ export default function UserProfile() {
                     onChange={(e) => setEditForm({...editForm, fullName: e.target.value})}
                     className="form-input"
                     placeholder="Enter your full name"
+                  />
+                </div>
+                <div>
+                  <label className="form-label text-f1-light">Current Password</label>
+                  <input
+                    type="password"
+                    value={editForm.currentPassword}
+                    onChange={(e) => setEditForm({...editForm, currentPassword: e.target.value})}
+                    className="form-input"
+                    placeholder="Required only when changing password"
                   />
                 </div>
                 <div>
