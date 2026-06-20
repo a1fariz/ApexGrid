@@ -134,6 +134,7 @@ export default function RaceDetail() {
       setBookingSuccess(res.data)
       // L-05 Fix: refresh race data to update availableQuota after booking
       fetchRace()
+      navigate(`/payment/${res.data.bookingCode}`)
     } catch (err) {
       if (err.response?.data?.errors) {
         const fieldErrors = err.response.data.errors;
@@ -196,41 +197,6 @@ export default function RaceDetail() {
   const labelOffsetVal = isFallback ? -6 : -22
   const labelFontSizeVal = isFallback ? 3.5 : 12
   const textStrokeWidthVal = isFallback ? 1 : 4
-
-  if (bookingSuccess) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <div className="max-w-lg mx-auto px-4 py-20 text-center animate-fade-in flex-1">
-          <div className="glass-card p-10">
-            {/* Success checkmark */}
-            <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-500/20">
-              <span className="text-5xl">🏆</span>
-            </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Booking Created!</h2>
-            <div className="font-mono text-f1-red text-2xl font-bold my-4 tracking-widest">{bookingSuccess.bookingCode}</div>
-            <p className="text-gray-400 text-sm mb-2">{race.name}</p>
-            <p className="text-gray-400 text-sm mb-3">
-              Zone: <span className="text-white font-semibold">{bookingSuccess.zone}</span>
-            </p>
-            <p className="text-gray-400 text-sm mb-6">
-              {bookingSuccess.quantity} ticket(s) — {formatPrice(bookingSuccess.totalPrice)}
-            </p>
-            <div className="badge-pending mb-8">⏳ PENDING — Expires in 30 minutes</div>
-            <div className="flex gap-3">
-              <button onClick={() => navigate('/bookings')} className="flex-1 btn-primary">
-                View My Bookings →
-              </button>
-              <button onClick={() => navigate('/')} className="flex-1 btn-secondary">
-                Back to Races
-              </button>
-            </div>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    )
-  }
 
   return (
     <PageTransition>

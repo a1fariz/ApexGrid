@@ -655,6 +655,49 @@ User Registration                Admin Creates Race
 
 ---
 
+## 🐳 Docker Deployment Guide
+
+Sistem **ApexGrid** sepenuhnya mendukung kontainerisasi menggunakan Docker dan Docker Compose. Ini memudahkan distribusi dan deployment seluruh ekosistem (Database, 3 Microservices, dan React Frontend) dengan satu perintah.
+
+### Prasyarat
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) terinstal di komputer Anda.
+
+### Menjalankan Stack Microservices
+Untuk menjalankan seluruh layanan dalam satu kesatuan kontainer, jalankan perintah berikut di root directory proyek:
+
+```bash
+docker-compose up --build -d
+```
+
+Perintah ini akan:
+1. Menjalankan kontainer **PostgreSQL** dan secara otomatis memuat skema database (`schema.sql`) serta menyemai data awal 25 sirkuit dan balapan F1 (`reseed-f1.sql`).
+2. Melakukan *multi-stage build* untuk mengompilasi file Java `.jar` untuk **user-service**, **race-service**, dan **api-gateway** sebelum menjalankannya di JRE yang ringan.
+3. Melakukan *build* produksi aplikasi React, lalu menyajikannya menggunakan server web **Nginx** yang dikonfigurasikan sebagai reverse proxy untuk `/api` ke API Gateway.
+
+### Port Kontainer di Docker
+
+| Service | Port Eksternal | Port Internal | Deskripsi |
+|---------|----------------|---------------|-----------|
+| **Frontend (React/Nginx)** | `80` (http://localhost) | `80` | Aplikasi web React produksi |
+| **API Gateway** | `8080` | `8080` | Entry point API Gateway |
+| **Race Service** | `8081` | `8081` | Microservice Balapan & Booking |
+| **User Service** | `8082` | `8082` | Microservice Auth & Profile |
+| **PostgreSQL** | `5432` | `5432` | Database utama `apexgrid_db` |
+
+### Menghentikan Layanan
+Untuk menghentikan dan menghapus semua kontainer yang berjalan, jalankan:
+
+```bash
+docker-compose down
+```
+
+Untuk menghapus data volume database PostgreSQL juga, jalankan:
+```bash
+docker-compose down -v
+```
+
+---
+
 ## 📄 License
 
 This project is developed for educational purposes as part of a university/portfolio project.

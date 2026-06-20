@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import ConfirmModal from './ConfirmModal'
 import { showToast } from './Toast'
@@ -59,32 +60,28 @@ function ZoneBadge({ zone }) {
 function CircularCountdown({ expiredAt }) {
   const [timeLeft, setTimeLeft] = useState('')
   const [progress, setProgress] = useState(100)
-  const TOTAL_DURATION = 30 * 60 * 1000 // 30 minutes in ms
+  const TOTAL_DURATION = 30 * 60 // 30 minutes in seconds
+  const [secondsLeft, setSecondsLeft] = useState(TOTAL_DURATION)
 
   useEffect(() => {
-    if (!expiredAt) return
-
     const update = () => {
-      const expiry = new Date(expiredAt).getTime()
-      const now = Date.now()
-      const diff = expiry - now
-
-      if (diff <= 0) {
-        setTimeLeft('Expired')
-        setProgress(0)
-        return
-      }
-
-      const mins = Math.floor(diff / 60000)
-      const secs = Math.floor((diff % 60000) / 1000)
-      setTimeLeft(`${mins}:${secs.toString().padStart(2, '0')}`)
-      setProgress(Math.max(0, (diff / TOTAL_DURATION) * 100))
+      setSecondsLeft(prev => {
+        const next = prev - 1;
+        if (next <= 0) {
+          setTimeLeft('Expired')
+          setProgress(0)
+          return 0;
+        }
+        const mins = String(Math.floor(next / 60)).padStart(2, '0')
+        const secs = String(next % 60).padStart(2, '0')
+        setTimeLeft(`${mins}:${secs}`)
+        setProgress((next / TOTAL_DURATION) * 100)
+        return next;
+      })
     }
-
-    update()
-    const interval = setInterval(update, 1000)
-    return () => clearInterval(interval)
-  }, [expiredAt])
+    const id = setInterval(update, 1000)
+    return () => clearInterval(id)
+  }, [])
 
   if (!timeLeft || timeLeft === 'Expired') return null
 
@@ -121,6 +118,7 @@ function CircularCountdown({ expiredAt }) {
 }
 
 export default function BookingCard({ booking, onUpdate }) {
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [downloading, setDownloading] = useState(false)
   const [confirmModal, setConfirmModal] = useState({ open: false, type: null })
@@ -242,12 +240,12 @@ export default function BookingCard({ booking, onUpdate }) {
           {booking.status === 'PENDING' && (
             <div className="flex gap-2">
               <button
-                onClick={() => setConfirmModal({ open: true, type: 'confirm' })}
+                onClick={() => navigate(`/payment/${booking.bookingCode}`)}
                 disabled={loading}
-                id={`confirm-btn-${booking.id}`}
-                className="flex-1 py-2.5 text-sm bg-green-600/90 hover:bg-green-500 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 hover:shadow-lg hover:shadow-green-900/30 hover:scale-[1.02] active:scale-[0.98]"
+                id={`pay-btn-${booking.id}`}
+                className="flex-1 py-2.5 text-sm bg-f1-red/90 hover:bg-f1-red text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 hover:shadow-lg hover:shadow-red-900/30 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-1.5"
               >
-                {loading ? '...' : 'Confirm'}
+                {loading ? '...' : '💳 Pay Now'}
               </button>
               <button
                 onClick={() => setConfirmModal({ open: true, type: 'cancel' })}
@@ -255,7 +253,7 @@ export default function BookingCard({ booking, onUpdate }) {
                 id={`cancel-btn-${booking.id}`}
                 className="flex-1 py-2.5 text-sm bg-white/[0.04] hover:bg-red-900/30 hover:text-f1-red text-gray-400 font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 border border-white/[0.04] hover:border-f1-red/20 hover:scale-[1.02] active:scale-[0.98]"
               >
-                {loading ? '...' : 'Cancel Booking'}
+                {loading ? '...' : 'Cancel'}
               </button>
             </div>
           )}

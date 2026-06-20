@@ -282,7 +282,14 @@ public class AuthServiceImpl implements AuthService {
         }
 
         User user = refreshToken.getUser();
-        
+
+        // Suspend check: if user is suspended, revoke their refresh token immediately
+        // and reject the request — no new JWT will be issued.
+        if (Boolean.FALSE.equals(user.getIsActive())) {
+            refreshTokenRepository.delete(refreshToken);
+            throw new ApiException("Your account has been suspended by an administrator", HttpStatus.FORBIDDEN);
+        }
+
         UserDetailsImpl userDetails = UserDetailsImpl.build(user);
 
         String token = jwtUtils.generateToken(userDetails);

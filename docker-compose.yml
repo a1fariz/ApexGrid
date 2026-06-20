@@ -1,0 +1,87 @@
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: apexgrid-postgres
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=apex
+      - POSTGRES_PASSWORD=apex123
+      - POSTGRES_DB=apexgrid_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
+      - ./database/reseed-f1.sql:/docker-entrypoint-initdb.d/2_reseed-f1.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U apex -d apexgrid_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  user-service:
+    build:
+      context: .
+      dockerfile: user-service/Dockerfile
+    container_name: apexgrid-user-service
+    ports:
+      - "8082:8082"
+    env_file:
+      - .env
+    environment:
+      - SERVER_PORT=8082
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/apexgrid_db
+      - SPRING_DATASOURCE_USERNAME=apex
+      - SPRING_DATASOURCE_PASSWORD=apex123
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  race-service:
+    build:
+      context: .
+      dockerfile: race-service/Dockerfile
+    container_name: apexgrid-race-service
+    ports:
+      - "8081:8081"
+    env_file:
+      - .env
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/apexgrid_db
+      - SPRING_DATASOURCE_USERNAME=apex
+      - SPRING_DATASOURCE_PASSWORD=apex123
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    container_name: apexgrid-api-gateway
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - USER_SERVICE_URL=http://user-service:8082
+      - RACE_SERVICE_URL=http://race-service:8081
+      - SPRING_CLOUD_GATEWAY_GLOBALCORS_CORS_CONFIGURATIONS_[/**]_ALLOWED_ORIGINS=http://localhost
+    depends_on:
+      - user-service
+      - race-service
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend-react/Dockerfile
+    container_name: apexgrid-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api-gateway
+
+volumes:
+  pgdata:

@@ -41,6 +41,10 @@ CREATE TABLE users (
     CONSTRAINT fk_users_role FOREIGN KEY (role_id) REFERENCES roles(id)
 );
 
+-- Default Admin User (Password: admin123)
+INSERT INTO users (username, email, password, full_name, role_id, is_active, is_verified) 
+VALUES ('admin', 'admin@apexgrid.com', '$2a$10$yqph6nyPCiU.MjuujOqseOKjkae/cmBIjAzW4aMCb/Y8vfWOPH3wS', 'System Administrator', 2, TRUE, TRUE);
+
 -- ============================================================
 -- 2.5. VERIFICATION TOKENS
 -- ============================================================

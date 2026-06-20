@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +25,7 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
+    private final JdbcTemplate jdbcTemplate;
 
     // B-02 Fix: Shared secret between API Gateway and downstream services.
     // Only requests with this header are trusted to carry X-User-* headers.
@@ -48,6 +50,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (trustedGatewayRequest) {
                 // Trust the headers injected by API Gateway (validated via shared secret)
                 Integer userId = Integer.parseInt(headerUserId);
+
+                // Real-time suspension check: query users table directly.
+                // This ensures suspended users are blocked IMMEDIATELY (no 15-min JWT window).
+                // When unsuspended, access is restored on the very next request automatically.
+                Boolean isActive = jdbcTemplate.queryForObject(
+                        "SELECT is_active FROM users WHERE id = ?",
+                        Boolean.class, userId);
+                if (Boolean.FALSE.equals(isActive)) {
+                    log.warn("Blocked request from suspended user id={}", userId);
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Account has been suspended");
+                    return;
+                }
+
                 String role = request.getHeader("X-User-Role");
                 String username = request.getHeader("X-User-Name");
                 String fullName = request.getHeader("X-User-FullName");
@@ -77,6 +92,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     String username = jwtUtils.extractUsername(jwt);
                     String role = jwtUtils.extractRole(jwt);
                     Integer userId = jwtUtils.extractUserId(jwt);
+
+                    // Real-time suspension check for direct JWT path (e.g., local dev without gateway)
+                    Boolean isActive = jdbcTemplate.queryForObject(
+                            "SELECT is_active FROM users WHERE id = ?",
+                            Boolean.class, userId);
+                    if (Boolean.FALSE.equals(isActive)) {
+                        log.warn("Blocked direct JWT request from suspended user id={}", userId);
+                        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Account has been suspended");
+                        return;
+                    }
 
                     request.setAttribute("userId", userId);
                     request.setAttribute("userRole", role);

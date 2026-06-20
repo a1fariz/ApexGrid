@@ -12,6 +12,7 @@ import Home from './pages/Home'
 import RaceDetail from './pages/RaceDetail'
 import BookingHistory from './pages/BookingHistory'
 import UserProfile from './pages/UserProfile'
+import Payment from './pages/Payment'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminRaceManagement from './pages/AdminRaceManagement'
 import AdminCircuitManagement from './pages/AdminCircuitManagement'
@@ -43,6 +44,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <UserProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/payment/:code"
+            element={
+              <ProtectedRoute>
+                <Payment />
               </ProtectedRoute>
             }
           />

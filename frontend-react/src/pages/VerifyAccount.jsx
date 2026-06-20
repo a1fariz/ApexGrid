@@ -26,11 +26,7 @@ const VerifyAccount = () => {
         const response = await api.get(`/auth/verify?token=${token}`);
         setStatus('success');
         setMessage(response.data.message || 'Email verified successfully! You can now log in.');
-        
-        // Redirect to login after 3 seconds
-        setTimeout(() => {
-          navigate('/login');
-        }, 3000);
+        setTimeout(() => navigate('/login'), 3000);
       } catch (err) {
         setStatus('error');
         setMessage(err.response?.data?.message || 'Verification failed. The link may have expired.');
@@ -41,47 +37,84 @@ const VerifyAccount = () => {
   }, [token, navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-f1-black px-4 relative overflow-hidden">
-      {/* Background Accent */}
-      <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-f1-red opacity-10 blur-[100px] rounded-full pointer-events-none"></div>
+    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden" style={{ background: 'var(--f1-black)' }}>
+      {/* Background accent glow */}
+      <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-f1-red opacity-10 blur-[100px] rounded-full pointer-events-none" />
 
-      <div className="w-full max-w-md bg-[#15151E] p-8 rounded-2xl border border-gray-800 shadow-2xl z-10 text-center">
+      <div
+        className="w-full max-w-md p-8 rounded-2xl shadow-2xl z-10 text-center border"
+        style={{
+          background: 'var(--f1-card)',
+          borderColor: 'var(--f1-border)',
+          color: 'var(--f1-white)',
+        }}
+      >
+        {/* Logo */}
         <h2 className="text-3xl font-black italic tracking-wider mb-6">
-          <span className="text-white">APEX</span>
+          <span style={{ color: 'var(--f1-white)' }}>APEX</span>
           <span className="text-f1-red">GRID</span>
         </h2>
-        
+
+        {/* Verifying state */}
         {status === 'verifying' && (
           <div className="py-8">
-            <div className="w-16 h-16 border-4 border-gray-700 border-t-f1-red rounded-full animate-spin mx-auto mb-4"></div>
-            <h3 className="text-xl font-bold text-white mb-2">Verifying Email</h3>
-            <p className="text-gray-400">Please wait while we verify your account...</p>
+            <div
+              className="w-16 h-16 rounded-full animate-spin mx-auto mb-4 border-4"
+              style={{ borderColor: 'var(--f1-border)', borderTopColor: 'var(--f1-red)' }}
+            />
+            <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--f1-white)' }}>
+              Verifying Email
+            </h3>
+            <p style={{ color: 'var(--f1-light)' }}>
+              Please wait while we verify your account...
+            </p>
           </div>
         )}
 
+        {/* Success state */}
         {status === 'success' && (
           <div className="py-8 animate-fade-in">
-            <div className="w-16 h-16 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/50">
+            <div className="w-16 h-16 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/40">
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">Verified!</h3>
-            <p className="text-gray-300 mb-6">{message}</p>
-            <p className="text-gray-500 text-sm">Redirecting to login in a few seconds...</p>
+            <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--f1-white)' }}>
+              ✅ Verified!
+            </h3>
+            <p className="mb-4" style={{ color: 'var(--f1-white)', opacity: 0.8 }}>
+              {message}
+            </p>
+            <p className="text-sm" style={{ color: 'var(--f1-light)' }}>
+              Redirecting to login in a few seconds...
+            </p>
+            <div className="mt-4 h-1 rounded-full overflow-hidden" style={{ background: 'var(--f1-border)' }}>
+              <div
+                className="h-1 bg-green-500 rounded-full"
+                style={{ animation: 'progressShrink 3s linear forwards', width: '100%' }}
+              />
+            </div>
           </div>
         )}
 
+        {/* Error state */}
         {status === 'error' && (
           <div className="py-8 animate-fade-in">
-            <div className="w-16 h-16 bg-red-500/20 text-f1-red rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/50">
+            <div className="w-16 h-16 bg-red-500/20 text-f1-red rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/40">
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">Verification Failed</h3>
-            <p className="text-gray-300 mb-8">{message}</p>
-            <Link to="/login" className="bg-f1-red hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors inline-block w-full">
+            <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--f1-white)' }}>
+              ❌ Verification Failed
+            </h3>
+            <p className="mb-6" style={{ color: 'var(--f1-light)' }}>
+              {message}
+            </p>
+            <Link
+              to="/login"
+              className="btn-primary inline-block w-full text-center"
+            >
               Back to Login
             </Link>
           </div>

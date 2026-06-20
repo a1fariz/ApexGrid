@@ -124,6 +124,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BookingResponse getBookingByCode(String code) {
         Booking booking = bookingRepository.findByBookingCode(code)
                 .orElseThrow(() -> new ApiException("Booking not found with code: " + code, HttpStatus.NOT_FOUND));
