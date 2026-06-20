@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/badge/Spring_Boot-3.2-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" />
   <img src="https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black" />
   <img src="https://img.shields.io/badge/PostgreSQL-15+-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
-  <img src="https://img.shields.io/badge/TailwindCSS-3.4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" />
+  <img src="https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white" />
 </p>
 
 <p align="center">
@@ -19,28 +19,30 @@
   <img src="https://img.shields.io/badge/Gateway-Spring_Cloud-6DB33F?style=flat-square" />
   <img src="https://img.shields.io/badge/API_Docs-Swagger_UI-85EA2D?style=flat-square" />
   <img src="https://img.shields.io/badge/Status-Production_Ready-brightgreen?style=flat-square" />
-  <img src="https://img.shields.io/badge/Last_Updated-June_13,_2026-blue?style=flat-square" />
+  <img src="https://img.shields.io/badge/Last_Updated-June_20,_2026-blue?style=flat-square" />
 </p>
 
 ---
 
 ## 📖 About
 
-**ApexGrid** is a comprehensive F1 race ticket booking platform that allows fans to browse all 25 Grand Prix events of the 2026 season, book tickets with real-time quota management, and manage their reservations. Built as a microservices architecture to demonstrate scalable enterprise application design.
+**ApexGrid** is a comprehensive F1 race ticket booking platform that allows fans to browse all 25 Grand Prix events of the 2026 season, book tickets with real-time quota management, simulate payment, and manage their reservations. Built as a microservices architecture to demonstrate scalable enterprise application design — fully containerized with Docker.
 
 ### ✨ Key Highlights
 
 - 🔐 **JWT Authentication** — Secure stateless auth with role-based access control (USER & ADMIN)
 - 🏁 **Real-time Quota** — Database-triggered quota management (auto-decrements on booking confirmation)
 - 🎟️ **Booking Lifecycle** — PENDING → CONFIRMED → CANCELLED with auto-expiry (30 min)
+- 💳 **Payment Simulation** — QRIS, Bank Transfer (BCA/BNI/Mandiri), and Credit Card payment flows
+- ⏱️ **Live Countdown Timer** — 30-minute payment countdown for pending bookings
 - 📱 **QR Code E-Tickets** — Auto-generated PDF tickets with embedded QR codes upon confirmation
 - 👨‍💼 **Admin Panel** — Full CRUD race & circuit management for administrators
 - 📊 **System Monitoring** — Real-time microservice health checks via Admin Dashboard
 - 🗺️ **Interactive Circuit Map** — Clickable SVG seating zone map per race (GA, Grandstand, VIP)
 - 🌐 **API Gateway** — Centralized routing with Spring Cloud Gateway
-- 📧 **Async Email** — Non-blocking email notifications with retry logging
-- 📋 **Swagger UI** — Interactive API documentation for both services
-- 🎨 **F1 Dark Theme** — Premium dark UI with glassmorphism effects
+- 📧 **Async Email** — Non-blocking email verification & password reset (Gmail SMTP)
+- 🌙 **Dark / Light Mode** — Full theme support with smooth toggle transition
+- 🐳 **Docker Ready** — One-command full-stack deployment via Docker Compose
 
 ---
 
@@ -48,13 +50,13 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    FRONTEND (React + Vite)                   │
-│                      localhost:5173                          │
+│              FRONTEND (React + Vite + Nginx)                 │
+│              http://localhost  (Docker: port 80)             │
 │  ┌──────┐ ┌──────────┐ ┌───────────┐ ┌──────────────────┐  │
-│  │Login │ │Race List │ │  Booking  │ │  Admin Dashboard │  │
+│  │Login │ │Race List │ │  Payment  │ │  Admin Dashboard │  │
 │  └──────┘ └──────────┘ └───────────┘ └──────────────────┘  │
 └─────────────────────────┬───────────────────────────────────┘
-                          │ HTTP (Vite Proxy)
+                          │ HTTP /api/* (Nginx reverse proxy)
                           ▼
 ┌─────────────────────────────────────────────────────────────┐
 │              API GATEWAY (Spring Cloud Gateway)              │
@@ -70,10 +72,10 @@
 │                        │   │                              │
 │  • JWT Auth            │   │  • CRUD Races & Circuits     │
 │  • User Registration   │   │  • Booking Management        │
-│  • Login & Token Gen   │   │  • Quota Management          │
-│  • Role Management     │   │  • Email Service (Async)     │
-│  • Password Hashing    │   │  • Booking Scheduler         │
-│    (BCrypt)            │   │  • JWT Validation            │
+│  • Email Verification  │   │  • Quota Management          │
+│  • Password Reset      │   │  • Payment Confirmation      │
+│  • Role Management     │   │  • Auto-expire Scheduler     │
+│  • BCrypt Hashing      │   │  • PDF E-Ticket + QR Code    │
 │  • Swagger UI (:8082)  │   │  • Swagger UI (:8081)        │
 └──────────┬─────────────┘   └──────────────┬───────────────┘
            │                                │
@@ -88,123 +90,12 @@
           │  • 25 circuits           │
           │  • 25 races (2026)       │
           │  • bookings              │
+          │  • verification_tokens   │
+          │  • password_reset_tokens │
           │  • email_logs            │
           │  • triggers & 4 views    │
           └──────────────────────────┘
 ```
-
----
-
-## 📸 Screenshots
-
-### 🔐 Authentication
-
-<details open>
-<summary><strong>Login Page</strong></summary>
-<br/>
-<img src="docs/images/login.png" alt="Login Page" width="100%" />
-<p><em>F1-themed login page with dark gradient background — supports username or email authentication with JWT token generation.</em></p>
-</details>
-
-<details>
-<summary><strong>Register Page</strong></summary>
-<br/>
-<img src="docs/images/register.png" alt="Register Page" width="100%" />
-<p><em>User registration form with full name, username, email, password and confirm password fields — includes input validation.</em></p>
-</details>
-
----
-
-### 🏠 User Features
-
-<details open>
-<summary><strong>Home Page — Hero, Search & Pagination</strong></summary>
-<br/>
-<img src="docs/images/home-page-user.png" alt="Home Page" width="100%" />
-<p><em>Landing page with "Experience Formula 1" hero section, advanced search bar, season/status filters, and paginated race cards.</em></p>
-</details>
-
-<details>
-<summary><strong>Race Calendar — Browse All 25 Races</strong></summary>
-<br/>
-<img src="docs/images/raceBookings.png" alt="Race Calendar" width="100%" />
-<p><em>Browse all 25 2026 F1 Grand Prix events with race cards showing date, location, price, ticket availability bar, and status badges.</em></p>
-</details>
-
-<details>
-<summary><strong>Race Detail & Ticket Booking</strong></summary>
-<br/>
-<img src="docs/images/bookings.png" alt="Race Detail & Booking" width="100%" />
-<p><em>Detailed race information (date, season, circuit, country, track length) with interactive seating zone map, real-time ticket booking — dynamic price calculation, quantity selector, and 30-minute booking expiry notice.</em></p>
-</details>
-
-<details>
-<summary><strong>My Bookings — Booking History</strong></summary>
-<br/>
-<img src="docs/images/mybookings.png" alt="My Bookings" width="100%" />
-<p><em>Personal booking dashboard with summary stats (All, Pending, Confirmed, Cancelled) and booking cards showing unique booking codes (APEX-XXXXXX), status badges, race details, and total price.</em></p>
-</details>
-
----
-
-### 👨‍💼 Admin Panel
-
-<details open>
-<summary><strong>Admin Dashboard — Analytics</strong></summary>
-<br/>
-<img src="docs/images/admin-dashboard.png" alt="Admin Dashboard" width="100%" />
-<p><em>Admin overview featuring real-time statistics (Revenue, Tickets Sold, Unique Customers) powered by database views, booking status breakdown, race popularity charts, and live microservice health monitoring.</em></p>
-</details>
-
-<details>
-<summary><strong>Race Management — Data Table</strong></summary>
-<br/>
-<img src="docs/images/race-manajement.png" alt="Race Management Table" width="100%" />
-<p><em>Full race management table with columns for Race, Circuit, Date, Quota (available/total), Price, Status badges, and Edit/Delete action buttons.</em></p>
-</details>
-
-<details>
-<summary><strong>Add New Race — Create Form</strong></summary>
-<br/>
-<img src="docs/images/add-new-race-admin.png" alt="Add New Race" width="100%" />
-<p><em>Modal form for creating a new race — includes Race Name, Circuit selector, Status, Date & Time, Season, Round Number, Total Quota, Ticket Price, Description, and Image URL fields.</em></p>
-</details>
-
-<details>
-<summary><strong>Edit Race — Update Form</strong></summary>
-<br/>
-<img src="docs/images/edit-race.png" alt="Edit Race" width="100%" />
-<p><em>Pre-filled edit form for updating existing race details — same fields as create with current data loaded for modification.</em></p>
-</details>
-
----
-
-### 📋 API Documentation (Swagger UI)
-
-<details>
-<summary><strong>Race Service API — Swagger UI</strong></summary>
-<br/>
-<img src="docs/images/swagger-ui1.png" alt="Race Service Swagger" width="100%" />
-<p><em>Interactive Swagger UI for Race Service (port 8081) — documents all race-controller and booking-controller endpoints with request/response schemas.</em></p>
-</details>
-
-<details>
-<summary><strong>User Service API — Swagger UI</strong></summary>
-<br/>
-<img src="docs/images/swagger-ui2.png" alt="User Service Swagger" width="100%" />
-<p><em>Interactive Swagger UI for User Service (port 8082) — documents auth-controller endpoints (register, login, me) with schemas.</em></p>
-</details>
-
----
-
-### 🗄️ Database Design
-
-<details>
-<summary><strong>Entity Relationship Diagram</strong></summary>
-<br/>
-<img src="docs/images/diagram-schema.png" alt="Database ER Diagram" width="100%" />
-<p><em>Complete database schema showing all 6 tables (users, roles, races, circuits, bookings, email_logs) and 4 views with their relationships and column definitions.</em></p>
-</details>
 
 ---
 
@@ -216,9 +107,9 @@
 | **Java 17** | Primary language |
 | **Spring Boot 3.2** | Application framework |
 | **Spring Security** | Authentication & authorization |
-| **Spring Cloud Gateway** | API routing & load balancing |
+| **Spring Cloud Gateway** | API routing & CORS management |
 | **Spring Data JPA** | ORM / database access |
-| **Spring Mail** | Async email notifications |
+| **Spring Mail** | Async email (verification & password reset) |
 | **JWT (jjwt 0.12.5)** | Stateless token authentication |
 | **PostgreSQL 15+** | Relational database |
 | **Lombok** | Boilerplate reduction |
@@ -230,101 +121,171 @@
 | **React 18** | UI library |
 | **Vite 5** | Build tool & dev server |
 | **TailwindCSS 3.4** | Utility-first CSS |
+| **Vanilla CSS** | Custom design system & theme variables |
 | **React Router 6** | Client-side routing |
-| **Axios** | HTTP client with interceptors |
+| **Axios** | HTTP client with JWT interceptors |
 
-### DevOps & Tools
+### DevOps & Deployment
 | Technology | Purpose |
 |------------|---------|
-| **Maven** | Build & dependency management |
+| **Docker** | Containerization |
+| **Docker Compose** | Multi-service orchestration |
+| **Nginx** | Frontend production server & API reverse proxy |
+| **Maven Multi-module** | Build & dependency management |
 | **PostgreSQL Triggers** | Auto quota management & expiry |
-| **Database Views** | Optimized query aggregation |
 
 ---
 
 ## 🔑 Features
 
 ### Authentication & Authorization
-- ✅ User registration with validation
-- ✅ Login with JWT token generation
+- ✅ User registration with form validation
+- ✅ Email verification via magic link (Gmail SMTP)
+- ✅ Login with JWT token generation (24hr expiry)
+- ✅ Password reset via secure email link
 - ✅ BCrypt password hashing
-- ✅ JWT claims: userId, role, email, fullName
-- ✅ Token expiry (24 hours)
 - ✅ Auto-logout on 401 response
 - ✅ Role-based access: `USER` and `ADMIN`
 
 ### Race Management (Admin)
 - ✅ Create new races linked to circuits
-- ✅ Update race details (name, date, price, quota)
-- ✅ Delete races
+- ✅ Update race details (name, date, price, quota, status)
+- ✅ Delete races with confirmation modal
 - ✅ Full circuit CRUD management
-- ✅ View all races with circuit information
 - ✅ Filter & search races by name, season, status
 
 ### Booking System
-- ✅ Book tickets with quantity selection
+- ✅ Book tickets with zone & quantity selection
 - ✅ Real-time quota validation
-- ✅ Unique booking code generation (APEX-XXXXXX)
-- ✅ Auto price calculation (price × quantity)
-- ✅ Booking lifecycle: PENDING → CONFIRMED / CANCELLED
-- ✅ Auto-expiry (30 minutes via DB trigger)
+- ✅ Unique booking code generation (`APEX-XXXXXX`)
+- ✅ Auto price calculation (price × quantity × zone multiplier)
+- ✅ Booking lifecycle: `PENDING` → `CONFIRMED` / `CANCELLED`
+- ✅ Auto-expiry after 30 minutes (scheduled job)
 - ✅ Quota auto-restore on cancellation (DB trigger)
 - ✅ PDF e-ticket with embedded QR code on confirmation
 
-### Frontend & UI/UX
-- ✅ **Deep Dark Theme** — Ultra-premium dark theme (`#0A0A0F` + `#E10600`) with neon-glow card borders
-- ✅ **Interactive Seating Zone Map** — Clickable SVG circuit segments (GA, Grandstand, VIP) with real-time multiplier calculations
-- ✅ **Custom Glassmorphism Modals** — Replaced native browser popups with beautiful floating dialogs (`ConfirmModal`)
-- ✅ **Real-Time Health Checks** — Browser-native pinging to monitor microservice statuses (API Gateway, User, Race)
-- ✅ **Animated Statistics** — Custom count-up animations, urgency pulse effects, and staggered list entrances
-- ✅ **Skeleton Loaders** — Layout-preserving skeleton cards preventing content shifts during fetch
-- ✅ **Page Transitions** — Fluid fade & slide animations for Router navigation
-- ✅ **SVG Image Fallbacks** — Checkered flag SVG fallback handling for invalid race image URLs
-- ✅ **Protected Routes** — Auth-guarded navigation for users and admin dashboards
-- ✅ **Circular Progress Countdowns** — SVG circular countdown timer for pending booking expiries
-- ✅ **Toast Notifications** — Beautiful dismissible alerts for system messages and user feedback
-- ✅ **Autofill Overrides** — Prevented browser autofill from breaking the dark theme
+### Payment Flow
+- ✅ Dedicated payment page with 30-minute live countdown timer
+- ✅ **QRIS** — Mock QR code payment with animated scan UI
+- ✅ **Bank Transfer** — BCA / BNI / Mandiri virtual account simulation
+- ✅ **Credit Card** — Card number, expiry, CVV with real-time formatting
+- ✅ Payment processing animation & success state
+- ✅ Auto-redirect to booking history after payment
 
-### API Documentation
-- ✅ Swagger UI for Race Service (port 8081)
-- ✅ Swagger UI for User Service (port 8082)
-- ✅ OpenAPI 3.0 specification
-- ✅ Interactive API testing
+### Frontend & UI/UX
+- ✅ **Dark / Light Mode** — Full theme toggle with smooth transition, CSS variables
+- ✅ **F1 Dark Theme** — Ultra-premium `#0A0A0F` + `#E10600` with glassmorphism
+- ✅ **Interactive Seating Zone Map** — Clickable SVG circuit segments (GA, Grandstand, VIP)
+- ✅ **Live Countdown Timer** — Animated 30-minute payment countdown
+- ✅ **Glassmorphism Modals** — Custom `ConfirmModal` replacing native browser popups
+- ✅ **Real-Time Health Checks** — Microservice status monitoring in Admin Dashboard
+- ✅ **Skeleton Loaders** — Layout-preserving cards during data fetch
+- ✅ **Toast Notifications** — Dismissible alerts with progress bar auto-dismiss
+- ✅ **Page Transitions** — Fluid fade & slide animations on route change
+- ✅ **SVG Image Fallbacks** — Checkered flag fallback for invalid race image URLs
+- ✅ **Protected Routes** — Auth-guarded navigation for users and admins
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start (Docker — Recommended)
 
 ### Prerequisites
 
-| Software | Version | Download |
-|----------|---------|----------|
-| Java (JDK) | 17+ | [adoptium.net](https://adoptium.net/) |
-| Maven | 3.8+ | [maven.apache.org](https://maven.apache.org/) |
-| Node.js | 18+ | [nodejs.org](https://nodejs.org/) |
-| PostgreSQL | 15+ | [postgresql.org](https://www.postgresql.org/) |
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
 
-### Step 1: Database Setup
+### 1. Clone & Configure
 
 ```bash
-# Create database
+git clone https://github.com/a1fariz/ApexGrid.git
+cd ApexGrid
+
+# Copy environment template and fill in your credentials
+cp .env.example .env
+```
+
+Edit `.env` with your values:
+
+```env
+DB_USERNAME=apex
+DB_PASSWORD=apex123
+JWT_SECRET=your-very-long-secret-key-here
+INTERNAL_SECRET=your-internal-service-secret
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your-gmail@gmail.com
+MAIL_PASSWORD=your-16-char-gmail-app-password
+```
+
+### 2. Run Full Stack
+
+```bash
+docker-compose up --build -d
+```
+
+This single command will:
+1. Start **PostgreSQL** and auto-seed 25 circuits + 25 F1 2026 races
+2. Build & run **User Service**, **Race Service**, **API Gateway** (Spring Boot)
+3. Build **React** app for production and serve via **Nginx** with API reverse proxy
+
+### 3. Access the App
+
+| URL | Description |
+|-----|-------------|
+| 🌐 **http://localhost** | Frontend App |
+| 📋 http://localhost:8081/swagger-ui.html | Race Service API Docs |
+| 📋 http://localhost:8082/swagger-ui.html | User Service API Docs |
+
+> ⚠️ **First startup takes ~2 minutes** for Spring Boot services to fully initialize.
+
+### Stop Services
+
+```bash
+docker-compose down          # Stop containers
+docker-compose down -v       # Stop + delete database volume
+```
+
+---
+
+## 🌐 Public Demo via ngrok
+
+To share a live demo link without cloud deployment:
+
+```bash
+# 1. Download ngrok: https://ngrok.com/download
+# 2. Add your auth token (from dashboard.ngrok.com)
+ngrok config add-authtoken YOUR_TOKEN
+
+# 3. Make sure Docker containers are running
+docker-compose up -d
+
+# 4. Expose to the internet
+ngrok http 80
+```
+
+ngrok will generate a public URL like `https://xxxx.ngrok-free.app` — share it with anyone for live demo access.
+
+---
+
+## 🏃 Manual Setup (Without Docker)
+
+### Prerequisites
+
+| Software | Version |
+|----------|---------|
+| Java (JDK) | 17+ |
+| Maven | 3.8+ |
+| Node.js | 18+ |
+| PostgreSQL | 15+ |
+
+### Step 1: Database
+
+```bash
 psql -U postgres -c "CREATE DATABASE apexgrid_db;"
-
-# Create application user
 psql -U postgres -f database/setup-user.sql
-
-# Run full schema (tables, triggers, views, 25 circuits & 25 races seeded)
 psql -U postgres -d apexgrid_db -f database/schema.sql
 ```
 
-### Step 2: Start All Services
-
-**Option A: One-click (Windows)**
-```powershell
-.\start-all.bat
-```
-
-**Option B: Manual (3 terminals)**
+### Step 2: Backend Services (3 terminals)
 
 ```bash
 # Terminal 1 — User Service (port 8082)
@@ -337,28 +298,21 @@ cd race-service && mvn spring-boot:run
 cd api-gateway && mvn spring-boot:run
 ```
 
-### Step 3: Start Frontend
+### Step 3: Frontend
 
 ```bash
 cd frontend-react
 npm install
 npm run dev
+# Opens at http://localhost:5173
 ```
-
-### Step 4: Open App
-
-| URL | Description |
-|-----|-------------|
-| 🌐 http://localhost:5173 | **Frontend App** |
-| 📋 http://localhost:8081/swagger-ui.html | **Race Service API Docs** |
-| 📋 http://localhost:8082/swagger-ui.html | **User Service API Docs** |
 
 ---
 
 ## 👤 Creating an Admin Account
 
 1. Register a new account at `/register`
-2. Update the role in PostgreSQL:
+2. Promote to admin in PostgreSQL:
 
 ```sql
 UPDATE users 
@@ -366,13 +320,13 @@ SET role_id = (SELECT id FROM roles WHERE name = 'ADMIN')
 WHERE username = 'your-username';
 ```
 
-3. Re-login to get updated JWT token with ADMIN role
+3. Re-login to get a refreshed JWT with ADMIN role
 
 ---
 
 ## 📡 API Endpoints
 
-All endpoints are accessed through the **API Gateway** at `http://localhost:8080`.
+All endpoints accessed through API Gateway at `http://localhost:8080`.
 
 ### 🔐 Authentication
 
@@ -381,15 +335,17 @@ All endpoints are accessed through the **API Gateway** at `http://localhost:8080
 | `POST` | `/api/auth/register` | — | Register new user |
 | `POST` | `/api/auth/login` | — | Login, returns JWT |
 | `GET` | `/api/auth/me` | `Bearer JWT` | Get current user info |
+| `GET` | `/api/auth/verify?token=` | — | Verify email address |
+| `POST` | `/api/auth/forgot-password` | — | Request password reset |
+| `POST` | `/api/auth/reset-password` | — | Reset with token |
 
 ### 🏁 Races
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| `GET` | `/api/races` | — | List all races |
-| `GET` | `/api/races/upcoming` | — | List upcoming races |
+| `GET` | `/api/races/search` | — | Search & filter races |
 | `GET` | `/api/races/{id}` | — | Race detail with circuit |
-| `GET` | `/api/races/circuits` | — | List all circuits |
+| `GET` | `/api/races/upcoming` | — | Upcoming races |
 | `POST` | `/api/races` | `ADMIN` | Create new race |
 | `PUT` | `/api/races/{id}` | `ADMIN` | Update race |
 | `DELETE` | `/api/races/{id}` | `ADMIN` | Delete race |
@@ -401,40 +357,9 @@ All endpoints are accessed through the **API Gateway** at `http://localhost:8080
 | `POST` | `/api/bookings` | `Bearer JWT` | Create booking |
 | `GET` | `/api/bookings` | `Bearer JWT` | My bookings |
 | `GET` | `/api/bookings/{code}` | `Bearer JWT` | Booking by code |
-| `PUT` | `/api/bookings/{id}/confirm` | `Bearer JWT` | Confirm booking |
+| `PUT` | `/api/bookings/{id}/confirm` | `Bearer JWT` | Confirm / pay booking |
 | `PUT` | `/api/bookings/{id}/cancel` | `Bearer JWT` | Cancel booking |
-
----
-
-## 🧪 API Testing with cURL
-
-### Register
-```bash
-curl -X POST http://localhost:8080/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"username":"fan1","email":"fan1@f1.com","password":"pass123","fullName":"F1 Fan"}'
-```
-
-### Login
-```bash
-curl -X POST http://localhost:8080/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"fan1","password":"pass123"}'
-```
-
-### Book Tickets
-```bash
-curl -X POST http://localhost:8080/api/bookings \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -d '{"raceId":1,"quantity":2}'
-```
-
-### Confirm Booking
-```bash
-curl -X PUT http://localhost:8080/api/bookings/1/confirm \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
-```
+| `GET` | `/api/bookings/{id}/ticket` | `Bearer JWT` | Download PDF e-ticket |
 
 ---
 
@@ -445,19 +370,12 @@ curl -X PUT http://localhost:8080/api/bookings/1/confirm \
 |-------|-------------|
 | `roles` | User roles (USER, ADMIN) |
 | `users` | User accounts with BCrypt-hashed passwords |
+| `verification_tokens` | Email verification magic link tokens |
+| `password_reset_tokens` | Password reset tokens (1hr expiry) |
 | `circuits` | 25 real F1 circuits with lap records & location data |
 | `races` | 25 race events (2026 season) with quota & pricing |
 | `bookings` | Ticket bookings with full lifecycle status |
 | `email_logs` | Async email audit trail with retry count |
-
-### Indexes
-| Index | Column(s) | Purpose |
-|-------|-----------|---------|
-| `idx_users_email` | `users.email` | Fast email lookup |
-| `idx_users_username` | `users.username` | Fast username lookup |
-| `idx_races_status` | `races.status` | Filter upcoming races |
-| `idx_bookings_code` | `bookings.booking_code` | Fast booking lookup |
-| `idx_bookings_expired` | `bookings.expired_at` (PENDING) | Partial index for scheduler |
 
 ### Triggers
 | Trigger | Function |
@@ -483,107 +401,60 @@ curl -X PUT http://localhost:8080/api/bookings/1/confirm \
 apexgrid-project/
 │
 ├── 📂 api-gateway/                    # Spring Cloud Gateway
+│   ├── Dockerfile
 │   └── src/main/java/.../gateway/
-│       ├── ApiGatewayApplication.java
-│       ├── config/
-│       │   └── GatewayConfig.java     # Routes & CORS configuration
-│       └── filter/
-│           └── AuthenticationFilter.java
+│       ├── config/GatewayConfig.java  # Routes & CORS
+│       └── filter/AuthenticationFilter.java
 │
-├── 📂 user-service/                   # Authentication & User Management
+├── 📂 user-service/                   # Auth & User Management
+│   ├── Dockerfile
 │   └── src/main/java/.../userservice/
-│       ├── controller/
-│       │   └── AuthController.java    # Register, Login, Me
-│       ├── service/impl/
-│       │   └── AuthServiceImpl.java
-│       ├── security/
-│       │   ├── JwtUtils.java
-│       │   ├── JwtAuthenticationFilter.java
-│       │   ├── UserDetailsImpl.java
-│       │   └── UserDetailsServiceImpl.java
-│       ├── entity/
-│       │   ├── User.java
-│       │   └── Role.java
-│       ├── dto/                       # Request/Response DTOs
-│       ├── repository/
-│       ├── config/SecurityConfig.java
-│       └── exception/
+│       ├── controller/AuthController.java
+│       ├── service/
+│       │   ├── AuthServiceImpl.java
+│       │   └── UserEmailService.java  # Email verification & reset
+│       ├── entity/ (User, Role, VerificationToken, PasswordResetToken)
+│       └── security/ (JwtUtils, JwtAuthenticationFilter)
 │
 ├── 📂 race-service/                   # Races, Bookings & Email
+│   ├── Dockerfile
 │   └── src/main/java/.../raceservice/
-│       ├── race/
-│       │   ├── controller/RaceController.java
-│       │   ├── service/RaceServiceImpl.java
-│       │   ├── entity/ (Race, Circuit)
-│       │   ├── dto/
-│       │   └── repository/
+│       ├── race/controller/RaceController.java
 │       ├── booking/
 │       │   ├── controller/BookingController.java
-│       │   ├── service/BookingServiceImpl.java
-│       │   ├── entity/Booking.java
-│       │   ├── dto/
-│       │   └── repository/
-│       ├── email/
-│       │   ├── EmailServiceImpl.java  # Async email sender
-│       │   └── EmailLog.java
-│       ├── scheduler/                 # Auto-cancel expired bookings
-│       ├── config/
-│       │   ├── SecurityConfig.java
-│       │   ├── JwtAuthenticationFilter.java
-│       │   ├── JwtUtils.java
-│       │   └── AsyncConfig.java
-│       └── exception/
+│       │   └── service/BookingServiceImpl.java
+│       └── scheduler/                 # Auto-cancel expired bookings
 │
 ├── 📂 frontend-react/                 # React + Vite + TailwindCSS
+│   ├── Dockerfile
+│   ├── nginx.conf                     # Nginx config with /api proxy
 │   └── src/
 │       ├── pages/
 │       │   ├── Login.jsx
 │       │   ├── Register.jsx
 │       │   ├── Home.jsx               # Race listing + search + pagination
 │       │   ├── RaceDetail.jsx         # Detail + interactive booking
+│       │   ├── Payment.jsx            # Payment page (QRIS/Bank/Card)
 │       │   ├── BookingHistory.jsx
-│       │   ├── UserProfile.jsx        # Profile + e-ticket download
-│       │   ├── AdminDashboard.jsx     # Stats + health checks
+│       │   ├── VerifyAccount.jsx      # Email verification handler
+│       │   ├── AdminDashboard.jsx
 │       │   ├── AdminRaceManagement.jsx
 │       │   └── AdminCircuitManagement.jsx
 │       ├── components/
-│       │   ├── Navbar.jsx
-│       │   ├── RaceCard.jsx
-│       │   ├── RaceCardSkeleton.jsx   # Skeleton loading state
+│       │   ├── Navbar.jsx             # Dark/Light mode toggle
 │       │   ├── BookingCard.jsx
+│       │   ├── PaymentModal.jsx       # Payment flow modal
 │       │   ├── CircuitOutline.jsx     # SVG interactive seating map
-│       │   ├── ConfirmModal.jsx       # Glassmorphism confirm dialog
-│       │   ├── PageTransition.jsx
-│       │   ├── ProtectedRoute.jsx
-│       │   ├── Toast.jsx
-│       │   └── LoadingSpinner.jsx
-│       ├── context/AuthContext.jsx    # JWT auth state
-│       ├── services/api.js            # Axios + interceptors
-│       ├── hooks/useAuth.js
-│       ├── App.jsx                    # Routes
-│       └── index.css                  # F1 dark theme
+│       │   ├── ConfirmModal.jsx
+│       │   └── Toast.jsx
+│       ├── index.css                  # F1 theme + light mode overrides
+│       └── services/api.js            # Axios + JWT interceptors
 │
 ├── 📂 database/
-│   ├── schema.sql                     # Full schema + triggers + views + 25 races seeded
-│   └── setup-user.sql                 # DB user creation
+│   └── schema.sql                     # Tables, triggers, views + 25 races seeded
 │
-├── 📂 docs/images/                    # Screenshots & documentation
-│   ├── login.png
-│   ├── register.png
-│   ├── home-page-user.png
-│   ├── raceBookings.png
-│   ├── bookings.png
-│   ├── mybookings.png
-│   ├── admin-dashboard.png
-│   ├── race-manajement.png
-│   ├── add-new-race-admin.png
-│   ├── edit-race.png
-│   ├── swagger-ui1.png
-│   ├── swagger-ui2.png
-│   └── diagram-schema.png
-│
-├── start-all.bat                      # One-click start (Windows)
-├── stop-all.bat                       # Stop all services
+├── docker-compose.yml                 # Full-stack orchestration
+├── .env.example                       # Environment template
 └── pom.xml                            # Parent Maven POM
 ```
 
@@ -591,109 +462,62 @@ apexgrid-project/
 
 ## ⚙️ Configuration
 
-### Service Ports
+### Docker Ports
 
-| Service | Port | Description |
-|---------|------|-------------|
-| API Gateway | `8080` | Entry point for all API calls |
-| Race Service | `8081` | Race & booking management |
-| User Service | `8082` | Auth & user management |
-| Frontend | `5173` | React dev server |
-| PostgreSQL | `5432` | Database |
+| Service | External Port | Description |
+|---------|---------------|-------------|
+| **Frontend (Nginx)** | `80` | React app + API proxy |
+| **API Gateway** | `8080` | Spring Cloud Gateway |
+| **Race Service** | `8081` | Race & booking microservice |
+| **User Service** | `8082` | Auth & user microservice |
+| **PostgreSQL** | `5432` | Database |
 
-### JWT Configuration
+### Environment Variables (`.env`)
 
-Both `user-service` and `race-service` share the same JWT secret:
+| Variable | Description |
+|----------|-------------|
+| `DB_USERNAME` | PostgreSQL username |
+| `DB_PASSWORD` | PostgreSQL password |
+| `JWT_SECRET` | Shared JWT signing secret (must match across services) |
+| `INTERNAL_SECRET` | Internal service authentication key |
+| `MAIL_HOST` | SMTP host (e.g. `smtp.gmail.com`) |
+| `MAIL_PORT` | SMTP port (`587` for TLS) |
+| `MAIL_USERNAME` | Gmail address for sending emails |
+| `MAIL_PASSWORD` | Gmail App Password (16 chars, no spaces) |
 
-```properties
-jwt.secret=apexgrid-super-secret-key-harus-panjang-banget-biar-aman-1234567890
-jwt.expiration=86400000   # 24 hours in milliseconds
-```
-
-> ⚠️ **Important**: The JWT secret must be identical across both services for token validation to work cross-service.
-
-### Email (Optional)
-
-Configure Gmail SMTP in `race-service/src/main/resources/application.properties`:
-
-```properties
-spring.mail.username=your-gmail@gmail.com
-spring.mail.password=your-16-char-app-password
-```
-
-> Email is **optional** — if not configured, emails are logged but not sent (graceful skip).
+> 📌 **Email is optional** — if SMTP fails, verification links are logged to Docker console as fallback.
 
 ---
 
 ## 🔄 Business Flow
 
 ```
-User Registration                Admin Creates Race
-      │                                │
-      ▼                                ▼
-  JWT Login ──────────────►  Browse Races (Public)
-      │                                │
-      │                                ▼
-      │                    Select Race & Quantity
-      │                                │
-      ▼                                ▼
-  Authenticated ──────────►  Create Booking (PENDING)
-                                       │
-                              ┌────────┼────────┐
-                              ▼                  ▼
-                    Confirm Booking      Auto-Expire (30 min)
-                     (CONFIRMED)            (CANCELLED)
-                         │                      │
-                         ▼                      ▼
-                  Quota Decremented     Quota Restored
-                  (DB Trigger)         (DB Trigger)
-                         │
-                         ▼
-                  PDF E-Ticket + QR
-                  Code Generated
-```
-
----
-
-## 🐳 Docker Deployment Guide
-
-Sistem **ApexGrid** sepenuhnya mendukung kontainerisasi menggunakan Docker dan Docker Compose. Ini memudahkan distribusi dan deployment seluruh ekosistem (Database, 3 Microservices, dan React Frontend) dengan satu perintah.
-
-### Prasyarat
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) terinstal di komputer Anda.
-
-### Menjalankan Stack Microservices
-Untuk menjalankan seluruh layanan dalam satu kesatuan kontainer, jalankan perintah berikut di root directory proyek:
-
-```bash
-docker-compose up --build -d
-```
-
-Perintah ini akan:
-1. Menjalankan kontainer **PostgreSQL** dan secara otomatis memuat skema database (`schema.sql`) serta menyemai data awal 25 sirkuit dan balapan F1 (`reseed-f1.sql`).
-2. Melakukan *multi-stage build* untuk mengompilasi file Java `.jar` untuk **user-service**, **race-service**, dan **api-gateway** sebelum menjalankannya di JRE yang ringan.
-3. Melakukan *build* produksi aplikasi React, lalu menyajikannya menggunakan server web **Nginx** yang dikonfigurasikan sebagai reverse proxy untuk `/api` ke API Gateway.
-
-### Port Kontainer di Docker
-
-| Service | Port Eksternal | Port Internal | Deskripsi |
-|---------|----------------|---------------|-----------|
-| **Frontend (React/Nginx)** | `80` (http://localhost) | `80` | Aplikasi web React produksi |
-| **API Gateway** | `8080` | `8080` | Entry point API Gateway |
-| **Race Service** | `8081` | `8081` | Microservice Balapan & Booking |
-| **User Service** | `8082` | `8082` | Microservice Auth & Profile |
-| **PostgreSQL** | `5432` | `5432` | Database utama `apexgrid_db` |
-
-### Menghentikan Layanan
-Untuk menghentikan dan menghapus semua kontainer yang berjalan, jalankan:
-
-```bash
-docker-compose down
-```
-
-Untuk menghapus data volume database PostgreSQL juga, jalankan:
-```bash
-docker-compose down -v
+User Registration → Email Verification
+       │
+       ▼
+   JWT Login ──────────────► Browse Races (Public)
+       │                             │
+       │                             ▼
+       │                   Select Race & Zone & Quantity
+       │                             │
+       ▼                             ▼
+   Authenticated ──────────► Create Booking (PENDING)
+                                     │
+                          ┌──────────┼──────────┐
+                          ▼                     ▼
+                   Go to Payment       Auto-Expire (30 min)
+                  (30min countdown)      (CANCELLED)
+                          │                     │
+                          ▼                     ▼
+                  Choose Payment Method   Quota Restored
+                  (QRIS/Bank/Card)        (DB Trigger)
+                          │
+                          ▼
+                  Confirm Booking (CONFIRMED)
+                          │
+                          ▼
+                  Quota Decremented (DB Trigger)
+                  PDF E-Ticket + QR Code Generated
 ```
 
 ---
@@ -706,5 +530,5 @@ This project is developed for educational purposes as part of a university/portf
 
 <p align="center">
   Built with 💻 and ☕ by <strong>Muhammad Alfarizi</strong><br/>
-  Last updated: June 13, 2026
+  Last updated: June 20, 2026
 </p>
