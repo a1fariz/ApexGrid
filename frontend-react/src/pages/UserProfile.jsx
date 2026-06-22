@@ -173,56 +173,118 @@ export default function UserProfile() {
               <p className="text-f1-light">No bookings yet</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>Booking</th>
-                    <th>Race</th>
-                    <th>Date</th>
-                    <th>Qty</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th>Ticket</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {bookings.map(booking => (
-                    <tr key={booking.id}>
-                      <td>
-                        <div className="font-mono font-semibold text-f1-red text-sm">{booking.bookingCode}</div>
-                        <div className="text-xs text-f1-light">{formatDate(booking.createdAt)}</div>
-                      </td>
-                      <td>
-                        <div className="font-medium text-f1-white text-sm">{booking.raceName}</div>
-                        <div className="text-xs text-f1-light">{booking.circuitName}, {booking.country}</div>
-                      </td>
-                      <td className="text-sm">{formatDate(booking.raceDate)}</td>
-                      <td className="text-sm text-center">{booking.quantity}</td>
-                      <td className="text-sm font-semibold">{formatPrice(booking.totalPrice)}</td>
-                      <td><span className={statusBadge(booking.status)}>{booking.status}</span></td>
-                      <td>
-                        {booking.status === 'CONFIRMED' ? (
-                          <button
-                            onClick={() => downloadTicket(booking.id, booking.bookingCode)}
-                            disabled={downloading === booking.id}
-                            className="px-3 py-1.5 text-xs bg-f1-red/10 hover:bg-f1-red/20 rounded-lg text-f1-red font-medium transition-colors disabled:opacity-50 flex items-center gap-1 mx-auto"
-                          >
-                            {downloading === booking.id ? (
-                              <><FaHourglassHalf className="animate-spin" /> ...</>
-                            ) : (
-                              <><FaTicketAlt /> Download</>
-                            )}
-                          </button>
-                        ) : (
-                          <span className="text-xs text-f1-light">—</span>
-                        )}
-                      </td>
+            <>
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Booking</th>
+                      <th>Race</th>
+                      <th>Date</th>
+                      <th>Qty</th>
+                      <th>Total</th>
+                      <th>Status</th>
+                      <th>Ticket</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {bookings.map(booking => (
+                      <tr key={booking.id}>
+                        <td>
+                          <div className="font-mono font-semibold text-f1-red text-sm">{booking.bookingCode}</div>
+                          <div className="text-xs text-f1-light">{formatDate(booking.createdAt)}</div>
+                        </td>
+                        <td>
+                          <div className="font-medium text-f1-white text-sm">{booking.raceName}</div>
+                          <div className="text-xs text-f1-light">{booking.circuitName}, {booking.country}</div>
+                        </td>
+                        <td className="text-sm">{formatDate(booking.raceDate)}</td>
+                        <td className="text-sm text-center">{booking.quantity}</td>
+                        <td className="text-sm font-semibold">{formatPrice(booking.totalPrice)}</td>
+                        <td><span className={statusBadge(booking.status)}>{booking.status}</span></td>
+                        <td>
+                          {booking.status === 'CONFIRMED' ? (
+                            <button
+                              onClick={() => downloadTicket(booking.id, booking.bookingCode)}
+                              disabled={downloading === booking.id}
+                              className="px-3 py-1.5 text-xs bg-f1-red/10 hover:bg-f1-red/20 rounded-lg text-f1-red font-medium transition-colors disabled:opacity-50 flex items-center gap-1 mx-auto"
+                            >
+                              {downloading === booking.id ? (
+                                <><FaHourglassHalf className="animate-spin" /> ...</>
+                              ) : (
+                                <><FaTicketAlt /> Download</>
+                              )}
+                            </button>
+                          ) : (
+                            <span className="text-xs text-f1-light">—</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Card List View */}
+              <div className="flex flex-col gap-4 md:hidden p-4">
+                {bookings.map(booking => (
+                  <div 
+                    key={booking.id} 
+                    className={`card-static p-5 rounded-xl border border-f1-border flex flex-col gap-4 bg-f1-card/40 ${booking.status === 'CANCELLED' ? 'opacity-70 bg-black/20' : ''}`}
+                  >
+                    {/* Top Header of Card */}
+                    <div className="flex items-center justify-between border-b border-f1-border/40 pb-3">
+                      <span className="font-mono text-xs font-bold text-f1-red">{booking.bookingCode}</span>
+                      <span className={`${statusBadge(booking.status)} px-2 py-0.5 rounded text-[10px] font-bold`}>
+                        {booking.status}
+                      </span>
+                    </div>
+
+                    {/* Race Event Details */}
+                    <div>
+                      <div className="text-[10px] text-f1-light uppercase tracking-wider font-semibold mb-0.5">Race Event</div>
+                      <h4 className="font-semibold text-f1-white text-sm">{booking.raceName}</h4>
+                      <p className="text-xs text-f1-light truncate">{booking.circuitName}, {booking.country}</p>
+                      <p className="text-xs text-f1-white font-medium mt-1">Race Date: {formatDate(booking.raceDate)}</p>
+                    </div>
+
+                    {/* Details Grid */}
+                    <div className="grid grid-cols-2 gap-y-3 gap-x-2 text-xs border-t border-f1-border/40 pt-3">
+                      <div>
+                        <div className="text-[10px] text-f1-light uppercase tracking-wider font-semibold mb-0.5">Qty</div>
+                        <span className="text-f1-white font-medium">x{booking.quantity}</span>
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-f1-light uppercase tracking-wider font-semibold mb-0.5">Total Price</div>
+                        <span className="text-f1-red font-bold text-sm">{formatPrice(booking.totalPrice)}</span>
+                      </div>
+                      <div className="col-span-2">
+                        <div className="text-[10px] text-f1-light uppercase tracking-wider font-semibold mb-0.5">Booked Date</div>
+                        <span className="text-f1-white">{formatDate(booking.createdAt)}</span>
+                      </div>
+                    </div>
+
+                    {/* Ticket Download Action */}
+                    {booking.status === 'CONFIRMED' && (
+                      <div className="border-t border-f1-border/40 pt-3 mt-1">
+                        <button
+                          onClick={() => downloadTicket(booking.id, booking.bookingCode)}
+                          disabled={downloading === booking.id}
+                          className="w-full px-3 py-2 text-xs bg-f1-red/10 hover:bg-f1-red/20 rounded-lg text-f1-red font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
+                        >
+                          {downloading === booking.id ? (
+                            <><FaHourglassHalf className="animate-spin text-xs" /> Downloading...</>
+                          ) : (
+                            <><FaTicketAlt className="text-xs" /> Download E-Ticket</>
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </div>

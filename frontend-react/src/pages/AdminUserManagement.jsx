@@ -150,81 +150,165 @@ export default function AdminUserManagement() {
                 <p>No users found</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="data-table w-full">
-                  <thead>
-                    <tr>
-                      <th className="w-12">ID</th>
-                      <th>User Info</th>
-                      <th>Role</th>
-                      <th>Status</th>
-                      <th>Verified</th>
-                      <th>Joined Date</th>
-                      <th className="text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-f1-border/40">
-                    {users.map(u => (
-                      <tr key={u.id} className={!u.isActive ? 'bg-red-900/5' : ''}>
-                        <td className="text-f1-light text-sm">#{u.id}</td>
-                        <td>
-                          <div className="font-semibold text-f1-white">{u.fullName || u.username}</div>
-                          <div className="text-xs text-f1-light">@{u.username} • {u.email}</div>
-                        </td>
-                        <td>
-                          <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${u.role === 'ADMIN' ? 'bg-amber-400/20 text-amber-400 border border-amber-400/30' : 'bg-f1-surface text-f1-light border border-f1-border'}`}>
+              <>
+                {/* Desktop Table View */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="data-table w-full">
+                    <thead>
+                      <tr>
+                        <th className="w-12">ID</th>
+                        <th>User Info</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Verified</th>
+                        <th>Joined Date</th>
+                        <th className="text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-f1-border/40">
+                      {users.map(u => (
+                        <tr key={u.id} className={!u.isActive ? 'bg-red-900/5' : ''}>
+                          <td className="text-f1-light text-sm">#{u.id}</td>
+                          <td>
+                            <div className="font-semibold text-f1-white">{u.fullName || u.username}</div>
+                            <div className="text-xs text-f1-light">@{u.username} • {u.email}</div>
+                          </td>
+                          <td>
+                            <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${u.role === 'ADMIN' ? 'bg-amber-400/20 text-amber-400 border border-amber-400/30' : 'bg-f1-surface text-f1-light border border-f1-border'}`}>
+                              {u.role}
+                            </span>
+                          </td>
+                          <td>
+                            {u.isActive ? (
+                              <span className="inline-flex items-center gap-1.5 text-xs text-green-400">
+                                <span className="w-1.5 h-1.5 rounded-full bg-green-400"></span> Active
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1.5 text-xs text-red-400">
+                                <span className="w-1.5 h-1.5 rounded-full bg-red-400"></span> Suspended
+                              </span>
+                            )}
+                          </td>
+                          <td>
+                            {u.isVerified ? (
+                              <span className="text-green-400 text-sm flex items-center gap-1"><FaCheck /> Yes</span>
+                            ) : (
+                              <span className="text-amber-400 text-sm flex items-center gap-1"><FaHourglassHalf /> No</span>
+                            )}
+                          </td>
+                          <td className="text-sm text-f1-light">{formatDate(u.createdAt)}</td>
+                          <td className="text-right">
+                            <div className="flex justify-end items-center gap-2">
+                              {u.role !== 'ADMIN' && (
+                                <>
+                                  <button
+                                    onClick={() => { setRoleChangeTarget(u); setNewRole(u.role); }}
+                                    className="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-gray-300 transition-colors border border-white/10"
+                                  >
+                                    Change Role
+                                  </button>
+
+                                  <button
+                                    onClick={() => toggleUserStatus(u.id, u.role)}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                                      u.isActive 
+                                        ? 'bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20' 
+                                        : 'bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-green-500/20'
+                                    }`}
+                                  >
+                                    {u.isActive ? 'Suspend' : 'Activate'}
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile Card List View */}
+                <div className="flex flex-col gap-4 md:hidden p-4">
+                  {users.map(u => (
+                    <div 
+                      key={u.id} 
+                      className={`card-static p-5 rounded-xl border border-f1-border flex flex-col gap-4 bg-f1-card/40 ${!u.isActive ? 'border-red-500/20 bg-red-950/5' : ''}`}
+                    >
+                      {/* Top Header Row of Card */}
+                      <div className="flex items-center justify-between border-b border-f1-border/40 pb-3">
+                        <span className="text-f1-light text-xs font-semibold">User #{u.id}</span>
+                        {u.isActive ? (
+                          <span className="inline-flex items-center gap-1.5 text-xs text-green-400">
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-400"></span> Active
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 text-xs text-red-400">
+                            <span className="w-1.5 h-1.5 rounded-full bg-red-400"></span> Suspended
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Main User Profile Row */}
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-full bg-f1-surface border border-f1-border flex items-center justify-center text-sm font-bold text-f1-white select-none shrink-0 uppercase">
+                          {u.fullName ? u.fullName.slice(0, 2) : u.username.slice(0, 2)}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-bold text-f1-white text-base truncate">{u.fullName || u.username}</h3>
+                          <p className="text-xs text-f1-light truncate">@{u.username}</p>
+                          <p className="text-xs text-f1-light truncate mt-0.5">{u.email}</p>
+                        </div>
+                      </div>
+
+                      {/* Details (Role, Verified, Date) */}
+                      <div className="grid grid-cols-2 gap-y-3 gap-x-2 text-xs border-t border-f1-border/40 pt-3">
+                        <div>
+                          <div className="text-[10px] text-f1-light uppercase tracking-wider font-semibold mb-1">Role</div>
+                          <span className={`inline-block px-2.5 py-0.5 text-[10px] font-bold rounded-full ${u.role === 'ADMIN' ? 'bg-amber-400/20 text-amber-400 border border-amber-400/30' : 'bg-f1-surface text-f1-light border border-f1-border'}`}>
                             {u.role}
                           </span>
-                        </td>
-                        <td>
-                          {u.isActive ? (
-                            <span className="inline-flex items-center gap-1.5 text-xs text-green-400">
-                              <span className="w-1.5 h-1.5 rounded-full bg-green-400"></span> Active
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1.5 text-xs text-red-400">
-                              <span className="w-1.5 h-1.5 rounded-full bg-red-400"></span> Suspended
-                            </span>
-                          )}
-                        </td>
-                        <td>
+                        </div>
+                        <div>
+                          <div className="text-[10px] text-f1-light uppercase tracking-wider font-semibold mb-1">Verified</div>
                           {u.isVerified ? (
-                            <span className="text-green-400 text-sm flex items-center gap-1"><FaCheck /> Yes</span>
+                            <span className="text-green-400 text-xs flex items-center gap-1 font-semibold"><FaCheck className="text-2xs" /> Yes</span>
                           ) : (
-                            <span className="text-amber-400 text-sm flex items-center gap-1"><FaHourglassHalf /> No</span>
+                            <span className="text-amber-400 text-xs flex items-center gap-1 font-semibold"><FaHourglassHalf className="text-2xs" /> No</span>
                           )}
-                        </td>
-                        <td className="text-sm text-f1-light">{formatDate(u.createdAt)}</td>
-                        <td className="text-right">
-                          <div className="flex justify-end items-center gap-2">
-                            {u.role !== 'ADMIN' && (
-                              <>
-                                <button
-                                  onClick={() => { setRoleChangeTarget(u); setNewRole(u.role); }}
-                                  className="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-gray-300 transition-colors border border-white/10"
-                                >
-                                  Change Role
-                                </button>
+                        </div>
+                        <div className="col-span-2">
+                          <div className="text-[10px] text-f1-light uppercase tracking-wider font-semibold mb-0.5">Joined Date</div>
+                          <span className="text-f1-white text-xs">{formatDate(u.createdAt)}</span>
+                        </div>
+                      </div>
 
-                                <button
-                                  onClick={() => toggleUserStatus(u.id, u.role)}
-                                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                                    u.isActive 
-                                      ? 'bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20' 
-                                      : 'bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-green-500/20'
-                                  }`}
-                                >
-                                  {u.isActive ? 'Suspend' : 'Activate'}
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                      {/* Card Action Buttons */}
+                      {u.role !== 'ADMIN' && (
+                        <div className="flex items-center gap-2 border-t border-f1-border/40 pt-3 mt-1">
+                          <button
+                            onClick={() => { setRoleChangeTarget(u); setNewRole(u.role); }}
+                            className="flex-1 px-3 py-2 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 text-gray-300 transition-colors border border-white/10 text-center"
+                          >
+                            Change Role
+                          </button>
+
+                          <button
+                            onClick={() => toggleUserStatus(u.id, u.role)}
+                            className={`flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-colors text-center ${
+                              u.isActive 
+                                ? 'bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20' 
+                                : 'bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-green-500/20'
+                            }`}
+                          >
+                            {u.isActive ? 'Suspend' : 'Activate'}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
           </div>
 

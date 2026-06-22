@@ -140,7 +140,8 @@ export default function AdminCircuitManagement() {
           </div>
         ) : (
           <div className="card overflow-hidden">
-            <div className="overflow-x-auto">
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="data-table">
                 <thead>
                   <tr>
@@ -185,7 +186,7 @@ export default function AdminCircuitManagement() {
                               Edit
                             </button>
                             <button
-                            onClick={() => setDeleteTarget(circuit)}
+                              onClick={() => setDeleteTarget(circuit)}
                               className="px-3 py-1.5 text-xs bg-red-500/10 hover:bg-red-500/20 rounded-lg text-red-400 font-medium transition-colors border border-red-500/20"
                             >
                               Delete
@@ -197,6 +198,64 @@ export default function AdminCircuitManagement() {
                   )}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile Card List View */}
+            <div className="flex flex-col gap-4 md:hidden p-4">
+              {circuits.length === 0 ? (
+                <div className="text-center text-f1-light py-12">No circuits found</div>
+              ) : (
+                circuits.map((circuit) => (
+                  <div 
+                    key={circuit.id} 
+                    className="card-static p-5 rounded-xl border border-f1-border flex flex-col gap-4 bg-f1-card/40"
+                  >
+                    {/* Top Header of Card */}
+                    <div className="border-b border-f1-border/40 pb-3">
+                      <h4 className="font-bold text-f1-white text-base">{circuit.name}</h4>
+                      {circuit.description && (
+                        <p className="text-xs text-f1-light mt-1 italic">{circuit.description}</p>
+                      )}
+                    </div>
+
+                    {/* Details Grid */}
+                    <div className="grid grid-cols-2 gap-y-3 gap-x-2 text-xs">
+                      <div>
+                        <div className="text-[10px] text-f1-light uppercase tracking-wider font-semibold mb-0.5">Location</div>
+                        <span className="text-f1-white">{circuit.location}, {circuit.country}</span>
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-f1-light uppercase tracking-wider font-semibold mb-0.5">Length & Laps</div>
+                        <span className="text-f1-white">
+                          {circuit.lengthKm ? `${circuit.lengthKm} km` : '—'} ({circuit.numberOfLaps ? `${circuit.numberOfLaps} laps` : '—'})
+                        </span>
+                      </div>
+                      <div className="col-span-2">
+                        <div className="text-[10px] text-f1-light uppercase tracking-wider font-semibold mb-0.5">Lap Record</div>
+                        <span className="text-f1-white font-medium">
+                          {circuit.lapRecord || '—'} {circuit.lapRecordHolder ? `by ${circuit.lapRecordHolder}` : ''}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-2 border-t border-f1-border/40 pt-3 mt-1">
+                      <button
+                        onClick={() => openEdit(circuit)}
+                        className="flex-1 px-3 py-2 text-xs bg-white/5 hover:bg-white/10 rounded-lg text-gray-300 font-semibold transition-colors border border-white/10 text-center"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => setDeleteTarget(circuit)}
+                        className="flex-1 px-3 py-2 text-xs bg-red-500/10 hover:bg-red-500/20 rounded-lg text-red-400 font-semibold transition-colors border border-red-500/20 text-center"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         )}

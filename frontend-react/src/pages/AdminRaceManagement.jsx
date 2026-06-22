@@ -163,7 +163,8 @@ export default function AdminRaceManagement() {
           </div>
         ) : (
           <div className="card overflow-hidden">
-            <div className="overflow-x-auto">
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="data-table">
                 <thead>
                   <tr>
@@ -239,7 +240,7 @@ export default function AdminRaceManagement() {
                               Edit
                             </button>
                             <button
-                            onClick={() => setDeleteTarget(race)}
+                              onClick={() => setDeleteTarget(race)}
                               id={`delete-race-${race.id}`}
                               className="px-3 py-1.5 text-xs bg-red-500/10 hover:bg-red-500/20 rounded-lg text-red-400 font-medium transition-colors border border-red-500/20"
                             >
@@ -252,6 +253,81 @@ export default function AdminRaceManagement() {
                   )}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile Card List View */}
+            <div className="flex flex-col gap-4 md:hidden p-4">
+              {races.length === 0 ? (
+                <div className="text-center text-f1-light py-12">No races found</div>
+              ) : (
+                races.map((race) => (
+                  <div 
+                    key={race.id} 
+                    className="card-static p-5 rounded-xl border border-f1-border flex flex-col gap-4 bg-f1-card/40"
+                  >
+                    {/* Top Header of Card */}
+                    <div className="flex items-center justify-between border-b border-f1-border/40 pb-3">
+                      <div>
+                        <h4 className="font-bold text-f1-white text-base">{race.name}</h4>
+                        <p className="text-xs text-f1-light mt-0.5">Round {race.round} · {race.season}</p>
+                      </div>
+                      <span className={
+                        race.status === 'UPCOMING' ? 'badge-upcoming px-2 py-0.5 rounded text-[10px] font-bold' :
+                        race.status === 'LIVE' ? 'badge-confirmed px-2 py-0.5 rounded text-[10px] font-bold' : 'badge-cancelled px-2 py-0.5 rounded text-[10px] font-bold'
+                      }>
+                        {race.status}
+                      </span>
+                    </div>
+
+                    {/* Circuit Details */}
+                    <div>
+                      <div className="text-[10px] text-f1-light uppercase tracking-wider font-semibold mb-0.5">Circuit & Date</div>
+                      <h5 className="font-semibold text-f1-white text-sm">{race.circuitName}</h5>
+                      <p className="text-xs text-f1-light truncate">{race.location}, {race.country}</p>
+                      <p className="text-xs text-f1-white font-medium mt-1">{formatDate(race.raceDate)}</p>
+                    </div>
+
+                    {/* Details Grid */}
+                    <div className="grid grid-cols-2 gap-y-3 gap-x-2 text-xs border-t border-f1-border/40 pt-3">
+                      <div>
+                        <div className="text-[10px] text-f1-light uppercase tracking-wider font-semibold mb-1">Price</div>
+                        <span className="text-f1-red font-bold text-sm">{formatPrice(race.ticketPrice)}</span>
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-f1-light uppercase tracking-wider font-semibold mb-1">Quota</div>
+                        <div className="text-xs font-semibold text-f1-white">{race.availableQuota} left</div>
+                        <div className="text-[10px] text-f1-light">{race.totalQuota - race.availableQuota} / {race.totalQuota} sold</div>
+                        
+                        <div className="w-full h-1 bg-gray-700 rounded-full mt-1 overflow-hidden">
+                          <div
+                            className={`h-full rounded-full ${
+                              race.availableQuota === 0 ? 'bg-red-500' :
+                              race.availableQuota <= race.totalQuota * 0.1 ? 'bg-amber-400' : 'bg-f1-green'
+                            }`}
+                            style={{ width: `${Math.round((race.availableQuota / race.totalQuota) * 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-2 border-t border-f1-border/40 pt-3 mt-1">
+                      <button
+                        onClick={() => openEdit(race)}
+                        className="flex-1 px-3 py-2 text-xs bg-white/5 hover:bg-white/10 rounded-lg text-gray-300 font-semibold transition-colors border border-white/10 text-center"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => setDeleteTarget(race)}
+                        className="flex-1 px-3 py-2 text-xs bg-red-500/10 hover:bg-red-500/20 rounded-lg text-red-400 font-semibold transition-colors border border-red-500/20 text-center"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         )}

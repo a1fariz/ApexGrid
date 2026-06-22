@@ -148,64 +148,134 @@ export default function AdminBookingManagement() {
                 <p className="text-xs">There are no bookings matching the selected status filter.</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="data-table w-full">
-                  <thead>
-                    <tr>
-                      <th>Code</th>
-                      <th>Customer</th>
-                      <th>Race details</th>
-                      <th>Zone</th>
-                      <th>Qty</th>
-                      <th>Total Price</th>
-                      <th>Status</th>
-                      <th>Date Booked</th>
-                      <th className="text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-f1-border/40">
-                    {bookings.map(b => (
-                      <tr key={b.id}>
-                        <td className="font-mono text-xs font-bold text-f1-red">{b.bookingCode}</td>
-                        <td>
-                          <div className="font-semibold text-white">{b.userFullName || 'ApexGrid Customer'}</div>
-                          <div className="text-xs text-f1-light">@{b.username || 'unknown'} · {b.userEmail || 'no email'}</div>
-                        </td>
-                        <td>
-                          <div className="font-semibold text-white">{b.raceName}</div>
-                          <div className="text-xs text-f1-light truncate max-w-[200px]">{b.circuitName} · {b.location}</div>
-                        </td>
-                        <td className="font-bold text-xs">{b.zone}</td>
-                        <td className="text-center font-medium">{b.quantity}</td>
-                        <td className="font-semibold text-f1-red text-sm">{formatPrice(b.totalPrice)}</td>
-                        <td>
-                          <span className={`${getStatusBadge(b.status)} px-2.5 py-0.5 rounded-full text-xs font-semibold`}>
+              <>
+                {/* Desktop Table View */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="data-table w-full">
+                    <thead>
+                      <tr>
+                        <th>Code</th>
+                        <th>Customer</th>
+                        <th>Race details</th>
+                        <th>Zone</th>
+                        <th>Qty</th>
+                        <th>Total Price</th>
+                        <th>Status</th>
+                        <th>Date Booked</th>
+                        <th className="text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-f1-border/40">
+                      {bookings.map(b => (
+                        <tr key={b.id}>
+                          <td className="font-mono text-xs font-bold text-f1-red">{b.bookingCode}</td>
+                          <td>
+                            <div className="font-semibold text-white">{b.userFullName || 'ApexGrid Customer'}</div>
+                            <div className="text-xs text-f1-light">@{b.username || 'unknown'} · {b.userEmail || 'no email'}</div>
+                          </td>
+                          <td>
+                            <div className="font-semibold text-white">{b.raceName}</div>
+                            <div className="text-xs text-f1-light truncate max-w-[200px]">{b.circuitName} · {b.location}</div>
+                          </td>
+                          <td className="font-bold text-xs">{b.zone}</td>
+                          <td className="text-center font-medium">{b.quantity}</td>
+                          <td className="font-semibold text-f1-red text-sm">{formatPrice(b.totalPrice)}</td>
+                          <td>
+                            <span className={`${getStatusBadge(b.status)} px-2.5 py-0.5 rounded-full text-xs font-semibold`}>
+                              {b.status}
+                            </span>
+                            {b.status === 'CONFIRMED' && b.scannedAt && (
+                              <span className="flex items-center gap-1 mt-1 text-[10px] text-green-400 font-bold uppercase tracking-wider">
+                                <FaCheck /> Scanned
+                              </span>
+                            )}
+                          </td>
+                          <td className="text-xs text-f1-light">{formatDate(b.createdAt)}</td>
+                          <td className="text-right">
+                            {b.status !== 'CANCELLED' ? (
+                              <button
+                                onClick={() => setCancelTarget(b)}
+                                className="px-2.5 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-bold rounded-lg border border-red-500/10 transition-colors"
+                              >
+                                Force Cancel
+                              </button>
+                            ) : (
+                              <span className="text-xs text-gray-600 font-medium">No actions</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile Card List View */}
+                <div className="flex flex-col gap-4 md:hidden p-4">
+                  {bookings.map(b => (
+                    <div 
+                      key={b.id} 
+                      className={`card-static p-5 rounded-xl border border-f1-border flex flex-col gap-4 bg-f1-card/40 ${b.status === 'CANCELLED' ? 'opacity-70 bg-black/20' : ''}`}
+                    >
+                      {/* Top Header Row of Card */}
+                      <div className="flex items-center justify-between border-b border-f1-border/40 pb-3">
+                        <span className="font-mono text-xs font-bold text-f1-red">{b.bookingCode}</span>
+                        <div className="flex flex-col items-end gap-1">
+                          <span className={`${getStatusBadge(b.status)} px-2.5 py-0.5 rounded-full text-[10px] font-bold`}>
                             {b.status}
                           </span>
                           {b.status === 'CONFIRMED' && b.scannedAt && (
-                            <span className="flex items-center gap-1 mt-1 text-[10px] text-green-400 font-bold uppercase tracking-wider">
+                            <span className="flex items-center gap-1 text-[9px] text-green-400 font-bold uppercase tracking-wider">
                               <FaCheck /> Scanned
                             </span>
                           )}
-                        </td>
-                        <td className="text-xs text-f1-light">{formatDate(b.createdAt)}</td>
-                        <td className="text-right">
-                          {b.status !== 'CANCELLED' ? (
-                            <button
-                              onClick={() => setCancelTarget(b)}
-                              className="px-2.5 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-bold rounded-lg border border-red-500/10 transition-colors"
-                            >
-                              Force Cancel
-                            </button>
-                          ) : (
-                            <span className="text-xs text-gray-600 font-medium">No actions</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                        </div>
+                      </div>
+
+                      {/* Customer Details */}
+                      <div>
+                        <div className="text-[10px] text-f1-light uppercase tracking-wider font-semibold mb-1">Customer</div>
+                        <h4 className="font-semibold text-f1-white text-sm">{b.userFullName || 'ApexGrid Customer'}</h4>
+                        <p className="text-xs text-f1-light truncate">@{b.username || 'unknown'} · {b.userEmail || 'no email'}</p>
+                      </div>
+
+                      {/* Race Details */}
+                      <div>
+                        <div className="text-[10px] text-f1-light uppercase tracking-wider font-semibold mb-1">Race Event</div>
+                        <h4 className="font-semibold text-f1-white text-sm">{b.raceName}</h4>
+                        <p className="text-xs text-f1-light truncate">{b.circuitName} · {b.location}</p>
+                      </div>
+
+                      {/* Details Grid */}
+                      <div className="grid grid-cols-2 gap-y-3 gap-x-2 text-xs border-t border-f1-border/40 pt-3">
+                        <div>
+                          <div className="text-[10px] text-f1-light uppercase tracking-wider font-semibold mb-0.5">Zone & Qty</div>
+                          <span className="text-f1-white font-medium">{b.zone} (x{b.quantity})</span>
+                        </div>
+                        <div>
+                          <div className="text-[10px] text-f1-light uppercase tracking-wider font-semibold mb-0.5">Total Price</div>
+                          <span className="text-f1-red font-bold text-sm">{formatPrice(b.totalPrice)}</span>
+                        </div>
+                        <div className="col-span-2">
+                          <div className="text-[10px] text-f1-light uppercase tracking-wider font-semibold mb-0.5">Booked Date</div>
+                          <span className="text-f1-white">{formatDate(b.createdAt)}</span>
+                        </div>
+                      </div>
+
+                      {/* Card Action Buttons */}
+                      {b.status !== 'CANCELLED' && (
+                        <div className="border-t border-f1-border/40 pt-3 mt-1">
+                          <button
+                            onClick={() => setCancelTarget(b)}
+                            className="w-full px-3 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-bold rounded-lg border border-red-500/20 transition-colors text-center"
+                          >
+                            Force Cancel
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
           </div>
 
