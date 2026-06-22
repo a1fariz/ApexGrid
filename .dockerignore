@@ -1,0 +1,12 @@
+.git
+.gitignore
+.dockerignore
+.vscode
+.idea
+**/node_modules/
+**/target/
+**/dist/
+**/*.webp
+**/*.mp4
+**/*.pdf
+**/*.drawio
