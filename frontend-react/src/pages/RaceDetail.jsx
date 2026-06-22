@@ -261,9 +261,9 @@ export default function RaceDetail() {
 
               {/* Seating & Zone Selection Section */}
               <div className="card p-6 md:p-8 animate-fade-in" style={{ animationDelay: '0.05s' }}>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="f1-stripe" />
+                <div className="flex flex-col gap-1.5 mb-3">
                   <span className="label-machined text-f1-light">Seating</span>
+                  <div className="f1-stripe" />
                 </div>
                 <h2 className="font-f1 text-2xl font-semibold text-f1-white tracking-tight mb-1">Select Your Zone</h2>
                 <p className="text-f1-light text-sm mb-6">Click a track segment or pick a tier below to customize your ticket.</p>
@@ -483,9 +483,9 @@ export default function RaceDetail() {
 
               {/* Key Info */}
               <div className="card p-6 md:p-8 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-                <div className="flex items-center gap-3 mb-5">
-                  <div className="f1-stripe" />
+                <div className="flex flex-col gap-1.5 mb-4">
                   <span className="label-machined text-f1-light">Race Information</span>
+                  <div className="f1-stripe" />
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {[
@@ -511,9 +511,9 @@ export default function RaceDetail() {
               {/* Description */}
               {race.description && (
                 <div className="card p-6 md:p-8 animate-fade-in" style={{ animationDelay: '0.15s' }}>
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="f1-stripe" />
+                  <div className="flex flex-col gap-1.5 mb-3">
                     <span className="label-machined text-f1-light">About This Race</span>
+                    <div className="f1-stripe" />
                   </div>
                   <p className="text-f1-light leading-relaxed">{race.description}</p>
                 </div>
@@ -521,9 +521,9 @@ export default function RaceDetail() {
 
               {/* Ticket Availability */}
               <div className="card p-6 md:p-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="f1-stripe" />
+                <div className="flex flex-col gap-1.5 mb-3">
                   <span className="label-machined text-f1-light">Ticket Availability</span>
+                  <div className="f1-stripe" />
                 </div>
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-sm text-f1-light">{race.availableQuota.toLocaleString()} of {race.totalQuota.toLocaleString()} tickets remaining</span>
@@ -547,9 +547,9 @@ export default function RaceDetail() {
             {/* Right: Booking Card */}
             <div className="lg:col-span-1">
               <div className="card p-6 sticky top-24 animate-fade-in rounded-2xl" style={{ animationDelay: '0.1s' }}>
-                <div className="flex items-center gap-3 mb-1">
-                  <div className="f1-stripe" />
+                <div className="flex flex-col gap-1.5 mb-2">
                   <span className="label-machined text-f1-light">Booking</span>
+                  <div className="f1-stripe" />
                 </div>
                 <h2 className="font-f1 text-xl font-semibold text-f1-white tracking-tight">Book Tickets</h2>
                 <p className="text-sm text-f1-light mb-6 mt-0.5">Secure your spot at {race.name}</p>

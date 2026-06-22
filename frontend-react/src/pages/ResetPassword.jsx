@@ -124,9 +124,9 @@ export default function ResetPassword() {
 
             {/* Desktop Brand Subtitle */}
             <div className="hidden md:block mb-8">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="f1-stripe" />
+              <div className="flex flex-col gap-1.5 mb-2">
                 <span className="label-machined text-f1-light">Account Security</span>
+                <div className="f1-stripe" />
               </div>
               <h2 className="font-f1 text-2xl font-semibold text-f1-white tracking-tight animate-fade-in">
                 Reset Password

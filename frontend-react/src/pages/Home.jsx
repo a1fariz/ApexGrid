@@ -259,9 +259,9 @@ export default function Home() {
         <section id="races" className="max-w-7xl mx-auto px-4 py-16">
           {/* Section Header */}
           <div className="mb-8">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="f1-stripe" />
+            <div className="flex flex-col gap-1.5 mb-3">
               <span className="label-machined text-f1-light">Race Calendar</span>
+              <div className="f1-stripe" />
             </div>
             <h2 className="font-f1 text-3xl md:text-4xl text-f1-white tracking-tight">
               Explore the Season
