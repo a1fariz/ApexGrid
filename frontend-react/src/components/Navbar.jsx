@@ -41,18 +41,37 @@ export default function Navbar() {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-2">
-            <Link to="/" className="btn-ghost text-sm">Races</Link>
+            <Link to="/" className="py-2 px-3 text-sm text-f1-light hover:text-f1-white transition-colors duration-300 group">
+              <span className="relative py-0.5">
+                Races
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-0 bg-gradient-to-r from-[#0066b1] via-[#1c69d4] to-[#e22718] rounded-full transition-all duration-300 group-hover:w-full" />
+              </span>
+            </Link>
 
             {isAuthenticated() && (
               <>
-                <Link to="/bookings" className="btn-ghost text-sm">My Bookings</Link>
-                <Link to="/profile" className="btn-ghost text-sm">Profile</Link>
+                <Link to="/bookings" className="py-2 px-3 text-sm text-f1-light hover:text-f1-white transition-colors duration-300 group">
+                  <span className="relative py-0.5">
+                    My Bookings
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-0 bg-gradient-to-r from-[#0066b1] via-[#1c69d4] to-[#e22718] rounded-full transition-all duration-300 group-hover:w-full" />
+                  </span>
+                </Link>
+                <Link to="/profile" className="py-2 px-3 text-sm text-f1-light hover:text-f1-white transition-colors duration-300 group">
+                  <span className="relative py-0.5">
+                    Profile
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-0 bg-gradient-to-r from-[#0066b1] via-[#1c69d4] to-[#e22718] rounded-full transition-all duration-300 group-hover:w-full" />
+                  </span>
+                </Link>
               </>
             )}
 
             {isAdmin() && (
-              <Link to="/admin" className="btn-ghost text-sm text-amber-400 hover:text-amber-300 flex items-center gap-1">
-                <FaBolt /> Admin
+              <Link to="/admin" className="py-2 px-3 text-sm text-amber-400 hover:text-amber-300 transition-colors duration-300 group flex items-center gap-1">
+                <FaBolt />
+                <span className="relative py-0.5">
+                  Admin
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-0 bg-gradient-to-r from-[#0066b1] via-[#1c69d4] to-[#e22718] rounded-full transition-all duration-300 group-hover:w-full" />
+                </span>
               </Link>
             )}
 
@@ -70,7 +89,12 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="flex items-center gap-2 ml-4">
-                <Link to="/login" className="btn-ghost text-sm">Login</Link>
+                <Link to="/login" className="py-2 px-3 text-sm text-f1-light hover:text-f1-white transition-colors duration-300 group">
+                  <span className="relative py-0.5">
+                    Login
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-0 bg-gradient-to-r from-[#0066b1] via-[#1c69d4] to-[#e22718] rounded-full transition-all duration-300 group-hover:w-full" />
+                  </span>
+                </Link>
                 <Link to="/register" className="btn-primary text-sm py-2 px-4">Register</Link>
               </div>
             )}
