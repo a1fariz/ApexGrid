@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute'
 import { Toast } from './components/Toast'
+import ScrollToTop from './components/ScrollToTop'
 
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -22,6 +23,7 @@ import AdminBookingManagement from './pages/AdminBookingManagement'
 function App() {
   return (
     <AuthProvider>
+      <ScrollToTop />
       <div className="min-h-screen bg-f1-black text-f1-white">
         <Routes>
           <Route path="/" element={<Home />} />
