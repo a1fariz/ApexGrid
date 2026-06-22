@@ -150,24 +150,40 @@ export default function Navbar() {
         {/* Mobile Menu */}
         {menuOpen && (
           <div className="md:hidden pb-4 animate-fade-in border-t border-f1-border mt-2 pt-4 space-y-1">
-            <Link to="/" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-f1-surface text-sm" onClick={() => setMenuOpen(false)}>
-              <FaFlagCheckered /> Races
+            <Link to="/" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-f1-surface text-sm group" onClick={() => setMenuOpen(false)}>
+              <FaFlagCheckered />
+              <span className="relative">
+                Races
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-0 bg-gradient-to-r from-[#0066b1] via-[#1c69d4] to-[#e22718] rounded-full transition-all duration-300 group-hover:w-full" />
+              </span>
             </Link>
 
             {isAuthenticated() && (
               <>
-                <Link to="/bookings" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-f1-surface text-sm" onClick={() => setMenuOpen(false)}>
-                  <FaTicketAlt /> My Bookings
+                <Link to="/bookings" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-f1-surface text-sm group" onClick={() => setMenuOpen(false)}>
+                  <FaTicketAlt />
+                  <span className="relative">
+                    My Bookings
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-0 bg-gradient-to-r from-[#0066b1] via-[#1c69d4] to-[#e22718] rounded-full transition-all duration-300 group-hover:w-full" />
+                  </span>
                 </Link>
-                <Link to="/profile" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-f1-surface text-sm" onClick={() => setMenuOpen(false)}>
-                  <FaUser /> My Profile
+                <Link to="/profile" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-f1-surface text-sm group" onClick={() => setMenuOpen(false)}>
+                  <FaUser />
+                  <span className="relative">
+                    My Profile
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-0 bg-gradient-to-r from-[#0066b1] via-[#1c69d4] to-[#e22718] rounded-full transition-all duration-300 group-hover:w-full" />
+                  </span>
                 </Link>
               </>
             )}
 
             {isAdmin() && (
-              <Link to="/admin" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-f1-surface text-sm text-amber-400" onClick={() => setMenuOpen(false)}>
-                <FaBolt /> Admin Dashboard
+              <Link to="/admin" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-f1-surface text-sm text-amber-400 group" onClick={() => setMenuOpen(false)}>
+                <FaBolt />
+                <span className="relative">
+                  Admin Dashboard
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-0 bg-gradient-to-r from-[#0066b1] via-[#1c69d4] to-[#e22718] rounded-full transition-all duration-300 group-hover:w-full" />
+                </span>
               </Link>
             )}
 
