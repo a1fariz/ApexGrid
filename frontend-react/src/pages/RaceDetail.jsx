@@ -8,6 +8,21 @@ import { useAuth } from '../hooks/useAuth'
 import api from '../services/api'
 import { TRACK_PATHS, normalizeCircuitName } from '../components/CircuitOutline'
 import { CIRCUIT_FLAGS, getRaceImage } from '../services/circuitImages'
+import {
+  FaCampground,
+  FaBuilding,
+  FaGlassCheers,
+  FaFlagCheckered,
+  FaFlag,
+  FaCalendarAlt,
+  FaTrophy,
+  FaChartBar,
+  FaMap,
+  FaRulerHorizontal,
+  FaLock,
+  FaCar,
+  FaExclamationTriangle
+} from 'react-icons/fa'
 
 const TICKET_ZONES = {
   GA: {
@@ -16,7 +31,7 @@ const TICKET_ZONES = {
     color: '#00D2BE',
     bgLight: 'rgba(0, 210, 190, 0.05)',
     borderLight: 'rgba(0, 210, 190, 0.2)',
-    icon: '🏕️',
+    icon: <FaCampground />,
     description: 'Access to general spectator areas around the circuit, giant screens, and entertainment zones.',
   },
   GS: {
@@ -25,7 +40,7 @@ const TICKET_ZONES = {
     color: '#FFD700',
     bgLight: 'rgba(255, 215, 0, 0.05)',
     borderLight: 'rgba(255, 215, 0, 0.2)',
-    icon: '🏟️',
+    icon: <FaBuilding />,
     description: 'Reserved seat in covered grandstands opposite the main straight or key corners. Excellent viewing angles.',
   },
   VIP: {
@@ -34,7 +49,7 @@ const TICKET_ZONES = {
     color: '#E10600',
     bgLight: 'rgba(225, 6, 0, 0.05)',
     borderLight: 'rgba(225, 6, 0, 0.2)',
-    icon: '🥂',
+    icon: <FaGlassCheers />,
     description: 'Ultimate luxury. Prime viewing above the pit lane, pit lane walks, open bar, gourmet dining, and driver appearances.',
   },
 }
@@ -164,7 +179,7 @@ export default function RaceDetail() {
       <div className="min-h-screen flex flex-col">
         <Navbar />
         <div className="text-center py-24 animate-fade-in flex-1">
-          <div className="text-6xl mb-4">🏁</div>
+          <FaFlagCheckered className="text-6xl mx-auto mb-4 text-f1-light" />
           <h2 className="text-xl text-white mb-2">Race not found</h2>
           <p className="text-f1-light mb-6 text-sm">The race you're looking for doesn't exist or has been removed.</p>
           <button onClick={() => navigate('/')} className="btn-primary mt-4">Back to Races</button>
@@ -174,7 +189,7 @@ export default function RaceDetail() {
     )
   }
 
-  const flag = CIRCUIT_FLAGS[race.country] || '🏳️'
+  const flag = CIRCUIT_FLAGS[race.country] || <FaFlag className="inline text-gray-500" />
   const quotaPercent = Math.round((race.availableQuota / race.totalQuota) * 100)
   const isLowQuota = quotaPercent < 20
   const isPastEvent = race.raceDate ? new Date(race.raceDate) < new Date() : false
@@ -206,8 +221,8 @@ export default function RaceDetail() {
         {/* Hero Banner */}
         <div className="relative h-60 md:h-80 overflow-hidden"
              style={displayImageUrl && !imgError
-               ? { backgroundColor: '#0A0A0F' }
-               : { background: 'linear-gradient(135deg, #150505 0%, #1a0808 40%, #0A0A0F 100%)' }}>
+               ? { backgroundColor: 'var(--f1-darker)' }
+               : { background: 'linear-gradient(135deg, var(--f1-dark) 0%, var(--f1-darker) 100%)' }}>
 
           {displayImageUrl && !imgError && (
             <img
@@ -223,15 +238,17 @@ export default function RaceDetail() {
             <span className="text-[200px] font-black select-none">{flag}</span>
           </div>
 
-          {/* Bottom gradient */}
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0A0A0F] to-transparent" />
+          {/* Bottom gradient — fade into page background token */}
+          <div className="absolute bottom-0 left-0 right-0 h-32"
+               style={{ background: 'linear-gradient(to top, var(--f1-black), transparent)' }} />
 
           {/* Content */}
           <div className="relative z-10 max-w-7xl mx-auto px-4 h-full flex flex-col justify-end pb-8">
             <button onClick={() => navigate('/')} className="text-f1-light hover:text-f1-white text-sm transition-colors duration-300 mb-3 w-fit">
               ← Back to Races
             </button>
-            <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight">{race.name}</h1>
+            <div className="f1-stripe mb-3" />
+            <h1 className="font-f1 text-3xl md:text-5xl font-semibold text-white leading-tight tracking-tight">{race.name}</h1>
             <p className="text-f1-light mt-2 text-lg">{race.circuitName} · {race.location}, {race.country}</p>
           </div>
         </div>
@@ -243,15 +260,16 @@ export default function RaceDetail() {
             <div className="lg:col-span-2 space-y-6">
 
               {/* Seating & Zone Selection Section */}
-              <div className="card p-6 animate-fade-in" style={{ animationDelay: '0.05s' }}>
-                <div className="flex items-center gap-2 mb-2">
+              <div className="card p-6 md:p-8 animate-fade-in" style={{ animationDelay: '0.05s' }}>
+                <div className="flex items-center gap-3 mb-2">
                   <div className="f1-stripe" />
-                  <h2 className="text-lg font-bold text-f1-white uppercase tracking-wider font-f1">Select Seating Zone</h2>
+                  <span className="label-machined text-f1-light">Seating</span>
                 </div>
-                <p className="text-f1-light text-sm mb-6">Click on a track zone or select a tier below to customize your ticket</p>
+                <h2 className="font-f1 text-2xl font-semibold text-f1-white tracking-tight mb-1">Select Your Zone</h2>
+                <p className="text-f1-light text-sm mb-6">Click a track segment or pick a tier below to customize your ticket.</p>
 
                 {/* Interactive Racetrack SVG */}
-                <div className="bg-f1-surface rounded-2xl p-6 border border-f1-border flex flex-col md:flex-row items-center gap-8 mb-8 justify-center">
+                <div className="rounded-xl p-6 md:p-8 border border-f1-border flex flex-col md:flex-row items-center gap-8 mb-8 justify-center section-soft">
                   <div className="relative w-64 h-64 shrink-0">
                     <svg viewBox={activeTrack.viewBox} className="w-full h-full">
                       {/* Track Silhouette */}
@@ -259,7 +277,7 @@ export default function RaceDetail() {
                         ref={setPathRef}
                         d={activeTrack.path}
                         fill="none"
-                        stroke="#2A2A35"
+                        stroke={selectedZone ? 'var(--f1-border)' : '#2A2A35'}
                         strokeWidth={strokeWidthVal}
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -321,18 +339,18 @@ export default function RaceDetail() {
                         <>
                           {/* GA Pin & Label */}
                           <g className="cursor-pointer group" onClick={() => setSelectedZone('GA')} transform={`translate(${gaPin.x}, ${gaPin.y})`}>
-                            <circle r={pinRadiusOuterVal} fill="#14141E" stroke="#00D2BE" strokeWidth={pinStrokeWidthVal} className="transition-transform duration-300 group-hover:scale-125" />
+                            <circle r={pinRadiusOuterVal} fill="var(--f1-darker)" stroke="#00D2BE" strokeWidth={pinStrokeWidthVal} className="transition-transform duration-300 group-hover:scale-125" />
                             <circle r={pinRadiusInnerVal} fill="#00D2BE" />
-                            <text 
-                              y={labelOffsetVal} 
-                              textAnchor="middle" 
-                              fill="#FFFFFF" 
-                              stroke="#0F0F14" 
-                              strokeWidth={textStrokeWidthVal} 
-                              paintOrder="stroke" 
-                              strokeLinejoin="round" 
-                              fontSize={labelFontSizeVal} 
-                              fontWeight="bold" 
+                            <text
+                              y={labelOffsetVal}
+                              textAnchor="middle"
+                              fill="#FFFFFF"
+                              stroke="#0F0F14"
+                              strokeWidth={textStrokeWidthVal}
+                              paintOrder="stroke"
+                              strokeLinejoin="round"
+                              fontSize={labelFontSizeVal}
+                              fontWeight="bold"
                               className="pointer-events-none select-none font-f1 tracking-wider opacity-85 group-hover:opacity-100 transition-opacity"
                             >
                               GA ZONE
@@ -341,18 +359,18 @@ export default function RaceDetail() {
 
                           {/* GS Pin & Label */}
                           <g className="cursor-pointer group" onClick={() => setSelectedZone('GS')} transform={`translate(${gsPin.x}, ${gsPin.y})`}>
-                            <circle r={pinRadiusOuterVal} fill="#14141E" stroke="#FFD700" strokeWidth={pinStrokeWidthVal} className="transition-transform duration-300 group-hover:scale-125" />
+                            <circle r={pinRadiusOuterVal} fill="var(--f1-darker)" stroke="#FFD700" strokeWidth={pinStrokeWidthVal} className="transition-transform duration-300 group-hover:scale-125" />
                             <circle r={pinRadiusInnerVal} fill="#FFD700" />
-                            <text 
-                              y={labelOffsetVal} 
-                              textAnchor="middle" 
-                              fill="#FFFFFF" 
-                              stroke="#0F0F14" 
-                              strokeWidth={textStrokeWidthVal} 
-                              paintOrder="stroke" 
-                              strokeLinejoin="round" 
-                              fontSize={labelFontSizeVal} 
-                              fontWeight="bold" 
+                            <text
+                              y={labelOffsetVal}
+                              textAnchor="middle"
+                              fill="#FFFFFF"
+                              stroke="#0F0F14"
+                              strokeWidth={textStrokeWidthVal}
+                              paintOrder="stroke"
+                              strokeLinejoin="round"
+                              fontSize={labelFontSizeVal}
+                              fontWeight="bold"
                               className="pointer-events-none select-none font-f1 tracking-wider opacity-85 group-hover:opacity-100 transition-opacity"
                             >
                               GRANDSTAND
@@ -361,7 +379,7 @@ export default function RaceDetail() {
 
                           {/* VIP Pin & Label */}
                           <g className="cursor-pointer group" onClick={() => setSelectedZone('VIP')} transform={`translate(${vipPin.x}, ${vipPin.y})`}>
-                            <circle r={pinRadiusOuterVal} fill="#14141E" stroke="#E10600" strokeWidth={pinStrokeWidthVal} className="transition-transform duration-300 group-hover:scale-125" />
+                            <circle r={pinRadiusOuterVal} fill="var(--f1-darker)" stroke="#E10600" strokeWidth={pinStrokeWidthVal} className="transition-transform duration-300 group-hover:scale-125" />
                             <circle r={pinRadiusInnerVal} fill="#E10600" />
                             <text 
                               y={labelOffsetVal} 
@@ -381,71 +399,109 @@ export default function RaceDetail() {
                         </>
                       )}
                     </svg>
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <span className="text-2xl">{zoneInfo.icon}</span>
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-2xl" style={{ color: zoneInfo.color }}>
+                      {zoneInfo.icon}
                     </div>
                   </div>
 
-                  <div className="flex-1 space-y-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl">{zoneInfo.icon}</span>
-                      <h3 className="font-bold text-f1-white text-lg">{zoneInfo.name}</h3>
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
-                            style={{ backgroundColor: zoneInfo.bgLight, color: zoneInfo.color, border: `1px solid ${zoneInfo.borderLight}` }}>
-                        x{zoneInfo.multiplier.toFixed(1)} Price
+                  <div className="flex-1 space-y-4 max-w-xs">
+                    <div className="flex items-center gap-2.5">
+                      <span
+                        className="w-10 h-10 rounded-lg flex items-center justify-center text-xl"
+                        style={{ color: zoneInfo.color, backgroundColor: zoneInfo.bgLight, border: `1px solid ${zoneInfo.borderLight}` }}
+                      >
+                        {zoneInfo.icon}
                       </span>
+                      <div className="min-w-0">
+                        <h3 className="font-semibold text-f1-white text-base truncate">{zoneInfo.name}</h3>
+                        <span
+                          className="inline-block mt-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
+                          style={{ backgroundColor: zoneInfo.bgLight, color: zoneInfo.color, border: `1px solid ${zoneInfo.borderLight}` }}
+                        >
+                          ×{zoneInfo.multiplier.toFixed(1)} Price
+                        </span>
+                      </div>
                     </div>
                     <p className="text-f1-light text-sm leading-relaxed">{zoneInfo.description}</p>
-                    <div className="pt-2 border-t border-f1-border flex items-center justify-between">
-                      <span className="text-f1-light text-xs">Estimated Price per Ticket</span>
-                      <span className="font-bold text-f1-white text-base" style={{ color: zoneInfo.color }}>
+                    <div className="pt-3 border-t border-f1-border flex items-center justify-between">
+                      <span className="text-f1-light text-xs">Price per ticket</span>
+                      <span className="font-bold text-base" style={{ color: zoneInfo.color }}>
                         {formatPrice(ticketPrice)}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                {/* Zone Select Buttons */}
+                {/* Zone Select Buttons — clean tier cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {Object.entries(TICKET_ZONES).map(([key, zone]) => (
-                    <button
-                      key={key}
-                      onClick={() => setSelectedZone(key)}
-                      className={`card-static p-4 text-left transition-all duration-300 rounded-2xl border ${
-                        selectedZone === key
-                          ? 'bg-f1-surface scale-[1.01]'
-                          : 'border-f1-border hover:bg-f1-surface/60'
-                      }`}
-                      style={{ borderColor: selectedZone === key ? zone.color : 'var(--f1-border)' }}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xl">{zone.icon}</span>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-f1-light">Tier {key}</span>
-                      </div>
-                      <div className="font-bold text-f1-white text-sm truncate">{zone.name}</div>
-                      <div className="text-xs text-f1-light mt-1 font-semibold" style={{ color: selectedZone === key ? zone.color : undefined }}>
-                        {formatPrice(race.ticketPrice * zone.multiplier)}
-                      </div>
-                    </button>
-                  ))}
+                  {Object.entries(TICKET_ZONES).map(([key, zone]) => {
+                    const isActive = selectedZone === key
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => setSelectedZone(key)}
+                        className={`card-static card-m-accent ${isActive ? 'is-active' : ''} relative p-5 text-left transition-all duration-300 rounded-xl border overflow-hidden ${
+                          isActive
+                            ? 'scale-[1.01] shadow-lg'
+                            : 'hover:-translate-y-0.5 hover:border-f1-light/40'
+                        }`}
+                        style={{ borderColor: isActive ? zone.color : 'var(--f1-border)' }}
+                      >
+                        {/* Selected accent bar (zone color) */}
+                        {isActive && (
+                          <span
+                            className="absolute top-0 left-0 right-0 h-[3px]"
+                            style={{ background: zone.color }}
+                          />
+                        )}
+                        <div className="flex items-center justify-between mb-3">
+                          <span
+                            className="w-9 h-9 rounded-lg flex items-center justify-center text-lg transition-colors"
+                            style={{
+                              color: isActive ? zone.color : 'var(--f1-light)',
+                              backgroundColor: isActive ? zone.bgLight : 'var(--f1-surface)',
+                              border: `1px solid ${isActive ? zone.borderLight : 'var(--f1-border)'}`,
+                            }}
+                          >
+                            {zone.icon}
+                          </span>
+                          <span className="label-machined text-f1-light">Tier {key}</span>
+                        </div>
+                        <div className="font-semibold text-f1-white text-sm truncate">{zone.name}</div>
+                        <div
+                          className="text-sm font-bold mt-1.5"
+                          style={{ color: isActive ? zone.color : 'var(--f1-white)' }}
+                        >
+                          {formatPrice(race.ticketPrice * zone.multiplier)}
+                          <span className="text-[11px] font-normal text-f1-light ml-1">/ ticket</span>
+                        </div>
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
 
               {/* Key Info */}
-              <div className="card p-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-                <h2 className="text-lg font-semibold text-f1-white mb-5">Race Information</h2>
+              <div className="card p-6 md:p-8 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="f1-stripe" />
+                  <span className="label-machined text-f1-light">Race Information</span>
+                </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {[
-                    { label: 'Date', value: formatDate(race.raceDate), icon: '📅' },
-                    { label: 'Season', value: `${race.season} · Round ${race.round}`, icon: '🏆' },
-                    { label: 'Status', value: race.status, icon: '📊' },
-                    { label: 'Circuit', value: race.circuitName, icon: '🗺️' },
-                    { label: 'Country', value: `${flag} ${race.country}`, icon: '' },
-                    { label: 'Track Length', value: race.lengthKm ? `${race.lengthKm} km` : 'N/A', icon: '📏' },
+                    { label: 'Date', value: formatDate(race.raceDate), icon: <FaCalendarAlt className="text-f1-red" /> },
+                    { label: 'Season', value: `${race.season} · Round ${race.round}`, icon: <FaTrophy className="text-amber-400" /> },
+                    { label: 'Status', value: race.status, icon: <FaChartBar className="text-blue-400" /> },
+                    { label: 'Circuit', value: race.circuitName, icon: <FaMap className="text-green-400" /> },
+                    { label: 'Country', value: `${flag} ${race.country}`, icon: <FaFlag className="text-f1-light" /> },
+                    { label: 'Track Length', value: race.lengthKm ? `${race.lengthKm} km` : 'N/A', icon: <FaRulerHorizontal className="text-purple-400" /> },
                   ].map((item, i) => (
                     <div key={item.label} className="bg-f1-surface border border-f1-border rounded-xl p-4 hover:bg-f1-surface/60 transition-colors duration-300"
                          style={{ animationDelay: `${i * 0.05}s` }}>
-                      <div className="text-[10px] text-f1-light uppercase tracking-wider mb-1.5">{item.label}</div>
+                      <div className="text-[10px] text-f1-light uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                        {item.icon}
+                        <span>{item.label}</span>
+                      </div>
                       <div className="text-sm font-semibold text-f1-white">{item.value}</div>
                     </div>
                   ))}
@@ -454,15 +510,21 @@ export default function RaceDetail() {
 
               {/* Description */}
               {race.description && (
-                <div className="card p-6 animate-fade-in" style={{ animationDelay: '0.15s' }}>
-                  <h2 className="text-lg font-semibold text-f1-white mb-3">About This Race</h2>
+                <div className="card p-6 md:p-8 animate-fade-in" style={{ animationDelay: '0.15s' }}>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="f1-stripe" />
+                    <span className="label-machined text-f1-light">About This Race</span>
+                  </div>
                   <p className="text-f1-light leading-relaxed">{race.description}</p>
                 </div>
               )}
 
               {/* Ticket Availability */}
-              <div className="card p-6 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                <h2 className="text-lg font-semibold text-f1-white mb-4">Ticket Availability</h2>
+              <div className="card p-6 md:p-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="f1-stripe" />
+                  <span className="label-machined text-f1-light">Ticket Availability</span>
+                </div>
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-sm text-f1-light">{race.availableQuota.toLocaleString()} of {race.totalQuota.toLocaleString()} tickets remaining</span>
                   <span className={`text-sm font-bold ${isLowQuota ? 'text-amber-400' : 'text-f1-green'}`}>{quotaPercent}%</span>
@@ -484,13 +546,17 @@ export default function RaceDetail() {
 
             {/* Right: Booking Card */}
             <div className="lg:col-span-1">
-              <div className="card p-6 sticky top-24 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-                <h2 className="text-lg font-semibold text-f1-white mb-1">Book Tickets</h2>
-                <p className="text-sm text-f1-light mb-6">Secure your spot at {race.name}</p>
+              <div className="card p-6 sticky top-24 animate-fade-in rounded-2xl" style={{ animationDelay: '0.1s' }}>
+                <div className="flex items-center gap-3 mb-1">
+                  <div className="f1-stripe" />
+                  <span className="label-machined text-f1-light">Booking</span>
+                </div>
+                <h2 className="font-f1 text-xl font-semibold text-f1-white tracking-tight">Book Tickets</h2>
+                <p className="text-sm text-f1-light mb-6 mt-0.5">Secure your spot at {race.name}</p>
 
                 <div className="space-y-5">
                   {/* Selected Class info */}
-                  <div className="bg-f1-surface border border-f1-border rounded-xl p-3.5 space-y-2">
+                  <div className="bg-f1-surface border border-f1-border rounded-lg p-3.5 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-f1-light text-xs font-medium">Selected Class</span>
                       <span className="font-semibold text-xs" style={{ color: zoneInfo.color }}>{zoneInfo.name}</span>
@@ -504,12 +570,12 @@ export default function RaceDetail() {
                   {/* Quantity */}
                   <div>
                     <label className="form-label">Number of Tickets</label>
-                    <div className="flex items-center justify-between bg-f1-surface border border-f1-border p-1.5 rounded-xl w-full">
+                    <div className="flex items-center justify-between bg-f1-surface border border-f1-border p-1.5 rounded-lg w-full">
                       <button
                         type="button"
                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
                         id="qty-decrease"
-                        className="w-10 h-10 bg-f1-card hover:bg-f1-surface active:scale-95 rounded-lg flex items-center justify-center text-f1-white transition-all duration-300 text-lg font-bold border border-f1-border"
+                        className="w-10 h-10 bg-f1-card hover:bg-f1-surface active:scale-95 rounded-md flex items-center justify-center text-f1-white transition-all duration-300 text-lg font-bold border border-f1-border"
                       >
                         −
                       </button>
@@ -527,7 +593,7 @@ export default function RaceDetail() {
                         type="button"
                         onClick={() => setQuantity(Math.min(Math.min(race.availableQuota, 10), quantity + 1))}
                         id="qty-increase"
-                        className="w-10 h-10 bg-f1-card hover:bg-f1-surface active:scale-95 rounded-lg flex items-center justify-center text-f1-white transition-all duration-300 text-lg font-bold border border-f1-border"
+                        className="w-10 h-10 bg-f1-card hover:bg-f1-surface active:scale-95 rounded-md flex items-center justify-center text-f1-white transition-all duration-300 text-lg font-bold border border-f1-border"
                       >
                         +
                       </button>
@@ -536,7 +602,7 @@ export default function RaceDetail() {
                   </div>
 
                   {/* Total */}
-                  <div className="bg-f1-red/[0.04] dark:bg-f1-red/[0.06] rounded-2xl p-5 border border-f1-red/15 animate-scale-in" key={selectedZone}>
+                  <div className="bg-f1-red/[0.06] light:bg-f1-red/[0.04] rounded-lg p-5 border border-f1-red/15 animate-scale-in" key={selectedZone}>
                     <div className="flex items-center justify-between">
                       <span className="text-f1-white opacity-80 text-sm font-semibold">Total Price</span>
                       <span className="text-2xl font-bold text-f1-red">{formatPrice(totalPrice)}</span>
@@ -548,10 +614,8 @@ export default function RaceDetail() {
                   </div>
 
                   {bookingError && (
-                    <div className="text-red-400 text-sm bg-red-500/[0.08] rounded-xl p-3.5 border border-red-500/15 animate-fade-in flex items-center gap-2.5">
-                      <svg className="w-5 h-5 text-red-500 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                      </svg>
+                    <div className="text-red-400 text-sm bg-red-500/[0.08] rounded-lg p-3.5 border border-red-500/15 animate-fade-in flex items-center gap-2.5">
+                      <FaExclamationTriangle className="text-red-500 shrink-0 text-lg" />
                       <span>{bookingError}</span>
                     </div>
                   )}
@@ -560,7 +624,7 @@ export default function RaceDetail() {
                     onClick={handleBook}
                     id="book-now-btn"
                     disabled={booking || race.availableQuota === 0 || isPastEvent}
-                    className="w-full btn-primary py-3.5 text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full btn-primary py-3.5 text-base rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {booking ? (
                       <span className="flex items-center justify-center gap-2">
@@ -568,13 +632,13 @@ export default function RaceDetail() {
                         Processing...
                       </span>
                     ) : isPastEvent ? (
-                      '🏁 Event Ended'
+                      <span className="flex items-center justify-center gap-1.5"><FaFlagCheckered /> Event Ended</span>
                     ) : race.availableQuota === 0 ? (
                       'Sold Out'
                     ) : !isAuthenticated() ? (
-                      '🔒 Login to Book'
+                      <span className="flex items-center justify-center gap-1.5"><FaLock /> Login to Book</span>
                     ) : (
-                      '🏎️ Book Now'
+                      <span className="flex items-center justify-center gap-1.5"><FaCar className="animate-pulse" /> Book Now</span>
                     )}
                   </button>
 

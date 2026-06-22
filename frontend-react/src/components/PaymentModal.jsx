@@ -1,24 +1,25 @@
 import { useState, useEffect, useCallback } from 'react'
 import api from '../services/api'
 import { showToast } from './Toast'
+import { FaQrcode, FaUniversity, FaCreditCard, FaClock, FaLock, FaCheckCircle, FaCheck } from 'react-icons/fa'
 
 const PAYMENT_METHODS = [
   {
     id: 'qris',
     label: 'QRIS',
-    icon: '⬛',
+    icon: <FaQrcode />,
     desc: 'Scan with any e-wallet or mobile banking',
   },
   {
     id: 'bank',
     label: 'Bank Transfer',
-    icon: '🏦',
+    icon: <FaUniversity />,
     desc: 'Transfer to virtual account number',
   },
   {
     id: 'card',
     label: 'Credit / Debit Card',
-    icon: '💳',
+    icon: <FaCreditCard />,
     desc: 'Visa, Mastercard, JCB accepted',
   },
 ]
@@ -130,7 +131,7 @@ export default function PaymentModal({ isOpen, booking, race, onSuccess, onClose
           )}
         </div>
 
-        {/* ── Order Summary ── */}
+        {/* Order Summary */}
         {step !== 'success' && (
           <div className="mx-6 mt-5 rounded-xl bg-white/[0.03] border border-white/[0.05] p-4">
             <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-2">Order Summary</div>
@@ -155,13 +156,13 @@ export default function PaymentModal({ isOpen, booking, race, onSuccess, onClose
             )}
             {expired && (
               <div className="mt-3 pt-3 border-t border-red-900/30 text-red-400 text-xs font-semibold flex items-center gap-1.5">
-                ⏰ Payment window has expired
+                <FaClock /> Payment window has expired
               </div>
             )}
           </div>
         )}
 
-        {/* ── Step: Select Method ── */}
+        {/* Step: Select Method */}
         {step === 'select' && (
           <div className="px-6 pb-6 mt-5">
             <div className="text-[10px] text-gray-500 uppercase tracking-widest mb-3">Payment Method</div>
@@ -192,7 +193,7 @@ export default function PaymentModal({ isOpen, booking, race, onSuccess, onClose
 
             {/* QRIS */}
             {method === 'qris' && (
-              <div className="mt-4 flex flex-col items-center gap-2 p-4 bg-white rounded-2xl">
+              <div className="mt-4 flex flex-col items-center gap-2 p-4 bg-white rounded-xl">
                 <div className="text-gray-800 text-xs font-semibold mb-1">Scan to pay</div>
                 <svg viewBox="0 0 100 100" className="w-36 h-36">
                   {/* Simplified QR-like pattern for demo */}
@@ -248,7 +249,7 @@ export default function PaymentModal({ isOpen, booking, race, onSuccess, onClose
                     onChange={(e) => setCardNum(formatCardNum(e.target.value))}
                     placeholder="1234 5678 9012 3456"
                     maxLength={19}
-                    className="w-full bg-white/[0.03] border border-white/[0.07] rounded-xl px-4 py-3 text-white font-mono text-sm placeholder-gray-700 focus:outline-none focus:border-f1-red/40 transition-colors"
+                    className="w-full bg-white/[0.03] border border-white/[0.07] rounded-lg px-4 py-3 text-white font-mono text-sm placeholder-gray-700 focus:outline-none focus:border-f1-red/40 transition-colors"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -259,7 +260,7 @@ export default function PaymentModal({ isOpen, booking, race, onSuccess, onClose
                       onChange={(e) => setCardExp(formatExp(e.target.value))}
                       placeholder="MM/YY"
                       maxLength={5}
-                      className="w-full bg-white/[0.03] border border-white/[0.07] rounded-xl px-4 py-3 text-white font-mono text-sm placeholder-gray-700 focus:outline-none focus:border-f1-red/40 transition-colors"
+                      className="w-full bg-white/[0.03] border border-white/[0.07] rounded-lg px-4 py-3 text-white font-mono text-sm placeholder-gray-700 focus:outline-none focus:border-f1-red/40 transition-colors"
                     />
                   </div>
                   <div>
@@ -270,12 +271,12 @@ export default function PaymentModal({ isOpen, booking, race, onSuccess, onClose
                       placeholder="•••"
                       maxLength={4}
                       type="password"
-                      className="w-full bg-white/[0.03] border border-white/[0.07] rounded-xl px-4 py-3 text-white font-mono text-sm placeholder-gray-700 focus:outline-none focus:border-f1-red/40 transition-colors"
+                      className="w-full bg-white/[0.03] border border-white/[0.07] rounded-lg px-4 py-3 text-white font-mono text-sm placeholder-gray-700 focus:outline-none focus:border-f1-red/40 transition-colors"
                     />
                   </div>
                 </div>
                 <div className="flex items-center gap-2 text-[10px] text-gray-600">
-                  🔒 Your card data is encrypted and not stored
+                  <FaLock /> Your card data is encrypted and not stored
                 </div>
               </div>
             )}
@@ -285,7 +286,7 @@ export default function PaymentModal({ isOpen, booking, race, onSuccess, onClose
               onClick={handlePay}
               disabled={expired}
               id="payment-pay-btn"
-              className={`w-full mt-5 py-3.5 rounded-xl font-bold text-sm tracking-wide transition-all duration-300 ${
+              className={`w-full mt-5 py-2.5 rounded-lg font-medium text-sm transition-all duration-300 ${
                 expired
                   ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
                   : 'bg-f1-red hover:bg-red-600 text-white hover:shadow-lg hover:shadow-red-900/30 hover:scale-[1.01] active:scale-[0.99]'
@@ -295,22 +296,22 @@ export default function PaymentModal({ isOpen, booking, race, onSuccess, onClose
             </button>
 
             <div className="flex items-center justify-center gap-4 mt-4 text-[10px] text-gray-700">
-              <span>🔒 SSL Secured</span>
+              <span className="flex items-center gap-1"><FaLock /> SSL Secured</span>
               <span>·</span>
-              <span>🏦 PCI DSS Compliant</span>
+              <span className="flex items-center gap-1"><FaUniversity /> PCI DSS Compliant</span>
               <span>·</span>
-              <span>✅ 256-bit Encryption</span>
+              <span className="flex items-center gap-1"><FaCheckCircle className="text-green-500" /> 256-bit Encryption</span>
             </div>
           </div>
         )}
 
-        {/* ── Step: Processing ── */}
+        {/* Step: Processing */}
         {step === 'processing' && (
           <div className="px-6 py-12 flex flex-col items-center gap-5 text-center">
             <div className="relative w-16 h-16">
               <div className="absolute inset-0 rounded-full border-4 border-white/[0.05]" />
               <div className="absolute inset-0 rounded-full border-4 border-t-f1-red animate-spin" />
-              <div className="absolute inset-0 flex items-center justify-center text-2xl">💳</div>
+              <div className="absolute inset-0 flex items-center justify-center text-xl text-f1-red"><FaCreditCard /></div>
             </div>
             <div>
               <div className="text-white font-bold text-lg">Processing Payment</div>
@@ -328,11 +329,11 @@ export default function PaymentModal({ isOpen, booking, race, onSuccess, onClose
           </div>
         )}
 
-        {/* ── Step: Success ── */}
+        {/* Step: Success */}
         {step === 'success' && (
           <div className="px-6 py-10 flex flex-col items-center gap-4 text-center">
             <div className="w-20 h-20 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center">
-              <span className="text-4xl">✅</span>
+              <FaCheckCircle className="text-4xl text-green-500" />
             </div>
             <div>
               <div className="text-white font-bold text-xl">Payment Successful!</div>
@@ -349,13 +350,13 @@ export default function PaymentModal({ isOpen, booking, race, onSuccess, onClose
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Status</span>
-                <span className="text-green-400 font-semibold">CONFIRMED ✓</span>
+                <span className="text-green-400 font-semibold flex items-center gap-1">CONFIRMED <FaCheck /></span>
               </div>
             </div>
             <button
               onClick={() => { onSuccess?.(); onClose() }}
               id="payment-success-btn"
-              className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold text-sm transition-all duration-300 hover:shadow-lg hover:shadow-green-900/30 mt-2"
+              className="w-full py-2 rounded-lg bg-green-600 hover:bg-green-500 text-white font-medium text-sm transition-all duration-300 hover:shadow-lg hover:shadow-green-900/30 mt-2"
             >
               View My Ticket →
             </button>

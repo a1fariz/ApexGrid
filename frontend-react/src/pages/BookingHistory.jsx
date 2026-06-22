@@ -5,6 +5,7 @@ import Footer from '../components/Footer'
 import BookingCard from '../components/BookingCard'
 import PageTransition from '../components/PageTransition'
 import api from '../services/api'
+import { FaTicketAlt } from 'react-icons/fa'
 
 function BookingCardSkeleton() {
   return (
@@ -13,20 +14,20 @@ function BookingCardSkeleton() {
       <div className="p-5 space-y-4">
         <div className="flex justify-between items-start">
           <div className="space-y-2 flex-1">
-            <div className="h-4 bg-white/[0.06] rounded w-24" />
-            <div className="h-5 bg-white/[0.06] rounded w-40" />
-            <div className="h-3 bg-white/[0.04] rounded w-32" />
+            <div className="h-4 bg-white/[0.06] rounded-lg w-24" />
+            <div className="h-5 bg-white/[0.06] rounded-lg w-40" />
+            <div className="h-3 bg-white/[0.04] rounded-lg w-32" />
           </div>
           <div className="h-6 bg-white/[0.06] rounded-full w-20" />
         </div>
         <div className="grid grid-cols-3 gap-2">
-          <div className="h-14 bg-white/[0.03] rounded-xl" />
-          <div className="h-14 bg-white/[0.03] rounded-xl" />
-          <div className="h-14 bg-white/[0.03] rounded-xl" />
+          <div className="h-14 bg-white/[0.03] rounded-lg" />
+          <div className="h-14 bg-white/[0.03] rounded-lg" />
+          <div className="h-14 bg-white/[0.03] rounded-lg" />
         </div>
         <div className="flex gap-2">
-          <div className="flex-1 h-10 bg-white/[0.04] rounded-xl" />
-          <div className="flex-1 h-10 bg-white/[0.04] rounded-xl" />
+          <div className="flex-1 h-10 bg-white/[0.04] rounded-lg" />
+          <div className="flex-1 h-10 bg-white/[0.04] rounded-lg" />
         </div>
       </div>
     </div>
@@ -103,7 +104,7 @@ export default function BookingHistory() {
           {/* Header */}
           <div className="mb-10 flex flex-col items-center text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <Link to="/" className="text-f1-light hover:text-f1-white transition-colors text-sm flex items-center gap-2 font-semibold bg-white/5 hover:bg-f1-red px-4 py-1.5 rounded-full backdrop-blur-sm border border-white/10 hover:border-f1-red shadow-lg">
+              <Link to="/" className="text-f1-light hover:text-f1-white transition-colors text-sm flex items-center gap-2 font-semibold bg-white/5 hover:bg-f1-red px-4 py-1.5 rounded-lg backdrop-blur-sm border border-white/10 hover:border-f1-red shadow-lg">
                 ← Back to Home
               </Link>
             </div>
@@ -119,14 +120,14 @@ export default function BookingHistory() {
                   key={st}
                   onClick={() => { setFilter(st); setPage(0); }}
                   id={`filter-${st}`}
-                  className={`card-static p-4 text-center transition-all duration-300 rounded-2xl border ${
+                  className={`card-static p-4 text-center transition-all duration-300 rounded-xl border ${
                     filter === st
                       ? filterConfig[st].activeColor
                       : 'border-f1-border hover:border-f1-border/80'
                   }`}
                 >
                   <div className={`text-2xl font-bold ${filterConfig[st].color}`}>{count}</div>
-                  <div className="text-[10px] text-f1-light mt-1 uppercase tracking-wider font-semibold">{st}</div>
+                  <div className="text-[10px] text-f1-light mt-1 uppercase tracking-wider font-bold">{st}</div>
                 </button>
               ))}
             </div>
@@ -154,8 +155,8 @@ export default function BookingHistory() {
             </div>
           ) : filteredBookings.length === 0 ? (
             <div className="text-center py-24 animate-fade-in">
-              <div className="w-20 h-20 bg-f1-surface border border-f1-border rounded-3xl flex items-center justify-center mx-auto mb-6">
-                <span className="text-5xl">🎫</span>
+              <div className="w-20 h-20 bg-f1-surface border border-f1-border rounded-xl flex items-center justify-center mx-auto mb-6">
+                <FaTicketAlt className="text-4xl text-f1-light" />
               </div>
               <h2 className="text-xl font-semibold text-f1-white mb-2">
                 {filter === 'ALL' ? 'No bookings yet' : `No ${filter.toLowerCase()} bookings`}
@@ -187,7 +188,7 @@ export default function BookingHistory() {
               <button
                 onClick={() => setPage(p => Math.max(0, p - 1))}
                 disabled={page === 0}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-f1-surface text-f1-light hover:text-white border border-f1-border disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                className="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-f1-surface text-f1-light hover:text-white border border-f1-border disabled:opacity-20 disabled:cursor-not-allowed transition-all"
               >
                 ← Prev
               </button>
@@ -197,7 +198,7 @@ export default function BookingHistory() {
               <button
                 onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
                 disabled={page >= totalPages - 1}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-f1-surface text-f1-light hover:text-white border border-f1-border disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                className="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-f1-surface text-f1-light hover:text-white border border-f1-border disabled:opacity-20 disabled:cursor-not-allowed transition-all"
               >
                 Next →
               </button>

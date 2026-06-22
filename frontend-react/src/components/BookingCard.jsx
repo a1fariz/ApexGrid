@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
 import ConfirmModal from './ConfirmModal'
 import { showToast } from './Toast'
+import { FaBolt, FaClock, FaCreditCard } from 'react-icons/fa'
 
 function StatusBadge({ status }) {
   const config = {
@@ -108,8 +109,9 @@ function CircularCountdown({ expiredAt }) {
         </span>
       </div>
       <div>
-        <div className={`text-xs font-semibold ${isUrgent ? 'text-f1-red' : 'text-amber-400'}`}>
-          {isUrgent ? '⚡ Hurry up!' : '⏱ Time Remaining'}
+        <div className={`text-xs font-semibold flex items-center gap-1.5 ${isUrgent ? 'text-f1-red' : 'text-amber-400'}`}>
+          {isUrgent ? <FaBolt className="animate-pulse" /> : <FaClock />}
+          {isUrgent ? 'Hurry up!' : 'Time Remaining'}
         </div>
         <div className="text-[10px] text-gray-500">Confirm before expiry</div>
       </div>
@@ -208,15 +210,15 @@ export default function BookingCard({ booking, onUpdate }) {
 
           {/* Details */}
           <div className="grid grid-cols-3 gap-2 mb-4">
-            <div className="bg-white/[0.03] rounded-xl p-2.5 text-center">
+            <div className="bg-white/[0.03] rounded-lg p-2.5 text-center">
               <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Date</div>
               <div className="text-xs font-medium">{formatDate(booking.raceDate)}</div>
             </div>
-            <div className="bg-white/[0.03] rounded-xl p-2.5 text-center">
+            <div className="bg-white/[0.03] rounded-lg p-2.5 text-center">
               <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Tickets</div>
               <div className="text-sm font-bold text-white">{booking.quantity}</div>
             </div>
-            <div className="bg-white/[0.03] rounded-xl p-2.5 text-center">
+            <div className="bg-white/[0.03] rounded-lg p-2.5 text-center">
               <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Total</div>
               <div className="text-xs font-bold text-f1-red">{formatPrice(booking.totalPrice)}</div>
             </div>
@@ -224,7 +226,7 @@ export default function BookingCard({ booking, onUpdate }) {
 
           {/* Circular Countdown for PENDING */}
           {booking.status === 'PENDING' && (
-            <div className="mb-4 bg-amber-400/[0.04] rounded-xl px-3 py-1 border border-amber-400/10">
+            <div className="mb-4 bg-amber-400/[0.04] rounded-lg px-3 py-1 border border-amber-400/10">
               <CircularCountdown expiredAt={booking.expiredAt} />
             </div>
           )}
@@ -243,15 +245,19 @@ export default function BookingCard({ booking, onUpdate }) {
                 onClick={() => navigate(`/payment/${booking.bookingCode}`)}
                 disabled={loading}
                 id={`pay-btn-${booking.id}`}
-                className="flex-1 py-2.5 text-sm bg-f1-red/90 hover:bg-f1-red text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 hover:shadow-lg hover:shadow-red-900/30 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-1.5"
+                className="flex-1 py-2 text-sm bg-f1-red/90 hover:bg-f1-red text-white font-medium rounded-lg transition-all duration-300 disabled:opacity-50 hover:shadow-lg hover:shadow-red-900/30 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-1.5"
               >
-                {loading ? '...' : '💳 Pay Now'}
+                {loading ? '...' : (
+                  <span className="flex items-center justify-center gap-1.5">
+                    <FaCreditCard /> Pay Now
+                  </span>
+                )}
               </button>
               <button
                 onClick={() => setConfirmModal({ open: true, type: 'cancel' })}
                 disabled={loading}
                 id={`cancel-btn-${booking.id}`}
-                className="flex-1 py-2.5 text-sm bg-white/[0.04] hover:bg-red-900/30 hover:text-f1-red text-gray-400 font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 border border-white/[0.04] hover:border-f1-red/20 hover:scale-[1.02] active:scale-[0.98]"
+                className="flex-1 py-2 text-sm bg-white/[0.04] hover:bg-red-900/30 hover:text-f1-red text-gray-400 font-medium rounded-lg transition-all duration-300 disabled:opacity-50 border border-white/[0.04] hover:border-f1-red/20 hover:scale-[1.02] active:scale-[0.98]"
               >
                 {loading ? '...' : 'Cancel'}
               </button>
@@ -264,7 +270,7 @@ export default function BookingCard({ booking, onUpdate }) {
               onClick={handleDownloadTicket}
               disabled={downloading}
               id={`download-ticket-${booking.id}`}
-              className="w-full py-2.5 text-sm bg-f1-red/[0.08] hover:bg-f1-red/[0.15] text-f1-red font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 border border-f1-red/10 hover:border-f1-red/25 hover:scale-[1.01] active:scale-[0.99]"
+              className="w-full py-2 text-sm bg-f1-red/[0.08] hover:bg-f1-red/[0.15] text-f1-red font-medium rounded-lg transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 border border-f1-red/10 hover:border-f1-red/25 hover:scale-[1.01] active:scale-[0.99]"
             >
               {downloading ? (
                 <>
@@ -288,7 +294,7 @@ export default function BookingCard({ booking, onUpdate }) {
         isOpen={confirmModal.open && confirmModal.type === 'confirm'}
         title="Confirm Booking"
         message={`Are you sure you want to confirm booking ${booking.bookingCode}? This action will finalize your ticket purchase.`}
-        icon="🏆"
+        icon="trophy"
         confirmText="Yes, Confirm"
         confirmColor="green"
         loading={loading}
@@ -301,7 +307,7 @@ export default function BookingCard({ booking, onUpdate }) {
         isOpen={confirmModal.open && confirmModal.type === 'cancel'}
         title="Cancel Booking"
         message={`Are you sure you want to cancel booking ${booking.bookingCode}? Your tickets will be released and the quota will be restored.`}
-        icon="⚠️"
+        icon="warning"
         confirmText="Yes, Cancel Booking"
         confirmColor="red"
         loading={loading}

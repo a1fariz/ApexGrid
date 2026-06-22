@@ -7,6 +7,7 @@ import PageTransition from '../components/PageTransition'
 import ConfirmModal from '../components/ConfirmModal'
 import { showToast } from '../components/Toast'
 import api from '../services/api'
+import { FaTimes, FaTrash } from 'react-icons/fa'
 
 const EMPTY_FORM = {
   name: '', circuitId: '', raceDate: '', raceTime: '',
@@ -233,14 +234,14 @@ export default function AdminRaceManagement() {
                             <button
                               onClick={() => openEdit(race)}
                               id={`edit-race-${race.id}`}
-                              className="px-3 py-1 text-xs bg-white/5 hover:bg-white/10 rounded-lg text-gray-300 transition-colors"
+                              className="px-3 py-1.5 text-xs bg-white/5 hover:bg-white/10 rounded-lg text-gray-300 font-medium transition-colors border border-white/10"
                             >
                               Edit
                             </button>
                             <button
                             onClick={() => setDeleteTarget(race)}
                               id={`delete-race-${race.id}`}
-                              className="px-3 py-1.5 text-xs bg-red-500/10 hover:bg-red-500/20 rounded-lg text-red-400 transition-colors"
+                              className="px-3 py-1.5 text-xs bg-red-500/10 hover:bg-red-500/20 rounded-lg text-red-400 font-medium transition-colors border border-red-500/20"
                             >
                               Delete
                             </button>
@@ -267,14 +268,14 @@ export default function AdminRaceManagement() {
                 {editing ? 'Edit Race Details' : 'Add New Race'}
               </h2>
               <button type="button" onClick={() => setShowModal(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-f1-red text-f1-light hover:text-white transition-all">
-                ✕
+                <FaTimes />
               </button>
             </div>
 
             <div className="p-6 sm:p-8 overflow-y-auto flex-1 custom-scrollbar">
               <form id="race-form" onSubmit={handleSave} className="space-y-6">
               {error && (
-                <div className="px-4 py-3 rounded-xl bg-red-500/[0.08] border border-red-500/15 text-red-400 text-sm flex items-center gap-2.5">
+                <div className="px-4 py-3 rounded-lg bg-red-500/[0.08] border border-red-500/15 text-red-400 text-sm flex items-center gap-2.5">
                   <svg className="w-5 h-5 text-red-500 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                   </svg>
@@ -363,7 +364,7 @@ export default function AdminRaceManagement() {
             </div>
 
             <div className="p-6 sm:px-8 sm:py-6 border-t border-white/10 shrink-0 flex items-center justify-end gap-4 bg-white/[0.02]">
-              <button type="button" onClick={() => setShowModal(false)} className="px-6 py-2.5 rounded-xl text-f1-light hover:text-white hover:bg-white/5 transition-colors font-semibold">
+              <button type="button" onClick={() => setShowModal(false)} className="px-5 py-2 rounded-lg text-f1-light hover:text-f1-white hover:bg-f1-surface transition-colors font-medium text-sm">
                 Cancel
               </button>
               <button type="submit" form="race-form" id="save-race-btn" disabled={saving} className="btn-primary min-w-[160px] py-2.5 shadow-lg shadow-red-900/20">
@@ -386,7 +387,7 @@ export default function AdminRaceManagement() {
         isOpen={!!deleteTarget}
         title="Delete Race"
         message={`Are you sure you want to delete "${deleteTarget?.name}"? This action cannot be undone.`}
-        icon="🗑️"
+        icon="trash"
         confirmText="Yes, Delete"
         confirmColor="red"
         onConfirm={() => handleDelete(deleteTarget)}

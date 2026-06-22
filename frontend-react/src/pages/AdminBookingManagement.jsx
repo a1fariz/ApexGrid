@@ -6,6 +6,7 @@ import PageTransition from '../components/PageTransition'
 import ConfirmModal from '../components/ConfirmModal'
 import { showToast } from '../components/Toast'
 import api from '../services/api'
+import { FaBolt, FaTicketAlt, FaCheck } from 'react-icons/fa'
 
 export default function AdminBookingManagement() {
   const [bookings, setBookings] = useState([])
@@ -96,8 +97,8 @@ export default function AdminBookingManagement() {
               </div>
               <h1 className="text-3xl font-bold text-f1-white flex items-center gap-3">
                 Booking Management
-                <span className="px-3 py-1 bg-amber-400/10 border border-amber-400/20 text-amber-400 text-xs font-semibold rounded-full">
-                  ⚡ ADMIN
+                <span className="px-3 py-1 bg-amber-400/10 border border-amber-400/20 text-amber-400 text-xs font-bold rounded-full flex items-center gap-1">
+                  <FaBolt /> ADMIN
                 </span>
               </h1>
               <p className="text-f1-light mt-2">Monitor tickets sales, view order details, and administratively cancel bookings.</p>
@@ -123,7 +124,7 @@ export default function AdminBookingManagement() {
               <button
                 key={tab.label}
                 onClick={() => { setStatusFilter(tab.value); setPage(0); }}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-all duration-300 ${
+                className={`px-4 py-2 rounded-lg text-xs font-medium border transition-all duration-300 ${
                   statusFilter === tab.value
                     ? 'bg-f1-red border-f1-red text-white shadow-lg shadow-red-900/20'
                     : 'bg-f1-surface border-f1-border text-f1-light hover:text-f1-white'
@@ -142,7 +143,7 @@ export default function AdminBookingManagement() {
               </div>
             ) : bookings.length === 0 ? (
               <div className="text-center py-20 text-f1-light">
-                <div className="text-5xl mb-4">🎫</div>
+                <FaTicketAlt className="text-5xl mb-4 text-f1-light mx-auto" />
                 <h3 className="text-lg font-bold text-f1-white mb-1">No Bookings Found</h3>
                 <p className="text-xs">There are no bookings matching the selected status filter.</p>
               </div>
@@ -182,8 +183,8 @@ export default function AdminBookingManagement() {
                             {b.status}
                           </span>
                           {b.status === 'CONFIRMED' && b.scannedAt && (
-                            <span className="block mt-1 text-[10px] text-green-400 font-semibold uppercase tracking-wider">
-                              ✓ Scanned
+                            <span className="flex items-center gap-1 mt-1 text-[10px] text-green-400 font-bold uppercase tracking-wider">
+                              <FaCheck /> Scanned
                             </span>
                           )}
                         </td>
@@ -233,7 +234,7 @@ export default function AdminBookingManagement() {
                   <button
                     key={p}
                     onClick={() => setPage(p)}
-                    className={`w-9 h-9 rounded-xl text-xs font-semibold border transition-all ${
+                    className={`w-9 h-9 rounded-lg text-xs font-medium border transition-all ${
                       page === p
                         ? 'bg-f1-red border-f1-red text-white shadow-lg shadow-red-900/20'
                         : 'bg-f1-surface border-f1-border text-f1-light hover:text-white'
@@ -250,7 +251,7 @@ export default function AdminBookingManagement() {
                 <button
                   onClick={() => setPage(p => Math.max(0, p - 1))}
                   disabled={page === 0}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-f1-surface text-f1-light hover:text-white border border-f1-border disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                  className="px-4 py-2 rounded-lg text-xs font-medium bg-f1-surface text-f1-light hover:text-f1-white border border-f1-border disabled:opacity-20 disabled:cursor-not-allowed transition-all"
                 >
                   ← Previous
                 </button>
@@ -258,7 +259,7 @@ export default function AdminBookingManagement() {
                 <button
                   onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
                   disabled={page >= totalPages - 1}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-f1-surface text-f1-light hover:text-white border border-f1-border disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                  className="px-4 py-2 rounded-lg text-xs font-medium bg-f1-surface text-f1-light hover:text-f1-white border border-f1-border disabled:opacity-20 disabled:cursor-not-allowed transition-all"
                 >
                   Next →
                 </button>
@@ -273,7 +274,7 @@ export default function AdminBookingManagement() {
             isOpen={!!cancelTarget}
             title="Force Cancel Booking"
             message={`Are you sure you want to administratively cancel booking "${cancelTarget.bookingCode}" for user @${cancelTarget.username}?`}
-            icon="⚠️"
+            icon="warning"
             confirmText="Yes, Cancel"
             confirmColor="red"
             loading={cancelling}

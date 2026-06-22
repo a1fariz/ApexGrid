@@ -7,24 +7,40 @@ import PageTransition from '../components/PageTransition'
 import { showToast } from '../components/Toast'
 import api from '../services/api'
 import qrisImage from '../assets/qris.png'
+import {
+  FaMobileAlt,
+  FaUniversity,
+  FaCreditCard,
+  FaExclamationTriangle,
+  FaClipboardList,
+  FaLightbulb,
+  FaShieldAlt,
+  FaFlagCheckered,
+  FaCheckCircle,
+  FaLock,
+  FaClock,
+  FaCheck,
+  FaTimes,
+  FaQrcode
+} from 'react-icons/fa'
 
 const PAYMENT_METHODS = [
   {
     id: 'qris',
     label: 'QRIS E-Wallet',
-    icon: '📱',
+    icon: <FaMobileAlt />,
     desc: 'Scan with GoPay, OVO, Dana, LinkAja, or m-Banking',
   },
   {
     id: 'bank',
     label: 'Bank Transfer (VA)',
-    icon: '🏦',
+    icon: <FaUniversity />,
     desc: 'Pay using BCA, Mandiri, BNI, or BRI Virtual Account',
   },
   {
     id: 'card',
     label: 'Credit / Debit Card',
-    icon: '💳',
+    icon: <FaCreditCard />,
     desc: 'Visa, Mastercard, JCB, or Amex credit/debit card',
   },
 ]
@@ -188,8 +204,8 @@ export default function Payment() {
       <div className="min-h-screen flex flex-col">
         <Navbar />
         <div className="max-w-md mx-auto px-4 py-20 text-center flex-1">
-          <div className="glass-card p-8 border border-white/[0.05]">
-            <div className="text-5xl mb-4">⚠️</div>
+          <div className="glass-card p-8 border border-white/[0.05] rounded-xl">
+            <FaExclamationTriangle className="text-5xl text-amber-500 mx-auto mb-4" />
             <h2 className="text-xl font-bold text-white mb-2">Checkout Error</h2>
             <p className="text-gray-400 text-sm mb-6">{error || 'Booking not found.'}</p>
             <button onClick={() => navigate('/bookings')} className="w-full btn-primary">
@@ -259,15 +275,15 @@ export default function Payment() {
                                 : 'border-white/[0.05] bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/15'
                             }`}
                           >
-                            <span className="text-3xl mb-2">{m.icon}</span>
+                            <span className="text-3xl mb-2 text-f1-red">{m.icon}</span>
                             <div>
                               <div className="text-white font-semibold text-xs mb-1">{m.label}</div>
                               <div className="text-[9px] text-gray-500 leading-tight">{m.desc}</div>
                             </div>
-                            <div className={`mt-3 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
+                            <div className={`mt-3 w-4 h-4 rounded-md border-2 flex items-center justify-center transition-all ${
                               method === m.id ? 'border-f1-red bg-f1-red' : 'border-gray-600'
                             }`}>
-                              {method === m.id && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                              {method === m.id && <div className="w-1.5 h-1.5 bg-white" />}
                             </div>
                           </button>
                         ))}
@@ -296,8 +312,8 @@ export default function Payment() {
                               Scan this static QR code using GoPay, ShopeePay, OVO, Dana, LinkAja, or any Indonesian mobile banking application.
                             </p>
                             <div className="flex flex-wrap gap-2 pt-1">
-                              <span className="text-[9px] bg-white/5 border border-white/10 px-2 py-0.5 rounded text-gray-400">Instantly Confirmed</span>
-                              <span className="text-[9px] bg-white/5 border border-white/10 px-2 py-0.5 rounded text-gray-400">Zero Extra Fee</span>
+                              <span className="text-[9px] bg-white/5 border border-white/10 px-2 py-0.5 rounded-full text-gray-400">Instantly Confirmed</span>
+                              <span className="text-[9px] bg-white/5 border border-white/10 px-2 py-0.5 rounded-full text-gray-400">Zero Extra Fee</span>
                             </div>
                           </div>
                         </div>
@@ -331,7 +347,7 @@ export default function Payment() {
                                 <div className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">Virtual Account Bank</div>
                                 <div className="text-white font-bold text-sm mt-0.5">{selectedBankDetails.bankName}</div>
                               </div>
-                              <span className="text-xl">🏦</span>
+                              <FaUniversity className="text-xl text-f1-light" />
                             </div>
 
                             <div>
@@ -342,9 +358,9 @@ export default function Payment() {
                                 </span>
                                 <button
                                   onClick={() => copyToClipboard(selectedBankDetails.number.replace(/\s+/g, ''))}
-                                  className="text-xs bg-white/5 border border-white/10 hover:bg-white/10 text-gray-300 font-semibold px-2.5 py-1 rounded transition-colors active:scale-95 cursor-pointer"
+                                  className="text-xs bg-white/5 border border-white/10 hover:bg-white/10 text-gray-300 font-semibold px-2.5 py-1 rounded-lg transition-colors active:scale-95 cursor-pointer flex items-center gap-1"
                                 >
-                                  📋 Copy
+                                  <FaClipboardList /> Copy
                                 </button>
                               </div>
                             </div>
@@ -371,12 +387,11 @@ export default function Payment() {
                             <button
                               type="button"
                               onClick={handleAutofillCard}
-                              className="text-[10px] bg-f1-red/10 border border-f1-red/20 text-f1-red font-bold px-2 py-1 rounded hover:bg-f1-red/20 transition-all active:scale-95 cursor-pointer"
+                              className="text-[10px] bg-f1-red/10 border border-f1-red/20 text-f1-red font-bold px-2 py-1 rounded-lg hover:bg-f1-red/20 transition-all active:scale-95 cursor-pointer flex items-center gap-1"
                             >
-                              💡 Fill Demo Card
+                              <FaLightbulb /> Fill Demo Card
                             </button>
                           </div>
-
                           <div className="space-y-3">
                             <div>
                               <label className="text-[10px] text-gray-400 uppercase tracking-wider block mb-1">Card Number</label>
@@ -386,9 +401,9 @@ export default function Payment() {
                                   onChange={(e) => setCardNum(formatCardNum(e.target.value))}
                                   placeholder="4111 1111 1111 1111 (Demo)"
                                   maxLength={19}
-                                  className="w-full bg-white/[0.03] border border-white/[0.07] rounded-xl px-4 py-3 text-white font-mono text-sm placeholder-gray-700 focus:outline-none focus:border-f1-red/40 transition-colors"
+                                  className="w-full bg-white/[0.03] border border-white/[0.07] rounded-lg px-4 py-3 text-white font-mono text-sm placeholder-gray-700 focus:outline-none focus:border-f1-red/40 transition-colors"
                                 />
-                                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-lg">💳</span>
+                                <FaCreditCard className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" />
                               </div>
                             </div>
 
@@ -400,7 +415,7 @@ export default function Payment() {
                                   onChange={(e) => setCardExp(formatExp(e.target.value))}
                                   placeholder="MM/YY"
                                   maxLength={5}
-                                  className="w-full bg-white/[0.03] border border-white/[0.07] rounded-xl px-4 py-3 text-white font-mono text-sm placeholder-gray-700 focus:outline-none focus:border-f1-red/40 transition-colors"
+                                  className="w-full bg-white/[0.03] border border-white/[0.07] rounded-lg px-4 py-3 text-white font-mono text-sm placeholder-gray-700 focus:outline-none focus:border-f1-red/40 transition-colors"
                                 />
                               </div>
                               <div>
@@ -411,13 +426,13 @@ export default function Payment() {
                                   placeholder="•••"
                                   maxLength={4}
                                   type="password"
-                                  className="w-full bg-white/[0.03] border border-white/[0.07] rounded-xl px-4 py-3 text-white font-mono text-sm placeholder-gray-700 focus:outline-none focus:border-f1-red/40 transition-colors"
+                                  className="w-full bg-white/[0.03] border border-white/[0.07] rounded-lg px-4 py-3 text-white font-mono text-sm placeholder-gray-700 focus:outline-none focus:border-f1-red/40 transition-colors"
                                 />
                               </div>
                             </div>
                           </div>
                           <div className="text-[10px] text-gray-600 flex items-center gap-1.5">
-                            🛡️ Demo staging gateway — inputs are simulated and never stored.
+                            <FaShieldAlt className="text-xs text-gray-500" /> Demo staging gateway — inputs are simulated and never stored.
                           </div>
                         </div>
                       )}
@@ -430,7 +445,7 @@ export default function Payment() {
                         onClick={handlePay}
                         disabled={expired}
                         id="payment-pay-btn"
-                        className={`w-full py-4 rounded-xl font-bold text-sm tracking-widest uppercase transition-all duration-300 ${
+                        className={`w-full py-2.5 rounded-lg font-medium text-sm transition-all duration-300 ${
                           expired
                             ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
                             : 'bg-f1-red hover:bg-red-600 text-white hover:shadow-lg hover:shadow-red-600/20 hover:scale-[1.01] active:scale-[0.99] cursor-pointer'
@@ -449,7 +464,7 @@ export default function Payment() {
                     <div className="relative w-20 h-20">
                       <div className="absolute inset-0 rounded-full border-4 border-white/[0.05]" />
                       <div className="absolute inset-0 rounded-full border-4 border-t-f1-red animate-spin" />
-                      <div className="absolute inset-0 flex items-center justify-center text-3xl">🏁</div>
+                      <div className="absolute inset-0 flex items-center justify-center text-3xl text-f1-red"><FaFlagCheckered /></div>
                     </div>
                     <div>
                       <h3 className="text-white font-bold text-xl tracking-wide">Processing Secure Payment</h3>
@@ -460,27 +475,27 @@ export default function Payment() {
                     <div className="flex gap-2">
                       {[0, 1, 2].map((i) => (
                         <div
-                          key={i}
-                          className="w-2.5 h-2.5 bg-f1-red rounded-full animate-bounce"
-                          style={{ animationDelay: `${i * 0.15}s` }}
+                           key={i}
+                           className="w-2.5 h-2.5 bg-f1-red rounded-full animate-bounce"
+                           style={{ animationDelay: `${i * 0.15}s` }}
                         />
                       ))}
                     </div>
                   </div>
                 )}
-
+                
                 {/* Success Step */}
                 {step === 'success' && (
                   <div className="p-10 flex flex-col items-center gap-6 text-center animate-fade-in">
-                    <div className="w-20 h-20 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center text-4xl shadow-lg animate-bounce">
-                      ✅
+                    <div className="w-20 h-20 bg-green-500/10 border border-green-500/20 flex items-center justify-center shadow-lg animate-bounce rounded-full">
+                      <FaCheckCircle className="text-4xl text-green-500" />
                     </div>
                     <div>
                       <h3 className="text-white font-bold text-2xl tracking-wide">Payment Successful!</h3>
                       <p className="text-green-400 text-sm font-semibold mt-1">Your F1 Ticket has been confirmed</p>
                     </div>
 
-                    <div className="rounded-2xl bg-white/[0.02] border border-white/[0.05] p-5 w-full max-w-sm text-left space-y-3.5">
+                    <div className="rounded-xl bg-white/[0.02] border border-white/[0.05] p-5 w-full max-w-sm text-left space-y-3.5">
                       <div className="flex justify-between text-sm border-b border-white/[0.03] pb-2">
                         <span className="text-gray-500">Booking Code</span>
                         <span className="font-mono text-f1-red font-extrabold tracking-wider">{booking.bookingCode}</span>
@@ -503,13 +518,13 @@ export default function Payment() {
                       <button
                         onClick={() => navigate('/bookings')}
                         id="payment-success-btn"
-                        className="flex-1 py-3.5 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold text-sm tracking-wide transition-all shadow-lg shadow-green-950/20 active:scale-95 cursor-pointer"
+                        className="flex-1 py-2.5 rounded-lg bg-green-600 hover:bg-green-500 text-white font-medium text-sm tracking-wide transition-all shadow-lg shadow-green-950/20 active:scale-95 cursor-pointer"
                       >
                         View My Tickets →
                       </button>
                       <button
                         onClick={() => navigate('/')}
-                        className="flex-1 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 text-white font-bold text-sm tracking-wide border border-white/10 transition-all active:scale-95 cursor-pointer"
+                        className="flex-1 py-2.5 rounded-lg bg-white/5 hover:bg-white/10 text-white font-medium text-sm tracking-wide border border-white/10 transition-all active:scale-95 cursor-pointer"
                       >
                         Back to Home
                       </button>
@@ -522,10 +537,10 @@ export default function Payment() {
               {/* Secure payment logos block */}
               {step !== 'success' && (
                 <div className="flex flex-wrap items-center justify-center gap-6 py-4 px-6 bg-white/[0.01] border border-white/[0.03] rounded-xl text-[10px] text-gray-500 font-mono">
-                  <span>🔒 SSL SECURED CONNECTION</span>
+                  <span className="flex items-center gap-1"><FaLock className="text-gray-500" /> SSL SECURED CONNECTION</span>
                   <span>🏦 PCI DSS COMPLIANT</span>
-                  <span>🛡️ 256-BIT ENCRYPTION</span>
-                  <span>🇮🇩 BANK INDONESIA LICENSE</span>
+                  <span className="flex items-center gap-1"><FaShieldAlt className="text-gray-500" /> 256-BIT ENCRYPTION</span>
+                  <span>ID BANK INDONESIA LICENSE</span>
                 </div>
               )}
             </div>
@@ -552,7 +567,7 @@ export default function Payment() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <span className="text-[10px] text-gray-500 uppercase font-semibold font-mono">Zone</span>
-                      <div className="mt-1 font-bold text-xs uppercase tracking-wide bg-f1-red/10 border border-f1-red/20 text-f1-red px-2.5 py-1 rounded w-fit">
+                      <div className="mt-1 font-bold text-xs uppercase tracking-wide bg-f1-red/10 border border-f1-red/20 text-f1-red px-2.5 py-1 rounded-full w-fit">
                         {booking.zone}
                       </div>
                     </div>
@@ -594,8 +609,8 @@ export default function Payment() {
                         </div>
                       )}
                       {expired && (
-                        <div className="bg-red-500/[0.05] border border-red-500/10 rounded-xl p-3 text-red-500 text-xs font-bold text-center">
-                          ⏰ Booking has expired
+                        <div className="bg-red-500/[0.05] border border-red-500/10 rounded-xl p-3 text-red-500 text-xs font-bold text-center flex items-center justify-center gap-1">
+                          <FaClock /> Booking has expired
                         </div>
                       )}
                     </div>
@@ -606,9 +621,9 @@ export default function Payment() {
 
               {/* Backing Card Helper */}
               {step !== 'success' && (
-                <div className="glass-card border border-white/[0.05] rounded-2xl p-5 text-xs text-gray-400 leading-relaxed">
+                <div className="glass-card border border-white/[0.05] rounded-xl p-5 text-xs text-gray-400 leading-relaxed">
                   <h4 className="text-white font-bold mb-1 flex items-center gap-1">
-                    <span>💡</span> Staging Simulator Tips
+                    <FaLightbulb className="text-amber-400" /> Staging Simulator Tips
                   </h4>
                   All payments are processed in staging/demo environment. Choose your method, review details, check the parameters, and hit confirm to simulate successful purchase completion.
                 </div>

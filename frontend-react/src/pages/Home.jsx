@@ -7,6 +7,7 @@ import RaceCardSkeleton from '../components/RaceCardSkeleton'
 import PageTransition from '../components/PageTransition'
 import api from '../services/api'
 import f1Backdrop from '../assets/f1_backdrop.png'
+import { FaSearch, FaTimes, FaFlagCheckered } from 'react-icons/fa'
 
 export default function Home() {
   const [races, setRaces] = useState([])
@@ -167,14 +168,14 @@ export default function Home() {
               style={{ opacity: 'var(--f1-hero-opacity)' }}
             />
             {/* Telemetry/Dot grid pattern */}
-            <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.07]"
+            <div className="absolute inset-0 opacity-[0.07] light:opacity-[0.03]"
                  style={{
                    backgroundImage: `radial-gradient(var(--f1-white) 1px, transparent 1px)`,
                    backgroundSize: '24px 24px'
                  }}
             />
             {/* Diagonal racing lines */}
-            <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05]">
+            <div className="absolute inset-0 opacity-[0.05] light:opacity-[0.02]">
               {[...Array(12)].map((_, i) => (
                 <div key={i}
                   className="absolute h-[2px] bg-gradient-to-r from-transparent via-f1-red to-transparent"
@@ -195,11 +196,11 @@ export default function Home() {
               2026 Formula 1 Season
             </div>
 
-            <h1 className="font-f1 text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-6 animate-fade-in"
+            <h1 className="font-f1 text-5xl md:text-7xl lg:text-8xl tracking-tight mb-6 animate-fade-in text-f1-white uppercase"
                 style={{ animationDelay: '0.1s' }}>
-              <span className="text-f1-white">EXPERIENCE</span>
+              EXPERIENCE
               <br />
-              <span className="bg-gradient-to-r from-f1-red to-red-400 bg-clip-text text-transparent">FORMULA 1</span>
+              FORMULA 1
             </h1>
 
             <p className="text-lg md:text-xl text-f1-light max-w-2xl mx-auto mb-8 animate-fade-in leading-relaxed"
@@ -251,23 +252,31 @@ export default function Home() {
           </div>
         </section>
 
+        {/* BMW M gradient divider — between hero and content */}
+        <div className="m-stripe-divider" aria-hidden="true" />
+
         {/* Races Section */}
         <section id="races" className="max-w-7xl mx-auto px-4 py-16">
           {/* Section Header */}
           <div className="mb-8">
-            <div className="f1-stripe mb-3" />
-            <h2 className="text-3xl font-bold text-f1-white">Race Calendar</h2>
-            <p className="text-f1-light mt-1">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="f1-stripe" />
+              <span className="label-machined text-f1-light">Race Calendar</span>
+            </div>
+            <h2 className="font-f1 text-3xl md:text-4xl text-f1-white tracking-tight">
+              Explore the Season
+            </h2>
+            <p className="text-f1-light mt-1.5">
               {totalElements} race{totalElements !== 1 ? 's' : ''} found
             </p>
           </div>
 
           {/* Search & Filter Bar */}
-          <div className="card-static p-4 mb-8 rounded-2xl border border-f1-border">
+          <div className="card-static p-4 md:p-5 mb-8 rounded-xl border border-f1-border">
             <form onSubmit={handleSearchSubmit} className="flex flex-col md:flex-row gap-3">
               {/* Search Input */}
               <div className="flex-1 relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-f1-light text-sm">🔍</span>
+                <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-f1-light pointer-events-none" />
                 <input
                   id="race-search-input"
                   type="text"
@@ -323,9 +332,9 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="btn-ghost text-sm text-f1-light hover:text-f1-white"
+                  className="btn-ghost text-sm text-f1-light hover:text-f1-white flex items-center gap-1"
                 >
-                  ✕ Clear
+                  <FaTimes /> Clear
                 </button>
               )}
             </form>
@@ -353,7 +362,7 @@ export default function Home() {
             </div>
           ) : races.length === 0 ? (
             <div className="text-center py-24 animate-fade-in">
-              <div className="text-6xl mb-4">🏁</div>
+              <FaFlagCheckered className="text-6xl mx-auto mb-4 text-f1-light" />
               <h3 className="text-xl font-semibold text-f1-white mb-2">No races found</h3>
               <p className="text-f1-light mb-6">Try adjusting your search or filters.</p>
               {hasFilters && (
@@ -376,7 +385,7 @@ export default function Home() {
                   <button
                     onClick={() => setPage(p => Math.max(0, p - 1))}
                     disabled={page === 0}
-                    className="px-4 py-2.5 rounded-xl text-sm font-medium bg-f1-surface text-f1-light hover:bg-f1-surface hover:text-f1-white disabled:opacity-25 disabled:cursor-not-allowed transition-all duration-300 border border-f1-border"
+                    className="px-4 py-2.5 rounded-lg text-sm font-medium bg-f1-surface text-f1-light hover:bg-f1-surface hover:text-f1-white disabled:opacity-25 disabled:cursor-not-allowed transition-all duration-300 border border-f1-border"
                   >
                     ← Prev
                   </button>
@@ -385,7 +394,7 @@ export default function Home() {
                     <button
                       key={i}
                       onClick={() => setPage(i)}
-                      className={`w-10 h-10 rounded-xl text-sm font-medium transition-all duration-300 ${
+                      className={`w-10 h-10 rounded-lg text-sm font-medium transition-all duration-300 ${
                         page === i
                           ? 'bg-f1-red text-white shadow-lg shadow-red-900/30'
                           : 'bg-f1-surface text-f1-light hover:bg-f1-surface hover:text-f1-white border border-f1-border'
@@ -398,7 +407,7 @@ export default function Home() {
                   <button
                     onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
                     disabled={page >= totalPages - 1}
-                    className="px-4 py-2.5 rounded-xl text-sm font-medium bg-f1-surface text-f1-light hover:bg-f1-surface hover:text-f1-white disabled:opacity-25 disabled:cursor-not-allowed transition-all duration-300 border border-f1-border"
+                    className="px-4 py-2.5 rounded-lg text-sm font-medium bg-f1-surface text-f1-light hover:bg-f1-surface hover:text-f1-white disabled:opacity-25 disabled:cursor-not-allowed transition-all duration-300 border border-f1-border"
                   >
                     Next →
                   </button>

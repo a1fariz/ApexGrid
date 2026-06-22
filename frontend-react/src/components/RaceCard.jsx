@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CircuitOutline from './CircuitOutline'
 import { CIRCUIT_FLAGS, getRaceImage } from '../services/circuitImages'
+import { FaFlagCheckered, FaCircle, FaCheckCircle, FaCar, FaFire, FaFlag } from 'react-icons/fa'
 
 
 function StatusBadge({ status }) {
@@ -12,8 +13,8 @@ function StatusBadge({ status }) {
     CANCELLED: 'badge-cancelled',
   }
   return (
-    <span className={map[status] || 'badge-upcoming'}>
-      {status === 'UPCOMING' ? '🏁' : status === 'LIVE' ? '🔴' : '✅'} {status}
+    <span className={`${map[status] || 'badge-upcoming'} flex items-center gap-1`}>
+      {status === 'UPCOMING' ? <FaFlagCheckered /> : status === 'LIVE' ? <FaCircle className="text-red-500 animate-pulse" /> : <FaCheckCircle />} {status}
     </span>
   )
 }
@@ -21,7 +22,7 @@ function StatusBadge({ status }) {
 function RaceFallbackImage({ name }) {
   return (
     <div className="race-fallback-image">
-      <span className="text-3xl opacity-20 relative z-10">🏎️</span>
+      <span className="text-3xl opacity-20 relative z-10 flex justify-center"><FaCar /></span>
       <span className="text-[10px] text-gray-600 font-f1 mt-2 tracking-widest relative z-10 uppercase">
         {name?.split(' ')[0] || 'APEXGRID'}
       </span>
@@ -32,7 +33,7 @@ function RaceFallbackImage({ name }) {
 export default function RaceCard({ race }) {
   const navigate = useNavigate()
   const [imgError, setImgError] = useState(false)
-  const flag = CIRCUIT_FLAGS[race.country] || '🏳️'
+  const flag = CIRCUIT_FLAGS[race.country] || <FaFlag className="text-2xl text-gray-400" />
   const quotaPercent = Math.round((race.availableQuota / race.totalQuota) * 100)
   const isLowQuota = quotaPercent < 20
   const isSoldOut = race.availableQuota === 0
@@ -52,7 +53,7 @@ export default function RaceCard({ race }) {
 
   return (
     <div
-      className={`card cursor-pointer overflow-hidden group transition-all duration-500 ${isPastEvent ? 'opacity-60 grayscale hover:grayscale-0 hover:opacity-100' : ''}`}
+      className={`card card-m-accent cursor-pointer overflow-hidden group transition-all duration-500 ${isPastEvent ? 'opacity-60 grayscale hover:grayscale-0 hover:opacity-100' : ''}`}
       onClick={() => navigate(`/race/${race.id}`)}
       role="button"
       tabIndex={0}
@@ -63,7 +64,7 @@ export default function RaceCard({ race }) {
       <div className="h-36 w-full overflow-hidden relative">
         {displayImageUrl && !imgError ? (
           <>
-            <div className="absolute inset-0 bg-gradient-to-t from-[#14141E] via-black/40 to-transparent z-10" />
+            <div className="absolute inset-0 bg-gradient-to-t from-f1-card via-black/40 to-transparent z-10" />
             <img
               src={displayImageUrl}
               alt={race.name}
@@ -85,8 +86,8 @@ export default function RaceCard({ race }) {
             Sold Out
           </div>
         ) : isLowQuota ? (
-          <div className="absolute top-3 right-3 z-20 px-3 py-1 rounded-full bg-amber-500/90 text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm animate-pulse">
-            🔥 Almost Gone
+          <div className="absolute top-3 right-3 z-20 px-3 py-1 rounded-full bg-amber-500/90 text-white text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm animate-pulse flex items-center gap-1">
+            <FaFire /> Almost Gone
           </div>
         ) : null}
         {/* Track Outline Overlay */}
@@ -112,11 +113,11 @@ export default function RaceCard({ race }) {
 
         {/* Info Grid */}
         <div className="grid grid-cols-2 gap-2 mt-4">
-          <div className="bg-f1-surface rounded-xl p-3 border border-f1-border">
+          <div className="bg-f1-surface rounded-lg p-3 border border-f1-border">
             <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Date</div>
             <div className="text-sm font-medium">{formatDate(race.raceDate)}</div>
           </div>
-          <div className="bg-f1-surface rounded-xl p-3 border border-f1-border">
+          <div className="bg-f1-surface rounded-lg p-3 border border-f1-border">
             <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Location</div>
             <div className="text-sm font-medium truncate">{race.location}, {race.country}</div>
           </div>
@@ -146,7 +147,7 @@ export default function RaceCard({ race }) {
         </div>
 
         {/* CTA */}
-        <button className={`w-full mt-4 text-sm py-2.5 rounded-xl font-semibold transition-all duration-300 ${
+        <button className={`w-full mt-4 text-sm py-2.5 rounded-lg font-medium transition-all duration-300 ${
           isPastEvent || isSoldOut
             ? 'bg-white/[0.03] text-gray-500 cursor-not-allowed'
             : 'btn-primary group-hover:shadow-lg group-hover:shadow-red-900/30'
@@ -156,8 +157,8 @@ export default function RaceCard({ race }) {
           ) : isSoldOut ? (
             'Sold Out'
           ) : (
-            <span>
-              Book Tickets{' '}
+            <span className="flex items-center justify-center gap-1.5">
+              Book Tickets
               <span className="inline-block transition-transform duration-300 group-hover:translate-x-1.5">
                 →
               </span>

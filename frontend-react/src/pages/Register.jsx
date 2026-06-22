@@ -69,7 +69,7 @@ export default function Register() {
   if (success) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4 bg-f1-black text-f1-white">
-        <div className="text-center animate-fade-in card p-8 border border-f1-border bg-f1-card max-w-md w-full shadow-2xl">
+        <div className="text-center animate-fade-in card p-8 border border-f1-border bg-f1-card max-w-md w-full shadow-2xl rounded-2xl">
           <div className="w-20 h-20 bg-green-500/10 border border-green-500/30 rounded-full flex items-center justify-center mx-auto mb-6">
             <svg className="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
@@ -85,7 +85,7 @@ export default function Register() {
           </p>
           <button 
             onClick={() => navigate('/login')}
-            className="w-full bg-white/10 hover:bg-white/20 text-white py-3 rounded-lg font-semibold transition-colors border border-white/10"
+            className="w-full bg-white/10 hover:bg-white/20 text-white py-2 rounded-lg font-medium transition-colors border border-white/10"
           >
             Go to Login
           </button>
@@ -130,7 +130,7 @@ export default function Register() {
           <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/70" />
           
           <div className="relative z-10 text-center px-8">
-            <Link to="/" className="inline-flex items-center justify-center w-24 h-12 bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl mb-5 shadow-xl transition-transform hover:scale-105">
+            <Link to="/" className="inline-flex items-center justify-center w-24 h-12 bg-white/5 border border-white/10 backdrop-blur-md rounded-xl mb-5 shadow-xl transition-transform hover:scale-105">
               <svg viewBox="0 0 120 30" className="w-16 h-8 text-f1-red fill-current">
                 <path d="M101.086812,30 L101.711812,30 L101.711812,27.106875 L101.722437,27.106875 L102.761812,30 L103.302437,30 L104.341812,27.106875 L104.352437,27.106875 L104.352437,30 L104.977437,30 L104.977437,26.25125 L104.063687,26.25125 L103.055562,29.18625 L103.044937,29.18625 L102.011187,26.25125 L101.086812,26.25125 L101.086812,30 Z M97.6274375,26.818125 L98.8136875,26.818125 L98.8136875,30 L99.4699375,30 L99.4699375,26.818125 L100.661812,26.818125 L100.661812,26.25125 L97.6274375,26.25125 L97.6274375,26.818125 Z M89.9999375,30 L119.999937,0 L101.943687,0 L71.9443125,30 L89.9999375,30 Z M85.6986875,13.065 L49.3818125,13.065 C38.3136875,13.065 36.3768125,13.651875 31.6361875,18.3925 C27.2024375,22.82625 20.0005625,30 20.0005625,30 L35.7324375,30 L39.4855625,26.246875 C41.9530625,23.779375 43.2255625,23.52375 48.4068125,23.52375 L75.2405625,23.52375 L85.6986875,13.065 Z M31.1518125,16.253125 C27.8774375,19.3425 20.7530625,26.263125 16.9130625,30 L-6.25e-05,30 C-6.25e-05,30 13.5524375,16.486875 21.0849375,9.0725 C28.8455625,1.685 32.7143125,0 46.9486875,0 L98.7643125,0 L87.5449375,11.21875 L48.0011875,11.21875 C37.9993125,11.21875 35.7518125,11.911875 31.1518125,16.253125 Z" />
               </svg>
@@ -147,7 +147,7 @@ export default function Register() {
         {/* Right Side: Form Container (40% width) */}
         <div className="w-full md:w-[40%] flex items-center justify-center px-6 py-12 relative bg-f1-black">
           {/* Technical pattern overlay */}
-          <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05] pointer-events-none"
+          <div className="absolute inset-0 opacity-[0.05] light:opacity-[0.02] pointer-events-none"
                style={{
                  backgroundImage: `radial-gradient(var(--f1-white) 1px, transparent 1px)`,
                  backgroundSize: '24px 24px'

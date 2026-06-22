@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { FaFlagCheckered, FaTicketAlt, FaUser, FaLock, FaChevronUp } from 'react-icons/fa'
 
 export default function Footer() {
   const scrollToTop = () => {
@@ -8,8 +9,8 @@ export default function Footer() {
   return (
     <footer className="relative footer-glow border-t border-f1-border mt-auto pt-16 pb-10 px-4 md:px-8 overflow-hidden">
       
-      {/* Decorative Top Accent Line (F1 Red Accent Line) */}
-      <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-f1-red to-transparent opacity-80" />
+      {/* Decorative Top Accent Line (BMW M Tricolor Gradient) */}
+      <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-[#0066b1] via-[#1c69d4] to-[#e22718] opacity-80" />
 
       {/* Grid Pattern Background overlay */}
       <div className="absolute inset-0 bg-grid-pattern opacity-[0.02] pointer-events-none" />
@@ -41,16 +42,16 @@ export default function Footer() {
             <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-f1-white font-f1">Navigation</h4>
             <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm text-f1-light">
               <Link to="/" className="w-fit hover:text-f1-red transition-colors flex items-center gap-1.5 group">
-                <span className="text-xs group-hover:translate-x-0.5 transition-transform">🏁</span> Races
+                <span className="text-xs group-hover:translate-x-0.5 transition-transform"><FaFlagCheckered /></span> Races
               </Link>
               <Link to="/bookings" className="w-fit hover:text-f1-red transition-colors flex items-center gap-1.5 group">
-                <span className="text-xs group-hover:translate-x-0.5 transition-transform">🎫</span> My Bookings
+                <span className="text-xs group-hover:translate-x-0.5 transition-transform"><FaTicketAlt /></span> My Bookings
               </Link>
               <Link to="/profile" className="w-fit hover:text-f1-red transition-colors flex items-center gap-1.5 group">
-                <span className="text-xs group-hover:translate-x-0.5 transition-transform">👤</span> Profile
+                <span className="text-xs group-hover:translate-x-0.5 transition-transform"><FaUser /></span> Profile
               </Link>
               <Link to="/login" className="w-fit hover:text-f1-red transition-colors flex items-center gap-1.5 group">
-                <span className="text-xs group-hover:translate-x-0.5 transition-transform">🔒</span> Login
+                <span className="text-xs group-hover:translate-x-0.5 transition-transform"><FaLock /></span> Login
               </Link>
             </div>
           </div>
@@ -88,7 +89,7 @@ export default function Footer() {
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-f1-border bg-f1-surface hover:bg-f1-red hover:text-white hover:border-f1-red active:scale-95 transition-all duration-300 cursor-pointer"
           >
             <span>Back to top</span>
-            <span className="text-[10px]">▲</span>
+            <span className="text-[10px]"><FaChevronUp /></span>
           </button>
         </div>
 

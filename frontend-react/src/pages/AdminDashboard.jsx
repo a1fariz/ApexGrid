@@ -6,6 +6,7 @@ import PageTransition from '../components/PageTransition'
 import { useAuth } from '../hooks/useAuth'
 import api from '../services/api'
 import f1Dashboard from '../assets/f1_dashboard.png'
+import { FaBolt, FaDollarSign, FaTicketAlt, FaCheckCircle, FaUsers, FaChartBar, FaFire, FaFlagCheckered, FaChartLine, FaCalendarAlt, FaMap, FaEye } from 'react-icons/fa'
 
 function AnimatedCounter({ value, duration = 800, formatter }) {
   const [count, setCount] = useState(0)
@@ -137,10 +138,10 @@ export default function AdminDashboard() {
         <img 
           src={f1Dashboard} 
           alt="F1 Racetrack lines" 
-          className="w-full h-full object-cover opacity-[0.03] dark:opacity-[0.06] blur-lg transition-opacity duration-500"
+          className="w-full h-full object-cover opacity-[0.06] light:opacity-[0.03] blur-lg transition-opacity duration-500"
         />
         {/* Telemetry/Dot grid pattern */}
-        <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.05]"
+        <div className="absolute inset-0 opacity-[0.05] light:opacity-[0.02]"
              style={{
                backgroundImage: `radial-gradient(var(--f1-white) 1px, transparent 1px)`,
                backgroundSize: '24px 24px'
@@ -162,8 +163,8 @@ export default function AdminDashboard() {
           </div>
           <div className="flex items-center gap-3">
             <h1 className="text-3xl font-bold text-f1-white">Admin Dashboard</h1>
-            <span className="px-3 py-1 bg-amber-400/10 border border-amber-400/20 text-amber-400 text-xs font-semibold rounded-full">
-              ⚡ ADMIN
+            <span className="px-3 py-1 bg-amber-400/10 border border-amber-400/20 text-amber-400 text-xs font-bold rounded-full flex items-center gap-1">
+              <FaBolt /> ADMIN
             </span>
           </div>
           <p className="text-f1-light mt-1">Welcome back, <strong className="text-f1-white">{user?.fullName || user?.username}</strong></p>
@@ -177,29 +178,29 @@ export default function AdminDashboard() {
           <>
             {/* Statistics Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-              <div className="card p-5 text-center">
-                <div className="text-3xl mb-2">💰</div>
+              <div className="card p-5 text-center flex flex-col items-center justify-center">
+                <FaDollarSign className="text-3xl mb-2 text-green-400" />
                 <div className="text-2xl font-bold text-green-400">
                   <AnimatedCounter value={stats?.totalRevenue} formatter={formatCurrency} />
                 </div>
                 <div className="text-xs text-gray-500 mt-1">Total Revenue</div>
               </div>
-              <div className="card p-5 text-center">
-                <div className="text-3xl mb-2">🎫</div>
+              <div className="card p-5 text-center flex flex-col items-center justify-center">
+                <FaTicketAlt className="text-3xl mb-2 text-f1-red" />
                 <div className="text-2xl font-bold text-f1-red">
                   <AnimatedCounter value={stats?.totalTicketsSold} />
                 </div>
                 <div className="text-xs text-gray-500 mt-1">Tickets Sold</div>
               </div>
-              <div className="card p-5 text-center">
-                <div className="text-3xl mb-2">✅</div>
+              <div className="card p-5 text-center flex flex-col items-center justify-center">
+                <FaCheckCircle className="text-3xl mb-2 text-blue-400" />
                 <div className="text-2xl font-bold text-blue-400">
                   <AnimatedCounter value={stats?.totalConfirmedBookings} />
                 </div>
                 <div className="text-xs text-gray-500 mt-1">Confirmed Bookings</div>
               </div>
-              <div className="card p-5 text-center">
-                <div className="text-3xl mb-2">👥</div>
+              <div className="card p-5 text-center flex flex-col items-center justify-center">
+                <FaUsers className="text-3xl mb-2 text-amber-400" />
                 <div className="text-2xl font-bold text-amber-400">
                   <AnimatedCounter value={stats?.totalUniqueCustomers} />
                 </div>
@@ -239,8 +240,8 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               {/* Booking Status Breakdown */}
               <div className="card p-6">
-                <h2 className="font-semibold text-f1-white mb-4 flex items-center gap-2">
-                  <span>📊</span> Booking Status Breakdown
+                <h2 className="font-bold uppercase tracking-wider text-xs text-f1-white mb-4 flex items-center gap-2">
+                  <FaChartBar /> Booking Status Breakdown
                 </h2>
                 <div className="space-y-4">
                   {[
@@ -268,11 +269,13 @@ export default function AdminDashboard() {
 
               {/* Top Selling Events (Race Popularity) */}
               <div className="card p-6">
-                <h2 className="font-semibold text-f1-white mb-4 flex items-center gap-2">
-                  <span>🔥</span> Top Selling Events
+                <h2 className="font-bold uppercase tracking-wider text-xs text-f1-white mb-4 flex items-center gap-2">
+                  <FaFire className="text-f1-red animate-pulse" /> Top Selling Events
                 </h2>
                 {popular.length === 0 ? (
-                  <div className="text-center py-8 text-f1-light">🏁 No booking data yet</div>
+                  <div className="text-center py-8 text-f1-light">
+                    <FaFlagCheckered className="text-2xl mx-auto mb-2 opacity-50" /> No booking data yet
+                  </div>
                 ) : (
                   <div className="space-y-3">
                     {popular.slice(0, 5).map((race, i) => (
@@ -296,9 +299,9 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               {/* Revenue Overview Chart */}
               <div className="card p-6">
-                <h2 className="font-semibold text-f1-white mb-4 flex items-center justify-between">
-                  <span className="flex items-center gap-2"><span>📈</span> Revenue Overview</span>
-                  <span className="text-xs text-green-400 font-medium px-2 py-0.5 bg-green-400/10 rounded-full">Active</span>
+                <h2 className="font-bold uppercase tracking-wider text-xs text-f1-white mb-4 flex items-center justify-between">
+                  <span className="flex items-center gap-2"><FaChartLine /> Revenue Overview</span>
+                  <span className="text-xs text-green-400 font-bold uppercase tracking-wider px-2 py-0.5 bg-green-400/10 rounded-full border border-green-500/20">Active</span>
                 </h2>
                 <div className="mb-4">
                   <div className="text-3xl font-bold text-f1-white">{formatCurrency(stats?.totalRevenue)}</div>
@@ -333,13 +336,13 @@ export default function AdminDashboard() {
 
               {/* Upcoming Events Widget */}
               <div className="card p-6">
-                <h2 className="font-semibold text-f1-white mb-4 flex items-center justify-between">
-                  <span className="flex items-center gap-2"><span>📅</span> Upcoming Events</span>
-                  <span className="text-xs text-f1-red font-semibold tracking-wider font-f1">2026 CALENDAR</span>
+                <h2 className="font-bold uppercase tracking-wider text-xs text-f1-white mb-4 flex items-center justify-between">
+                  <span className="flex items-center gap-2"><FaCalendarAlt /> Upcoming Events</span>
+                  <span className="text-[10px] text-f1-red font-bold tracking-wider font-f1">2026 CALENDAR</span>
                 </h2>
                 {upcomingRaces.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-10 text-f1-light">
-                    <span className="text-3xl mb-2">🏁</span>
+                    <FaFlagCheckered className="text-3xl mb-2" />
                     <p className="text-sm">No upcoming races found</p>
                   </div>
                 ) : (
@@ -354,11 +357,11 @@ export default function AdminDashboard() {
                           </div>
                           <div className="text-right shrink-0">
                             {daysLeft > 0 ? (
-                              <span className="text-xs font-semibold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/20">
                                 In {daysLeft} days
                               </span>
                             ) : (
-                              <span className="text-xs font-semibold text-f1-red bg-f1-red/10 px-2 py-0.5 rounded-full">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-f1-red bg-f1-red/10 px-2 py-0.5 rounded-full border border-f1-red/20">
                                 Today / Past
                               </span>
                             )}
@@ -373,8 +376,8 @@ export default function AdminDashboard() {
 
             {/* Recent Activity Feed */}
             <div className="card p-6 mb-8">
-              <h2 className="font-semibold text-f1-white mb-4 flex items-center gap-2">
-                <span>⚡</span> Recent Activity Feed
+              <h2 className="font-bold uppercase tracking-wider text-xs text-f1-white mb-4 flex items-center gap-2">
+                <FaBolt className="text-amber-400" /> Recent Activity Feed
               </h2>
               <div className="space-y-4">
                 {recentBookings.length === 0 ? (
@@ -387,12 +390,12 @@ export default function AdminDashboard() {
                       CANCELLED: 'bg-red-400/10 text-f1-red border-f1-red/20'
                     }
                     return (
-                      <div key={booking.id} className="flex items-center justify-between gap-3 text-sm p-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+                      <div key={booking.id} className="flex items-center justify-between gap-3 text-sm p-3 rounded-lg bg-white/[0.02] border border-white/[0.04]">
                         <div className="flex items-start gap-3 min-w-0">
-                          <span className="text-lg bg-f1-surface p-1.5 rounded-lg border border-f1-border/40 shrink-0">🎫</span>
+                          <span className="text-lg bg-f1-surface p-1.5 rounded-lg border border-f1-border/40 shrink-0 text-f1-light"><FaTicketAlt /></span>
                           <div className="min-w-0">
                             <p className="text-f1-white truncate">
-                              <span className="font-semibold text-white">{booking.userFullName || booking.username || `User #${booking.userId}`}</span>{' '}
+                               <span className="font-semibold text-white">{booking.userFullName || booking.username || `User #${booking.userId}`}</span>{' '}
                               ordered {booking.quantity}x {booking.zone} ({formatCurrency(booking.totalPrice)})
                             </p>
                             <p className="text-xs text-f1-light mt-0.5 truncate">
@@ -420,18 +423,18 @@ export default function AdminDashboard() {
         {/* Admin Action Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           {[
-            { title: 'User Management', desc: 'Monitor customers and suspend/activate accounts.', icon: '👥', link: '/admin/users', color: 'from-amber-400/20 to-transparent' },
-            { title: 'Race Management', desc: 'Create, edit, and manage F1 race listings.', icon: '🏁', link: '/admin/races', color: 'from-f1-red/20 to-transparent' },
-            { title: 'Circuit Management', desc: 'Manage circuit data for all F1 tracks.', icon: '🗺️', link: '/admin/circuits', color: 'from-blue-500/20 to-transparent' },
-            { title: 'Booking Management', desc: 'Monitor ticket orders, audit logs, and cancel orders.', icon: '🎫', link: '/admin/bookings', color: 'from-green-500/20 to-transparent' },
+            { title: 'User Management', desc: 'Monitor customers and suspend/activate accounts.', icon: <FaUsers />, link: '/admin/users', color: 'from-amber-400/20 to-transparent' },
+            { title: 'Race Management', desc: 'Create, edit, and manage F1 race listings.', icon: <FaFlagCheckered />, link: '/admin/races', color: 'from-f1-red/20 to-transparent' },
+            { title: 'Circuit Management', desc: 'Manage circuit data for all F1 tracks.', icon: <FaMap />, link: '/admin/circuits', color: 'from-blue-500/20 to-transparent' },
+            { title: 'Booking Management', desc: 'Monitor ticket orders, audit logs, and cancel orders.', icon: <FaTicketAlt />, link: '/admin/bookings', color: 'from-green-500/20 to-transparent' },
           ].map(card => (
             <div
               key={card.title}
               onClick={() => card.link !== '#' && navigate(card.link)}
               className={`card p-6 cursor-pointer ${card.link !== '#' ? 'hover:border-f1-red/40' : 'cursor-default opacity-75'}`}
             >
-              <div className={`h-24 rounded-xl mb-4 bg-gradient-to-br ${card.color} flex items-center justify-center`}>
-                <span className="text-5xl">{card.icon}</span>
+              <div className={`h-24 rounded-xl mb-4 bg-gradient-to-br ${card.color} flex items-center justify-center text-5xl text-white`}>
+                {card.icon}
               </div>
               <h3 className="font-semibold text-f1-white mb-2">{card.title}</h3>
               <p className="text-sm text-f1-light">{card.desc}</p>
@@ -444,14 +447,14 @@ export default function AdminDashboard() {
 
         {/* Quick Links */}
         <div className="card p-6">
-          <h2 className="font-semibold text-f1-white mb-4">Quick Actions</h2>
+          <h2 className="font-bold uppercase tracking-wider text-xs text-f1-white mb-4">Quick Actions</h2>
           <div className="flex flex-wrap gap-3">
-            <Link to="/admin/users" className="btn-primary text-sm py-2 px-4">👥 Manage Users</Link>
-            <Link to="/admin/races" className="btn-primary text-sm py-2 px-4">🏁 Manage Races</Link>
-            <Link to="/admin/circuits" className="btn-primary text-sm py-2 px-4">🗺️ Manage Circuits</Link>
-            <Link to="/admin/bookings" className="btn-primary text-sm py-2 px-4">🎫 Manage Bookings</Link>
-            <Link to="/" className="btn-secondary text-sm py-2 px-4">👀 View Public Site</Link>
-            <Link to="/bookings" className="btn-secondary text-sm py-2 px-4">🎫 View Personal Bookings</Link>
+            <Link to="/admin/users" className="btn-primary text-sm py-2 px-4 flex items-center gap-1.5"><FaUsers /> Manage Users</Link>
+            <Link to="/admin/races" className="btn-primary text-sm py-2 px-4 flex items-center gap-1.5"><FaFlagCheckered /> Manage Races</Link>
+            <Link to="/admin/circuits" className="btn-primary text-sm py-2 px-4 flex items-center gap-1.5"><FaMap /> Manage Circuits</Link>
+            <Link to="/admin/bookings" className="btn-primary text-sm py-2 px-4 flex items-center gap-1.5"><FaTicketAlt /> Manage Bookings</Link>
+            <Link to="/" className="btn-secondary text-sm py-2 px-4 flex items-center gap-1.5"><FaEye /> View Public Site</Link>
+            <Link to="/bookings" className="btn-secondary text-sm py-2 px-4 flex items-center gap-1.5"><FaTicketAlt /> View Personal Bookings</Link>
           </div>
         </div>
 

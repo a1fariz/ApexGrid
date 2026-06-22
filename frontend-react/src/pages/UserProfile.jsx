@@ -7,6 +7,7 @@ import PageTransition from '../components/PageTransition'
 import { showToast } from '../components/Toast'
 import { useAuth } from '../hooks/useAuth'
 import api from '../services/api'
+import { FaPencilAlt, FaEnvelope, FaTicketAlt, FaHourglassHalf, FaTimes } from 'react-icons/fa'
 
 export default function UserProfile() {
   const { user } = useAuth()
@@ -116,7 +117,7 @@ export default function UserProfile() {
         {/* User Info Card */}
         <div className="card p-6 mb-8">
           <div className="flex items-start gap-5">
-            <div className="w-16 h-16 bg-f1-red rounded-2xl flex items-center justify-center text-2xl font-bold text-white shrink-0">
+            <div className="w-16 h-16 bg-f1-red rounded-full flex items-center justify-center text-2xl font-bold text-white shrink-0">
               {user?.username?.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1">
@@ -125,12 +126,12 @@ export default function UserProfile() {
                   <h2 className="text-xl font-bold text-f1-white">{user?.fullName || user?.username}</h2>
                   <div className="text-f1-light text-sm mt-1">@{user?.username}</div>
                 </div>
-                <button onClick={handleEditClick} className="btn-secondary text-xs px-3 py-1.5">
-                  ✏️ Edit Profile
+                <button onClick={handleEditClick} className="btn-secondary text-xs px-3 py-1.5 flex items-center gap-1.5">
+                  <FaPencilAlt /> Edit Profile
                 </button>
               </div>
               <div className="flex flex-wrap gap-4 mt-3 text-sm text-f1-light">
-                <span>📧 {user?.email}</span>
+                <span className="flex items-center gap-1.5"><FaEnvelope /> {user?.email}</span>
                 <span className="px-2 py-0.5 rounded-full bg-f1-red/10 text-f1-red text-xs font-semibold border border-f1-red/20">
                   {user?.role}
                 </span>
@@ -168,7 +169,7 @@ export default function UserProfile() {
             </div>
           ) : bookings.length === 0 ? (
             <div className="text-center py-16">
-              <div className="text-4xl mb-3">🎫</div>
+              <FaTicketAlt className="text-4xl mx-auto mb-3 text-f1-light" />
               <p className="text-f1-light">No bookings yet</p>
             </div>
           ) : (
@@ -205,9 +206,13 @@ export default function UserProfile() {
                           <button
                             onClick={() => downloadTicket(booking.id, booking.bookingCode)}
                             disabled={downloading === booking.id}
-                            className="px-3 py-1.5 text-xs bg-f1-red/10 hover:bg-f1-red/20 rounded-lg text-f1-red font-medium transition-colors disabled:opacity-50"
+                            className="px-3 py-1.5 text-xs bg-f1-red/10 hover:bg-f1-red/20 rounded-lg text-f1-red font-medium transition-colors disabled:opacity-50 flex items-center gap-1 mx-auto"
                           >
-                            {downloading === booking.id ? '⏳...' : '🎫 Download'}
+                            {downloading === booking.id ? (
+                              <><FaHourglassHalf className="animate-spin" /> ...</>
+                            ) : (
+                              <><FaTicketAlt /> Download</>
+                            )}
                           </button>
                         ) : (
                           <span className="text-xs text-f1-light">—</span>
@@ -228,7 +233,7 @@ export default function UserProfile() {
           <div className="bg-f1-card border border-f1-border rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-scale-in">
             <div className="p-5 border-b border-f1-border flex items-center justify-between">
               <h3 className="font-bold text-f1-white">Edit Profile</h3>
-              <button onClick={() => setIsEditing(false)} className="text-f1-light hover:text-white transition-colors">✕</button>
+              <button onClick={() => setIsEditing(false)} className="text-f1-light hover:text-white transition-colors flex items-center justify-center"><FaTimes /></button>
             </div>
             <form onSubmit={handleSaveProfile} className="p-6">
               <div className="space-y-4">
@@ -265,10 +270,10 @@ export default function UserProfile() {
                 </div>
               </div>
               <div className="mt-8 flex gap-3">
-                <button type="button" onClick={() => setIsEditing(false)} className="flex-1 btn-ghost border border-f1-border text-sm py-2">
+                <button type="button" onClick={() => setIsEditing(false)} className="flex-1 btn-ghost border border-f1-border text-sm py-2 rounded-lg">
                   Cancel
                 </button>
-                <button type="submit" disabled={saving} className="flex-1 btn-primary text-sm py-2">
+                <button type="submit" disabled={saving} className="flex-1 btn-primary text-sm py-2 rounded-lg">
                   {saving ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>

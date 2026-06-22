@@ -6,6 +6,7 @@ import PageTransition from '../components/PageTransition'
 import ConfirmModal from '../components/ConfirmModal'
 import { showToast } from '../components/Toast'
 import api from '../services/api'
+import { FaBolt, FaSearch, FaUsers, FaCheck, FaHourglassHalf, FaKey, FaShieldAlt } from 'react-icons/fa'
 
 export default function AdminUserManagement() {
   const [users, setUsers] = useState([])
@@ -126,14 +127,14 @@ export default function AdminUserManagement() {
               </div>
               <h1 className="text-3xl font-bold text-f1-white flex items-center gap-3">
                 User Management
-                <span className="px-3 py-1 bg-amber-400/10 border border-amber-400/20 text-amber-400 text-xs font-semibold rounded-full">
-                  ⚡ ADMIN
+                <span className="px-3 py-1 bg-amber-400/10 border border-amber-400/20 text-amber-400 text-xs font-bold rounded-full flex items-center gap-1">
+                  <FaBolt /> ADMIN
                 </span>
               </h1>
               <p className="text-f1-light mt-2">Manage customer accounts, monitor activity, and handle suspensions.</p>
             </div>
             
-            <div className="bg-f1-surface border border-f1-border rounded-xl px-4 py-3 flex items-center gap-4 shrink-0">
+            <div className="bg-f1-surface border border-f1-border rounded-lg px-4 py-3 flex items-center gap-4 shrink-0">
               <div className="text-center">
                 <div className="text-2xl font-bold text-f1-white">{totalElements}</div>
                 <div className="text-[10px] text-f1-light uppercase tracking-wider font-semibold">Total Accounts</div>
@@ -142,9 +143,9 @@ export default function AdminUserManagement() {
           </div>
 
           {/* Search bar */}
-          <div className="card-static p-4 mb-6 rounded-2xl border border-f1-border">
+          <div className="card-static p-4 mb-6 rounded-xl border border-f1-border">
             <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-f1-light text-sm">🔍</span>
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-f1-light text-sm"><FaSearch /></span>
               <input
                 type="text"
                 placeholder="Search users by username, name, or email..."
@@ -162,7 +163,7 @@ export default function AdminUserManagement() {
               </div>
             ) : users.length === 0 ? (
               <div className="text-center py-16 text-f1-light">
-                <div className="text-4xl mb-3">👥</div>
+                <FaUsers className="text-4xl mb-3 text-f1-light mx-auto" />
                 <p>No users found</p>
               </div>
             ) : (
@@ -205,9 +206,9 @@ export default function AdminUserManagement() {
                         </td>
                         <td>
                           {u.isVerified ? (
-                            <span className="text-green-400 text-sm">✓ Yes</span>
+                            <span className="text-green-400 text-sm flex items-center gap-1"><FaCheck /> Yes</span>
                           ) : (
-                            <span className="text-amber-400 text-sm">⏳ No</span>
+                            <span className="text-amber-400 text-sm flex items-center gap-1"><FaHourglassHalf /> No</span>
                           )}
                         </td>
                         <td className="text-sm text-f1-light">{formatDate(u.createdAt)}</td>
@@ -217,19 +218,19 @@ export default function AdminUserManagement() {
                               <>
                                 <button
                                   onClick={() => { setRoleChangeTarget(u); setNewRole(u.role); }}
-                                  className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 text-gray-300 transition-colors border border-white/5"
+                                  className="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-gray-300 transition-colors border border-white/10"
                                 >
                                   Change Role
                                 </button>
                                 <button
                                   onClick={() => setResetPwdTarget(u)}
-                                  className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white/5 hover:bg-white/10 text-gray-300 transition-colors border border-white/5"
+                                  className="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-gray-300 transition-colors border border-white/10"
                                 >
                                   Reset Password
                                 </button>
                                 <button
                                   onClick={() => toggleUserStatus(u.id, u.role)}
-                                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                                     u.isActive 
                                       ? 'bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20' 
                                       : 'bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-green-500/20'
@@ -274,7 +275,7 @@ export default function AdminUserManagement() {
                   <button
                     key={p}
                     onClick={() => setPage(p)}
-                    className={`w-9 h-9 rounded-xl text-xs font-semibold border transition-all ${
+                    className={`w-9 h-9 rounded-lg text-xs font-medium border transition-all ${
                       page === p
                         ? 'bg-f1-red border-f1-red text-white shadow-lg shadow-red-900/20'
                         : 'bg-f1-surface border-f1-border text-f1-light hover:text-white'
@@ -291,7 +292,7 @@ export default function AdminUserManagement() {
                 <button
                   onClick={() => setPage(p => Math.max(0, p - 1))}
                   disabled={page === 0}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-f1-surface text-f1-light hover:text-white border border-f1-border disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                  className="px-4 py-2 rounded-lg text-xs font-medium bg-f1-surface text-f1-light hover:text-f1-white border border-f1-border disabled:opacity-20 disabled:cursor-not-allowed transition-all"
                 >
                   ← Previous
                 </button>
@@ -299,7 +300,7 @@ export default function AdminUserManagement() {
                 <button
                   onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
                   disabled={page >= totalPages - 1}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-f1-surface text-f1-light hover:text-white border border-f1-border disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                  className="px-4 py-2 rounded-lg text-xs font-medium bg-f1-surface text-f1-light hover:text-f1-white border border-f1-border disabled:opacity-20 disabled:cursor-not-allowed transition-all"
                 >
                   Next →
                 </button>
@@ -314,7 +315,7 @@ export default function AdminUserManagement() {
             isOpen={!!resetPwdTarget}
             title="Reset User Password"
             message={`Set a new temporary password for user @${resetPwdTarget.username}.`}
-            icon="🔑"
+            icon={<FaKey className="text-3xl text-amber-400" />}
             confirmText="Reset Password"
             confirmColor="green"
             loading={resettingPwd}
@@ -343,7 +344,7 @@ export default function AdminUserManagement() {
             isOpen={!!roleChangeTarget}
             title="Change User Role"
             message={`Select a new system privilege level for user @${roleChangeTarget.username}.`}
-            icon="🛡️"
+            icon={<FaShieldAlt className="text-3xl text-blue-500" />}
             confirmText="Update Privilege"
             confirmColor="green"
             loading={updatingRole}

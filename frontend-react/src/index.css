@@ -1,56 +1,119 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ============================================================
-   APEXGRID — F1 Premium Dark Theme CSS Variables
+   APEXGRID — BMW M × Claude Design System
+   ------------------------------------------------------------
+   COLORS  → DESIGN-bmw-m.md  (near-black canvas, M tricolor, M-red)
+   SHAPES  → DESIGN-claude.md (rounded md/lg/xl, generous padding)
+   FONT    → DESIGN-claude.md (Cormorant Garamond serif display +
+             Inter humanist sans body — Copernicus/StyreneB substitutes)
+   EFFECTS → DESIGN-claude.md (glassmorphism, glow, hover-lift, scroll reveal)
    ============================================================ */
 :root {
-  --f1-red: #E10600;
-  --f1-red-dark: #b00500;
-  --f1-red-glow: rgba(225, 6, 0, 0.25);
-  --f1-black: #0A0A0F;
-  --f1-dark: #111118;
-  --f1-darker: #07070B;
-  --f1-card: #14141E;
-  --f1-card-hover: #1A1A28;
-  --f1-gray: #2A2A35;
-  --f1-light: #8f8f9a;
-  --f1-white: #FFFFFF;
-  --f1-gold: #FFD700;
-  --f1-green: #00D2BE;
-  --f1-yellow: #FFD700;
-  --f1-surface: rgba(255, 255, 255, 0.03);
-  --f1-border: rgba(255, 255, 255, 0.04);
-  --f1-navbar-bg: rgba(10, 10, 15, 0.92);
-  --f1-glass-bg: rgba(20, 20, 30, 0.85);
-  --f1-glass-border: rgba(255, 255, 255, 0.06);
-  --f1-confirm-bg: linear-gradient(145deg, #1a1a28, #12121c);
-  --f1-confirm-icon-bg: rgba(255, 255, 255, 0.03);
-  --f1-hero-bg: linear-gradient(180deg, #120505 0%, #0A0A0F 100%);
-  --f1-hero-opacity: 0.18;
+  /* ---- BMW M Tricolor (brand signature) ---- */
+  --m-blue-light: #0066b1;
+  --m-blue-dark:  #1c69d4;
+  --m-red:        #e22718;
+  --m-red-rgb:    226, 39, 24;
+  --bmw-blue:     #1c69d4;
+  --electric-blue:#0653b6;
+
+  /* ---- Brand semantic (BMW M palette) ---- */
+  --f1-red:        #e22718;
+  --f1-red-rgb:    226, 39, 24;
+  --f1-red-dark:   #b01c10;
+  --f1-red-glow:   rgba(226, 39, 24, 0.15);
+
+  /* ---- Dark canvas (default) ---- */
+  --f1-black:      #000000;
+  --f1-dark:       #0d0d0d;
+  --f1-darker:     #050505;
+  --f1-card:       #1a1a1a;
+  --f1-card-hover: #262626;
+  --f1-gray:       #2b2b2b;
+  --f1-light:      #7e7e7e;          /* muted */
+  --f1-white:      #ffffff;          /* ink / on-dark */
+  --f1-body:       #bbbbbb;          /* running text */
+  --f1-body-strong:#e6e6e6;
+  --f1-gold:       #f4b400;
+  --f1-green:      #0fa336;
+  --f1-yellow:     #f4b400;
+
+  /* ---- Surfaces & chrome ---- */
+  --f1-surface:        rgba(255, 255, 255, 0.03);
+  --f1-surface-soft:   #0d0d0d;
+  --f1-surface-elevated:#262626;
+  --f1-border:         #3c3c3c;
+  --f1-border-strong:  #262626;
+  --f1-navbar-bg:      rgba(0, 0, 0, 0.82);
+  --f1-glass-bg:       rgba(26, 26, 26, 0.85);
+  --f1-glass-border:   rgba(255, 255, 255, 0.08);
+  --f1-confirm-bg:     linear-gradient(145deg, #1a1a1a, #0d0d0d);
+  --f1-confirm-icon-bg:rgba(255, 255, 255, 0.03);
+  --f1-hero-bg:        linear-gradient(180deg, #0d0d0d 0%, #000000 100%);
+  --f1-hero-opacity:   0.25;
+
+  /* ---- Section backgrounds (anti-monoton) ---- */
+  --section-bg:        transparent;
+  --section-bg-soft:   #0a0a0a;
+  --section-bg-elevated:#111111;
+
+  /* ---- Claude typography stacks (Copernicus/StyreneB substitutes) ---- */
+  --font-display: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+  --font-body:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* ---- Claude rounded scale ---- */
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+
+  /* ---- M gradient (reusable) ---- */
+  --m-gradient: linear-gradient(90deg,
+    var(--m-blue-light) 0%,
+    var(--m-blue-light) 33.3%,
+    var(--m-blue-dark)  33.3%,
+    var(--m-blue-dark)  66.6%,
+    var(--m-red)        66.6%,
+    var(--m-red)       100%);
 }
 
+/* ============================================================
+   LIGHT MODE — invert canvas/text, keep M tricolor + accents
+   ============================================================ */
 :root.light {
-  --f1-black: #F8F8F8;
-  --f1-dark: #FFFFFF;
-  --f1-darker: #E4E4E4;
-  --f1-card: #FFFFFF;
-  --f1-card-hover: #F1F1F1;
-  --f1-gray: #E4E4E4;
-  --f1-light: #9B9B9B;
-  --f1-white: #1A1A1A;
-  --f1-surface: rgba(0, 0, 0, 0.02);
-  --f1-border: #E4E4E4;
-  --f1-navbar-bg: rgba(248, 248, 248, 0.92);
-  --f1-glass-bg: rgba(255, 255, 255, 0.85);
-  --f1-glass-border: rgba(0, 0, 0, 0.06);
-  --f1-confirm-bg: linear-gradient(145deg, #ffffff, #f5f5f5);
-  --f1-confirm-icon-bg: rgba(0, 0, 0, 0.02);
-  --f1-hero-bg: linear-gradient(180deg, #FFF5F5 0%, #F8F8F8 100%);
-  --f1-hero-opacity: 0.08;
+  --f1-black:       #fafafa;
+  --f1-dark:        #ffffff;
+  --f1-darker:      #f4f4f5;
+  --f1-card:        #ffffff;
+  --f1-card-hover:  #f3f4f6;
+  --f1-gray:        #e5e7eb;
+  --f1-light:       #6b7280;
+  --f1-white:       #18181b;
+  --f1-body:        #3f3f46;
+  --f1-body-strong: #27272a;
+
+  --f1-surface:        rgba(0, 0, 0, 0.025);
+  --f1-surface-soft:   #f4f4f5;
+  --f1-surface-elevated:#ececed;
+  --f1-border:         #e5e7eb;
+  --f1-border-strong:  #d4d4d8;
+  --f1-navbar-bg:      rgba(255, 255, 255, 0.82);
+  --f1-glass-bg:       rgba(255, 255, 255, 0.85);
+  --f1-glass-border:   rgba(0, 0, 0, 0.06);
+  --f1-confirm-bg:     linear-gradient(145deg, #ffffff, #f9fafb);
+  --f1-confirm-icon-bg:rgba(0, 0, 0, 0.02);
+  --f1-hero-bg:        linear-gradient(180deg, #f9fafb 0%, #ffffff 100%);
+  --f1-hero-opacity:   0.12;
+
+  --section-bg:        transparent;
+  --section-bg-soft:   #f4f4f5;
+  --section-bg-elevated:#ececed;
 }
 
 * {
@@ -66,68 +129,161 @@ html {
 body {
   background-color: var(--f1-black);
   color: var(--f1-white);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-body);
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  line-height: 1.6;
+  line-height: 1.55;
 }
 
 /* ============================================================
-   SCROLLBAR — Slim & Themed
+   SCROLLBAR — Slim & themed
    ============================================================ */
-::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(225, 6, 0, 0.3); border-radius: 10px; }
+::-webkit-scrollbar-thumb {
+  background: rgba(var(--m-red-rgb), 0.3);
+  border-radius: 10px;
+}
 ::-webkit-scrollbar-thumb:hover { background: var(--f1-red); }
 
-/* ============================================================
-   TYPOGRAPHY
-   ============================================================ */
-.font-f1 {
-  font-family: 'Orbitron', 'Inter', sans-serif;
-  letter-spacing: 0.05em;
+/* Selection */
+::selection {
+  background: rgba(var(--m-red-rgb), 0.25);
+  color: var(--f1-white);
 }
 
 /* ============================================================
-   BUTTONS
+   TYPOGRAPHY — Claude display serif + body sans
+   .font-f1 = display headline (serif, weight 600, negative tracking)
+   ============================================================ */
+.font-f1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+/* Uppercase "machined" label helper (BMW M label voice on Claude shape) */
+.label-machined {
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+/* ============================================================
+   BMW M GRADIENT STRIPE — brand divider / accent
+   ============================================================ */
+
+/* Full-width divider (3-4px) */
+.m-stripe-divider {
+  height: 4px;
+  width: 100%;
+  background: var(--m-gradient);
+  border: 0;
+}
+
+/* Short accent stripe (80px) — section eyebrow */
+.f1-stripe,
+.m-stripe {
+  background: var(--m-gradient);
+  height: 4px;
+  width: 80px;
+  border-radius: 9999px;
+}
+
+/* Gradient text (for inline accents / headlines) */
+.m-text-gradient {
+  background: var(--m-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Card accent border on hover/active (top gradient hairline) */
+.card-m-accent {
+  position: relative;
+}
+.card-m-accent::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: var(--m-gradient);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+.card-m-accent:hover::after,
+.card-m-accent.is-active::after {
+  opacity: 1;
+}
+
+/* ============================================================
+   BUTTONS — Claude shape (radius 8, h40, px20) + BMW M color
    ============================================================ */
 .btn-primary {
-  @apply px-6 py-3 bg-f1-red text-white font-semibold rounded-xl transition-all duration-300;
-  @apply hover:bg-red-700 hover:shadow-lg hover:shadow-red-900/40 active:scale-95;
+  background-color: var(--f1-red);
+  color: #ffffff !important;
+  border: 1px solid var(--f1-red);
+  min-height: 40px;
+  @apply px-5 py-2.5 font-medium rounded-lg transition-all duration-300;
+  @apply hover:brightness-110 hover:shadow-lg hover:shadow-red-900/25 hover:text-white active:scale-[0.97];
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
 .btn-secondary {
-  @apply px-6 py-3 bg-f1-surface text-f1-white font-semibold rounded-xl transition-all duration-300;
-  @apply hover:bg-f1-surface active:scale-95;
+  background-color: var(--f1-card);
+  color: var(--f1-white);
   border: 1px solid var(--f1-border);
+  min-height: 40px;
+  @apply px-5 py-2.5 font-medium rounded-lg transition-all duration-300 active:scale-[0.97];
+}
+.btn-secondary:hover {
+  background-color: var(--f1-card-hover);
+  border-color: var(--f1-light);
 }
 
 .btn-outline {
-  @apply px-6 py-3 border border-f1-red/40 text-f1-red font-semibold rounded-xl transition-all duration-300;
-  @apply hover:bg-f1-red hover:text-white hover:border-f1-red active:scale-95;
+  background-color: transparent;
+  color: var(--f1-white);
+  border: 1px solid var(--f1-border);
+  min-height: 40px;
+  @apply px-5 py-2.5 font-medium rounded-lg transition-all duration-300;
+  @apply hover:bg-f1-surface active:scale-[0.97];
+}
+.btn-outline:hover {
+  border-color: var(--f1-light);
 }
 
 .btn-ghost {
-  @apply px-4 py-2 text-f1-light font-medium rounded-xl transition-all duration-200;
-  @apply hover:text-f1-white hover:bg-f1-surface active:scale-95;
+  @apply px-4 py-2 text-f1-light font-medium rounded-lg transition-all duration-200;
+  @apply hover:text-f1-white hover:bg-f1-surface active:scale-[0.97];
 }
 
 /* ============================================================
-   CARDS — Premium glassmorphism with glow
+   CARDS — Claude rounded (12-16px) + glassmorphism + hover lift
    ============================================================ */
 .card {
   background: var(--f1-card);
   border: 1px solid var(--f1-border);
-  border-radius: 16px;
+  border-radius: var(--r-xl);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .card:hover {
-  border-color: rgba(225, 6, 0, 0.25);
+  border-color: rgba(var(--m-red-rgb), 0.25);
   transform: translateY(-3px);
   box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(225, 6, 0, 0.1),
+    0 20px 40px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(var(--m-red-rgb), 0.1),
     0 8px 32px var(--f1-red-glow);
 }
 
@@ -136,32 +292,42 @@ body {
   backdrop-filter: blur(20px) saturate(1.2);
   -webkit-backdrop-filter: blur(20px) saturate(1.2);
   border: 1px solid var(--f1-glass-border);
-  border-radius: 20px;
+  border-radius: var(--r-xl);
 }
 
 /* Static card (no hover effect) — for inner panels */
 .card-static {
   background: var(--f1-card);
   border: 1px solid var(--f1-border);
-  border-radius: 16px;
+  border-radius: var(--r-xl);
 }
 
 /* ============================================================
-   FORMS — Refined inputs
+   SECTION BACKGROUNDS — anti-monoton, alternating surfaces
    ============================================================ */
-.form-input {
-  @apply w-full px-4 py-3 rounded-xl bg-f1-surface border border-f1-border text-f1-white placeholder-gray-500;
-  @apply focus:outline-none focus:border-f1-red/60 focus:ring-2 focus:ring-f1-red/20 transition-all duration-300;
+.section-soft {
+  background-color: var(--section-bg-soft);
+}
+.section-elevated {
+  background-color: var(--section-bg-elevated);
 }
 
-/* Fix dropdown option clashing */
+/* ============================================================
+   FORMS — Claude text input (radius 8, h40)
+   ============================================================ */
+.form-input {
+  @apply w-full px-4 py-3 rounded-lg bg-f1-surface border border-f1-border text-f1-white placeholder-gray-500;
+  @apply focus:outline-none focus:border-f1-red/60 focus:ring-2 focus:ring-f1-red/20 transition-all duration-300;
+  min-height: 40px;
+}
+
 select.form-input option {
   background-color: var(--f1-card);
   color: var(--f1-white);
 }
 
 .form-label {
-  @apply block text-sm font-medium text-f1-light mb-2;
+  @apply block text-xs font-bold uppercase tracking-wider text-f1-light mb-2;
 }
 
 /* Hide number input spinners */
@@ -170,11 +336,9 @@ input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-input[type="number"] {
-  -moz-appearance: textfield;
-}
+input[type="number"] { -moz-appearance: textfield; }
 
-/* Fix browser autofill white background on dark theme */
+/* Autofill fix */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
@@ -188,134 +352,66 @@ select:-webkit-autofill {
 }
 
 /* ============================================================
-   BADGES / STATUS — Pill shapes with subtle backgrounds
+   BADGES / STATUS — pill shapes
    ============================================================ */
-.badge-upcoming {
-  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
-  background: rgba(0, 210, 190, 0.1);
-  color: #00D2BE;
-  border: 1px solid rgba(0, 210, 190, 0.2);
-}
-
-.badge-pending {
-  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
-  background: rgba(255, 215, 0, 0.1);
-  color: #FFD700;
-  border: 1px solid rgba(255, 215, 0, 0.2);
-}
-
-.badge-confirmed {
-  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
-  background: rgba(16, 185, 129, 0.1);
-  color: #10B981;
-  border: 1px solid rgba(16, 185, 129, 0.2);
-}
-
+.badge-upcoming,
+.badge-pending,
+.badge-confirmed,
 .badge-cancelled {
-  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
-  background: rgba(225, 6, 0, 0.1);
-  color: #E10600;
-  border: 1px solid rgba(225, 6, 0, 0.2);
+  @apply inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider;
+}
+.badge-upcoming {
+  background: rgba(28, 105, 212, 0.1);
+  color: var(--m-blue-dark);
+  border: 1px solid rgba(28, 105, 212, 0.2);
+}
+.badge-pending {
+  background: rgba(244, 180, 0, 0.1);
+  color: var(--f1-gold);
+  border: 1px solid rgba(244, 180, 0, 0.2);
+}
+.badge-confirmed {
+  background: rgba(15, 163, 54, 0.1);
+  color: var(--f1-green);
+  border: 1px solid rgba(15, 163, 54, 0.2);
+}
+.badge-cancelled {
+  background: rgba(var(--m-red-rgb), 0.1);
+  color: var(--f1-red);
+  border: 1px solid rgba(var(--m-red-rgb), 0.2);
 }
 
 /* ============================================================
-   ANIMATIONS — Smooth & Premium
+   ANIMATIONS — smooth & premium (Claude scroll reveal)
    ============================================================ */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeIn       { from { opacity:0; transform:translateY(16px);} to { opacity:1; transform:translateY(0);} }
+@keyframes fadeInUp     { from { opacity:0; transform:translateY(24px);} to { opacity:1; transform:translateY(0);} }
+@keyframes slideInLeft  { from { opacity:0; transform:translateX(-20px);} to { opacity:1; transform:translateX(0);} }
+@keyframes scaleIn      { from { opacity:0; transform:scale(0.92);} to { opacity:1; transform:scale(1);} }
+@keyframes pulse-red    { 0%,100%{ box-shadow:0 0 0 0 rgba(var(--m-red-rgb),0.4);} 50%{ box-shadow:0 0 0 8px rgba(var(--m-red-rgb),0);} }
+@keyframes spin-f1      { from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
+@keyframes shimmer      { 0%{ transform:translateX(-100%);} 100%{ transform:translateX(100%);} }
+@keyframes modalIn      { from{ opacity:0; transform:scale(0.9) translateY(10px);} to{ opacity:1; transform:scale(1) translateY(0);} }
+@keyframes overlayIn    { from{ opacity:0;} to{ opacity:1;} }
+@keyframes countdownPulse { 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.05);} }
+@keyframes toastSlideIn { from{ opacity:0; transform:translateX(28px);} to{ opacity:1; transform:translateX(0);} }
+@keyframes toastSlideOut{ from{ opacity:1; transform:translateX(0);} to{ opacity:0; transform:translateX(calc(100% + 28px));} }
+@keyframes progressShrink{ from{ width:100%;} to{ width:0%;} }
 
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+.animate-fade-in    { animation: fadeIn    0.5s cubic-bezier(0.16,1,0.3,1) both; }
+.animate-fade-in-up { animation: fadeInUp  0.6s cubic-bezier(0.16,1,0.3,1) both; }
+.animate-slide-left { animation: slideInLeft 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+.animate-scale-in   { animation: scaleIn   0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+.spin-f1            { animation: spin-f1   0.8s linear infinite; }
 
-@keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.92); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes pulse-red {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(225, 6, 0, 0.4); }
-  50% { box-shadow: 0 0 0 8px rgba(225, 6, 0, 0); }
-}
-
-@keyframes spin-f1 {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-@keyframes modalIn {
-  from { opacity: 0; transform: scale(0.9) translateY(10px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-@keyframes overlayIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes countdownPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-
-@keyframes toastSlideIn {
-  from { opacity: 0; transform: translateX(28px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes toastSlideOut {
-  from { opacity: 1; transform: translateX(0); }
-  to   { opacity: 0; transform: translateX(calc(100% + 28px)); }
-}
-
-@keyframes progressShrink {
-  from { width: 100%; }
-  to   { width: 0%; }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.animate-fade-in-up {
-  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.animate-slide-left {
-  animation: slideInLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-scale-in {
-  animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.spin-f1 {
-  animation: spin-f1 0.8s linear infinite;
-}
-
-/* Skeleton shimmer effect */
+/* Skeleton shimmer */
 .skeleton-shimmer {
-  background: linear-gradient(
-    90deg,
+  background: linear-gradient(90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.03) 40%,
-    rgba(255, 255, 255, 0.06) 50%,
-    rgba(255, 255, 255, 0.03) 60%,
-    transparent 100%
-  );
+    rgba(255,255,255,0.03) 40%,
+    rgba(255,255,255,0.06) 50%,
+    rgba(255,255,255,0.03) 60%,
+    transparent 100%);
   animation: shimmer 1.8s infinite;
 }
 
@@ -326,11 +422,10 @@ select:-webkit-autofill {
   opacity: 0;
   filter: blur(8px);
   transform: translateY(12px);
-  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-              filter 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1),
+              transform 0.5s cubic-bezier(0.16,1,0.3,1),
+              filter 0.5s cubic-bezier(0.16,1,0.3,1);
 }
-
 .page-transition-enter {
   opacity: 1;
   filter: blur(0);
@@ -338,82 +433,48 @@ select:-webkit-autofill {
 }
 
 /* ============================================================
-   ALERTS / NOTIFICATIONS — High Contrast & Premium
+   ALERTS / NOTIFICATIONS
    ============================================================ */
-.f1-alert-error {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border-radius: 12px;
-  background: rgba(225, 6, 0, 0.07);
-  border: 1px solid rgba(225, 6, 0, 0.25);
-  border-left: 4px solid var(--f1-red);
-  color: #FFA5A5;
-  font-size: 14px;
-  font-weight: 500;
-  box-shadow: 0 4px 20px rgba(225, 6, 0, 0.05);
-}
-
-:root.light .f1-alert-error {
-  background: rgba(225, 6, 0, 0.04);
-  border: 1px solid rgba(225, 6, 0, 0.15);
-  border-left: 4px solid var(--f1-red);
-  color: #C10000;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
-
+.f1-alert-error,
 .f1-alert-success {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 14px 16px;
-  border-radius: 12px;
-  background: rgba(16, 185, 129, 0.07);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  border-left: 4px solid #10B981;
-  color: #A7F3D0;
+  border-radius: var(--r-md);
   font-size: 14px;
   font-weight: 500;
-  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.05);
 }
-
-:root.light .f1-alert-success {
-  background: rgba(16, 185, 129, 0.04);
-  border: 1px solid rgba(16, 185, 129, 0.15);
-  border-left: 4px solid #10B981;
-  color: #065F46;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+.f1-alert-error {
+  background: rgba(var(--m-red-rgb), 0.07);
+  border: 1px solid rgba(var(--m-red-rgb), 0.25);
+  border-left: 4px solid var(--f1-red);
+  color: #FFA5A5;
+  box-shadow: 0 4px 20px rgba(var(--m-red-rgb), 0.05);
+}
+.f1-alert-success {
+  background: rgba(15,163,54,0.07);
+  border: 1px solid rgba(15,163,54,0.25);
+  border-left: 4px solid var(--f1-green);
+  color: #A7F3D0;
+  box-shadow: 0 4px 20px rgba(15,163,54,0.05);
 }
 
 /* ============================================================
-   NAVBAR — Deeper blur
+   NAVBAR — glassmorphism + M tricolor bottom border
    ============================================================ */
 .navbar-blur {
   background: var(--f1-navbar-bg);
   backdrop-filter: blur(20px) saturate(1.5);
   -webkit-backdrop-filter: blur(20px) saturate(1.5);
-  border-bottom: 1px solid var(--f1-border);
+  border-bottom: 3px solid transparent;
+  border-image: var(--m-gradient) 1;
 }
 
 /* ============================================================
-   HERO STRIPE DECORATION
+   TABLE — premium data table
    ============================================================ */
-.f1-stripe {
-  background: linear-gradient(90deg, var(--f1-red) 0%, transparent 100%);
-  height: 3px;
-  width: 60px;
-  border-radius: 2px;
-}
-
-/* ============================================================
-   TABLE — Premium data table
-   ============================================================ */
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
+.data-table { width: 100%; border-collapse: collapse; }
 .data-table th {
   background: var(--f1-surface);
   padding: 12px 16px;
@@ -425,127 +486,75 @@ select:-webkit-autofill {
   color: var(--f1-light);
   border-bottom: 1px solid var(--f1-border);
 }
-
 .data-table td {
   padding: 14px 16px;
   border-bottom: 1px solid var(--f1-border);
   font-size: 14px;
 }
-
-.data-table tr:hover td {
-  background: var(--f1-surface);
-}
+.data-table tr:hover td { background: var(--f1-surface); }
 
 /* ============================================================
-   TOAST — Premium notification system
+   TOAST — premium notification system
    ============================================================ */
 .toast-wrapper {
   position: relative;
-  border-radius: 14px;
+  border-radius: var(--r-lg);
   overflow: hidden;
   backdrop-filter: blur(16px) saturate(1.4);
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.25);
   pointer-events: auto;
 }
+.toast-enter  { animation: toastSlideIn  0.35s cubic-bezier(0.16,1,0.3,1) forwards; }
+.toast-exit   { animation: toastSlideOut 0.35s cubic-bezier(0.55,0,1,0.45) forwards; }
 
-/* Enter / Exit Animations */
-.toast-enter {
-  animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.toast-exit {
-  animation: toastSlideOut 0.35s cubic-bezier(0.55, 0, 1, 0.45) forwards;
-}
-
-/* Type variants */
 .toast-success {
-  background: rgba(10, 25, 20, 0.85);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: rgba(10,25,20,0.85);
+  border: 1px solid rgba(16,185,129,0.3);
   border-left: 4px solid #10B981;
 }
-
-:root.light .toast-success {
-  background: rgba(240, 253, 244, 0.95);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  border-left: 4px solid #10B981;
-}
-
 .toast-error {
-  background: rgba(25, 10, 10, 0.85);
-  border: 1px solid rgba(225, 6, 0, 0.3);
+  background: rgba(25,10,10,0.85);
+  border: 1px solid rgba(var(--m-red-rgb),0.3);
   border-left: 4px solid var(--f1-red);
 }
-
-:root.light .toast-error {
-  background: rgba(254, 242, 242, 0.95);
-  border: 1px solid rgba(225, 6, 0, 0.3);
-  border-left: 4px solid var(--f1-red);
-}
-
 .toast-warning {
-  background: rgba(25, 20, 10, 0.85);
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: rgba(25,20,10,0.85);
+  border: 1px solid rgba(245,158,11,0.3);
   border-left: 4px solid #F59E0B;
 }
-
-:root.light .toast-warning {
-  background: rgba(255, 251, 235, 0.95);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  border-left: 4px solid #F59E0B;
-}
-
 .toast-info {
-  background: rgba(10, 20, 25, 0.85);
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: rgba(10,20,25,0.85);
+  border: 1px solid rgba(56,189,248,0.3);
   border-left: 4px solid #38BDF8;
 }
-
-:root.light .toast-info {
-  background: rgba(240, 249, 255, 0.95);
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  border-left: 4px solid #38BDF8;
-}
-
-/* Icon colors per type */
 .toast-icon-success { color: #34D399; }
 .toast-icon-error   { color: #FF6B6B; }
 .toast-icon-warning { color: #FBBF24; }
 .toast-icon-info    { color: #38BDF8; }
 
-/* Dismiss (X) button */
 .toast-dismiss {
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255,255,255,0.25);
   transition: color 0.2s ease;
   line-height: 1;
   background: none;
   border: none;
   cursor: pointer;
   padding: 0;
-  border-radius: 4px;
+  border-radius: var(--r-xs);
 }
+.toast-dismiss:hover { color: rgba(255,255,255,0.65); }
 
-.toast-dismiss:hover {
-  color: rgba(255, 255, 255, 0.65);
-}
-
-/* Progress bar track */
 .toast-progress-track {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  position: absolute; bottom: 0; left: 0; right: 0;
   height: 2px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255,255,255,0.05);
 }
-
-/* Progress bar fill — animates width from 100 → 0 */
 .toast-progress-fill {
   height: 100%;
   animation: progressShrink linear forwards;
-  border-radius: 0 0 14px 14px;
+  border-radius: 4px;
 }
-
 .toast-progress-success { background: #34D399; }
 .toast-progress-error   { background: #FF6B6B; }
 .toast-progress-warning { background: #FBBF24; }
@@ -557,14 +566,14 @@ select:-webkit-autofill {
 .spinner-f1 {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(225, 6, 0, 0.1);
+  border: 3px solid rgba(var(--m-red-rgb),0.1);
   border-top-color: var(--f1-red);
   border-radius: 50%;
   animation: spin-f1 0.8s linear infinite;
 }
 
 /* ============================================================
-   CONFIRM MODAL — Premium dialog
+   CONFIRM MODAL — premium dialog
    ============================================================ */
 .confirm-modal-overlay {
   position: fixed;
@@ -574,30 +583,28 @@ select:-webkit-autofill {
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0,0,0,0.75);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   animation: overlayIn 0.25s ease-out forwards;
 }
-
 .confirm-modal-content {
   width: 100%;
   max-width: 400px;
   padding: 2rem;
-  border-radius: 24px;
+  border-radius: var(--r-xl);
   background: var(--f1-confirm-bg);
   border: 1px solid var(--f1-border);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(225, 6, 0, 0.05);
-  animation: modalIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(var(--m-red-rgb),0.05);
+  animation: modalIn 0.35s cubic-bezier(0.16,1,0.3,1) forwards;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-
 .confirm-modal-icon {
   width: 64px;
   height: 64px;
-  border-radius: 20px;
+  border-radius: 9999px;
   background: var(--f1-confirm-icon-bg);
   display: flex;
   align-items: center;
@@ -606,32 +613,26 @@ select:-webkit-autofill {
 }
 
 /* ============================================================
-   COUNTDOWN RING — Circular SVG timer
+   COUNTDOWN RING — circular SVG timer
    ============================================================ */
-.countdown-ring {
-  transform: rotate(-90deg);
-}
-
+.countdown-ring { transform: rotate(-90deg); }
 .countdown-ring-bg {
   fill: none;
   stroke: var(--f1-border);
   stroke-width: 3;
 }
-
 .countdown-ring-progress {
   fill: none;
   stroke-width: 3;
   stroke-linecap: round;
   transition: stroke-dashoffset 1s linear, stroke 0.5s ease;
 }
-
 .countdown-container {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
-
 .countdown-text {
   position: absolute;
   font-size: 10px;
@@ -653,34 +654,18 @@ select:-webkit-autofill {
   position: relative;
   overflow: hidden;
 }
-
 .race-fallback-image::before {
   content: '';
   position: absolute;
   inset: 0;
   background:
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 14px,
-      rgba(255, 255, 255, 0.015) 14px,
-      rgba(255, 255, 255, 0.015) 15px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 14px,
-      rgba(255, 255, 255, 0.015) 14px,
-      rgba(255, 255, 255, 0.015) 15px
-    );
+    repeating-linear-gradient(0deg, transparent, transparent 14px, rgba(255,255,255,0.015) 14px, rgba(255,255,255,0.015) 15px),
+    repeating-linear-gradient(90deg, transparent, transparent 14px, rgba(255,255,255,0.015) 14px, rgba(255,255,255,0.015) 15px);
 }
-
 .race-fallback-image::after {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 0; left: 0; right: 0;
   height: 2px;
   background: linear-gradient(90deg, var(--f1-red), transparent);
 }
@@ -690,96 +675,87 @@ select:-webkit-autofill {
    ============================================================ */
 .footer-glow {
   background:
-    radial-gradient(ellipse at center bottom, rgba(225, 6, 0, 0.03) 0%, transparent 60%),
+    radial-gradient(ellipse at center bottom, rgba(var(--m-red-rgb),0.03) 0%, transparent 60%),
     var(--f1-black);
 }
-
 .bg-grid-pattern {
   background-size: 24px 24px;
-  background-image: 
-    linear-gradient(to right, rgba(225, 6, 0, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(225, 6, 0, 0.04) 1px, transparent 1px);
+  background-image:
+    linear-gradient(to right, rgba(var(--m-red-rgb),0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(var(--m-red-rgb),0.04) 1px, transparent 1px);
 }
 
 /* ============================================================
-   LIGHT MODE — Global overrides for hardcoded Tailwind colors
+   LIGHT MODE OVERRIDES
    ============================================================ */
+:root.light body { color: var(--f1-white); }
 
-:root.light body {
-  color: #1A1A1A;
-}
+:root.light .text-white { color: var(--f1-white) !important; }
+:root.light .text-gray-100 { color: #18181b !important; }
+:root.light .text-gray-200 { color: #27272a !important; }
+:root.light .text-gray-300 { color: #3f3f46 !important; }
+:root.light .text-gray-400 { color: #52525b !important; }
+:root.light .text-gray-500 { color: #71717a !important; }
+:root.light .text-f1-light  { color: #6b7280 !important; }
 
-/* text-white → dark text in light mode */
-:root.light .text-white {
-  color: #1A1A1A !important;
-}
+:root.light .bg-f1-black  { background-color: #fafafa !important; }
+:root.light .bg-f1-dark   { background-color: #ffffff !important; }
+:root.light .bg-f1-card   { background-color: #ffffff !important; }
 
-/* gray text readable in light mode */
-:root.light .text-gray-100 { color: #1A1A1A !important; }
-:root.light .text-gray-200 { color: #2A2A2A !important; }
-:root.light .text-gray-300 { color: #3A3A3A !important; }
-:root.light .text-gray-400 { color: #555555 !important; }
-:root.light .text-gray-500 { color: #666666 !important; }
+:root.light .glass-card { color: var(--f1-white); }
+:root.light .glass-card .text-white { color: var(--f1-white) !important; }
+:root.light .card .text-white { color: var(--f1-white) !important; }
+:root.light .card-static .text-white { color: var(--f1-white) !important; }
 
-/* f1-light stays readable */
-:root.light .text-f1-light { color: #666666 !important; }
+:root.light [class*="bg-white\/"] { --tw-bg-opacity: 1; }
 
-/* Card & surface backgrounds */
-:root.light .bg-f1-black  { background-color: #F8F8F8 !important; }
-:root.light .bg-f1-dark   { background-color: #FFFFFF !important; }
-:root.light .bg-f1-card   { background-color: #FFFFFF !important; }
-
-/* glass-card text fix */
-:root.light .glass-card { color: #1A1A1A; }
-:root.light .glass-card .text-white { color: #1A1A1A !important; }
-:root.light .card .text-white { color: #1A1A1A !important; }
-:root.light .card-static .text-white { color: #1A1A1A !important; }
-
-/* White overlays → subtle dark overlays */
-:root.light [class*="bg-white\/"] {
-  --tw-bg-opacity: 1;
-}
-
-/* Dismiss button in light mode */
 :root.light .toast-dismiss { color: rgba(0,0,0,0.35); }
 :root.light .toast-dismiss:hover { color: rgba(0,0,0,0.65); }
 
-/* Skeleton shimmer light mode */
 :root.light .skeleton-shimmer {
-  background: linear-gradient(
-    90deg,
+  background: linear-gradient(90deg,
     transparent 0%,
     rgba(0,0,0,0.03) 40%,
     rgba(0,0,0,0.06) 50%,
     rgba(0,0,0,0.03) 60%,
-    transparent 100%
-  );
+    transparent 100%);
 }
 
-/* Table text in light mode */
-:root.light .data-table td { color: #1A1A1A; }
+:root.light .toast-success { background: rgba(240,253,244,0.95); }
+:root.light .toast-error   { background: rgba(254,242,242,0.95); }
+:root.light .toast-warning { background: rgba(255,251,235,0.95); }
+:root.light .toast-info    { background: rgba(240,249,255,0.95); }
 
-/* Input placeholder in light mode */
-:root.light .form-input::placeholder { color: #9B9B9B; }
+:root.light .data-table td { color: var(--f1-white); }
+:root.light .form-input::placeholder { color: #9ca3af; }
 
-/* Autofill fix for light mode */
+:root.light .f1-alert-error {
+  background: rgba(var(--m-red-rgb),0.04);
+  border: 1px solid rgba(var(--m-red-rgb),0.15);
+  border-left: 4px solid var(--f1-red);
+  color: #b91c1c;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+:root.light .f1-alert-success {
+  background: rgba(15,163,54,0.04);
+  border: 1px solid rgba(15,163,54,0.15);
+  border-left: 4px solid var(--f1-green);
+  color: #065f46;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
 :root.light input:-webkit-autofill,
 :root.light input:-webkit-autofill:hover,
 :root.light input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px #FFFFFF inset !important;
-  -webkit-text-fill-color: #1A1A1A !important;
-  caret-color: #1A1A1A;
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: var(--f1-white) !important;
+  caret-color: var(--f1-white);
 }
 
-/* Footer in light mode */
 :root.light .footer-glow {
-  background: radial-gradient(ellipse at center bottom, rgba(225,6,0,0.02) 0%, transparent 60%), #F0F0F0;
+  background: radial-gradient(ellipse at center bottom, rgba(var(--m-red-rgb),0.025) 0%, transparent 60%), #f4f4f5;
 }
-
-/* Navbar text in light mode */
-:root.light .navbar-blur { color: #1A1A1A; }
-
-/* Confirm modal shadow in light mode */
+:root.light .navbar-blur { color: var(--f1-white); }
 :root.light .confirm-modal-content {
   box-shadow: 0 25px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.06);
 }
