@@ -360,6 +360,27 @@ All endpoints accessed through API Gateway at `http://localhost:8080`.
 | `PUT` | `/api/bookings/{id}/confirm` | `Bearer JWT` | Confirm / pay booking |
 | `PUT` | `/api/bookings/{id}/cancel` | `Bearer JWT` | Cancel booking |
 | `GET` | `/api/bookings/{id}/ticket` | `Bearer JWT` | Download PDF e-ticket |
+| `POST` | `/api/bookings/{code}/scan` | `ADMIN JWT` | Scan QR code & use ticket |
+
+---
+
+## 🧪 Testing Ticket Scan with Postman
+
+Since scanning the real QR code using a generic scanner app on your phone will only show the raw JSON or text containing the ticket URL/code, you can simulate the scanner device's behavior by hitting the scan endpoint directly via Postman:
+
+1. **Login as Admin**: 
+   - Make a `POST` request to `http://localhost:8080/api/auth/login` with Admin credentials.
+   - Copy the `token` from the response.
+2. **Scan the Ticket**:
+   - Set up a `POST` request to `http://localhost:8080/api/bookings/{booking-code}/scan`
+     *(Replace `{booking-code}` with a confirmed booking code, e.g., `APEX-123456`)*
+   - Go to the **Authorization** tab, select **Bearer Token**, and paste your Admin token.
+   - Send the request.
+3. **Expected Result**: 
+   - You will receive a `200 OK` response with the booking details in JSON format.
+   - The ticket status is now updated to indicate it has been scanned/used.
+   - Subsequent scan requests for the same code will return an error stating the ticket has already been used.
+
 
 ---
 
