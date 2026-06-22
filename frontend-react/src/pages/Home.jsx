@@ -200,7 +200,7 @@ export default function Home() {
                 style={{ animationDelay: '0.1s' }}>
               EXPERIENCE
               <br />
-              FORMULA 1
+              FORMULA <span className="font-sans font-bold text-f1-red">1</span>
             </h1>
 
             <p className="text-lg md:text-xl text-f1-light max-w-2xl mx-auto mb-8 animate-fade-in leading-relaxed"
