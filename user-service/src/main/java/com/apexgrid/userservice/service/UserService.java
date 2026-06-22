@@ -13,6 +13,5 @@ public interface UserService {
     Page<UserAdminResponse> getAllUsers(int page, int size, String search);
     MessageResponse toggleUserStatus(Integer userId);
     UserAdminResponse getUserById(Integer userId);
-    MessageResponse adminResetUserPassword(Integer userId, String newPassword);
     MessageResponse adminAssignRole(Integer userId, String newRole);
 }

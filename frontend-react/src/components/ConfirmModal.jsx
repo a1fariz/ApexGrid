@@ -37,6 +37,7 @@ export default function ConfirmModal({
   onConfirm,
   onCancel,
   loading = false,
+  children
 }) {
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -77,10 +78,12 @@ export default function ConfirmModal({
 
         {/* Title & Message */}
         <h3 className="text-xl font-bold text-white text-center mb-2">{title}</h3>
-        <p className="text-f1-light text-sm text-center mb-8 leading-relaxed">{message}</p>
+        <p className="text-f1-light text-sm text-center mb-4 leading-relaxed">{message}</p>
+
+        {children}
 
         {/* Actions */}
-        <div className="flex gap-3 w-full">
+        <div className="flex gap-3 w-full mt-6">
           <button
             onClick={onCancel}
             disabled={loading}

@@ -467,8 +467,7 @@ select:-webkit-autofill {
   background: var(--f1-navbar-bg);
   backdrop-filter: blur(20px) saturate(1.5);
   -webkit-backdrop-filter: blur(20px) saturate(1.5);
-  border-bottom: 3px solid transparent;
-  border-image: var(--m-gradient) 1;
+  border-bottom: 1px solid var(--f1-border);
 }
 
 /* ============================================================

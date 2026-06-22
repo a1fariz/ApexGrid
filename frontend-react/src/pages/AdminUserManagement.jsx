@@ -26,9 +26,6 @@ export default function AdminUserManagement() {
   const [totalElements, setTotalElements] = useState(0)
 
   // Actions states
-  const [resetPwdTarget, setResetPwdTarget] = useState(null)
-  const [newPassword, setNewPassword] = useState('')
-  const [resettingPwd, setResettingPwd] = useState(false)
 
   const [roleChangeTarget, setRoleChangeTarget] = useState(null)
   const [newRole, setNewRole] = useState('USER')
@@ -74,20 +71,6 @@ export default function AdminUserManagement() {
     }
   }
 
-  const handleResetPassword = async () => {
-    if (!resetPwdTarget || !newPassword) return
-    setResettingPwd(true)
-    try {
-      const res = await api.post(`/users/${resetPwdTarget.id}/reset-password`, { newPassword })
-      showToast(res.data.message || `Password for @${resetPwdTarget.username} updated successfully`, 'success')
-      setResetPwdTarget(null)
-      setNewPassword('')
-    } catch (err) {
-      showToast(err.response?.data?.message || 'Failed to reset password', 'error')
-    } finally {
-      setResettingPwd(false)
-    }
-  }
 
   const handleChangeRole = async () => {
     if (!roleChangeTarget) return
@@ -222,12 +205,7 @@ export default function AdminUserManagement() {
                                 >
                                   Change Role
                                 </button>
-                                <button
-                                  onClick={() => setResetPwdTarget(u)}
-                                  className="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-gray-300 transition-colors border border-white/10"
-                                >
-                                  Reset Password
-                                </button>
+
                                 <button
                                   onClick={() => toggleUserStatus(u.id, u.role)}
                                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
@@ -309,34 +287,6 @@ export default function AdminUserManagement() {
           })()}
         </div>
 
-        {/* Reset Password Modal */}
-        {resetPwdTarget && (
-          <ConfirmModal
-            isOpen={!!resetPwdTarget}
-            title="Reset User Password"
-            message={`Set a new temporary password for user @${resetPwdTarget.username}.`}
-            icon={<FaKey className="text-3xl text-amber-400" />}
-            confirmText="Reset Password"
-            confirmColor="green"
-            loading={resettingPwd}
-            onConfirm={handleResetPassword}
-            onCancel={() => { setResetPwdTarget(null); setNewPassword(''); }}
-          >
-            <div className="w-full mt-4">
-              <label className="block text-xs text-left font-semibold text-f1-light mb-1.5">
-                New Temporary Password:
-              </label>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                className="form-input text-sm py-2 px-3 border border-f1-border"
-                placeholder="Minimum 6 characters"
-                required
-              />
-            </div>
-          </ConfirmModal>
-        )}
 
         {/* Change Role Modal */}
         {roleChangeTarget && (

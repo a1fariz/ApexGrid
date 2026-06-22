@@ -50,20 +50,6 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
-    @PostMapping("/{id}/reset-password")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<MessageResponse> adminResetUserPassword(
-            @PathVariable("id") Integer id,
-            @RequestBody java.util.Map<String, String> request) {
-        String newPassword = request.get("newPassword");
-        if (newPassword == null || newPassword.trim().isEmpty()) {
-            throw new com.apexgrid.userservice.exception.ApiException("New password cannot be blank", org.springframework.http.HttpStatus.BAD_REQUEST);
-        }
-        if (newPassword.length() < 6) {
-            throw new com.apexgrid.userservice.exception.ApiException("New password must be at least 6 characters", org.springframework.http.HttpStatus.BAD_REQUEST);
-        }
-        return ResponseEntity.ok(userService.adminResetUserPassword(id, newPassword));
-    }
 
     @PutMapping("/{id}/role")
     @PreAuthorize("hasRole('ADMIN')")

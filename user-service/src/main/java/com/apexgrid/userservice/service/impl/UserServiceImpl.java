@@ -119,18 +119,6 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    @Override
-    @Transactional
-    public MessageResponse adminResetUserPassword(Integer userId, String newPassword) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
-
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
-
-        log.info("Admin reset password for user: {}", user.getUsername());
-        return new MessageResponse("User password has been reset successfully.");
-    }
 
     @Override
     @Transactional
