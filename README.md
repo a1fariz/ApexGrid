@@ -19,7 +19,7 @@
   <img src="https://img.shields.io/badge/Gateway-Spring_Cloud-6DB33F?style=flat-square" />
   <img src="https://img.shields.io/badge/API_Docs-Swagger_UI-85EA2D?style=flat-square" />
   <img src="https://img.shields.io/badge/Status-Production_Ready-brightgreen?style=flat-square" />
-  <img src="https://img.shields.io/badge/Last_Updated-June_20,_2026-blue?style=flat-square" />
+  <img src="https://img.shields.io/badge/Last_Updated-June_22,_2026-blue?style=flat-square" />
 </p>
 
 ---
@@ -530,5 +530,5 @@ This project is developed for educational purposes as part of a university/portf
 
 <p align="center">
   Built with 💻 and ☕ by <strong>Muhammad Alfarizi</strong><br/>
-  Last updated: June 20, 2026
+  Last updated: June 22, 2026
 </p>

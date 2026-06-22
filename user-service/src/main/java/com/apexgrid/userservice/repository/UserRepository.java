@@ -19,7 +19,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     // B-14 Fix: paginated user list with optional search across username, email, fullName
     // L-01 Fix: escape LIKE wildcards to prevent wildcard injection
-    @Query("SELECT u FROM User u WHERE :search IS NULL OR " +
+    @Query("SELECT u FROM User u WHERE " +
            "LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) ESCAPE '!' OR " +
            "LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) ESCAPE '!' OR " +
            "LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%')) ESCAPE '!'")

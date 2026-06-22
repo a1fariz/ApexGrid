@@ -102,7 +102,7 @@ export default function Register() {
       <div className="min-h-screen flex flex-col md:flex-row bg-f1-black text-f1-white">
         
         {/* Left Side: F1 Brand Visuals (60% width, hidden on mobile) */}
-        <div className="hidden md:flex md:w-[60%] relative overflow-hidden items-center justify-center bg-black border-r border-f1-border">
+        <div className="auth-brand-sidebar hidden md:flex md:w-[60%] relative overflow-hidden items-center justify-center bg-black border-r border-f1-border">
           <img 
             src={f1Register} 
             alt="F1 Night Race Track" 

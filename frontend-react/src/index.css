@@ -24,7 +24,7 @@
 
   /* ---- Brand semantic (BMW M palette) ---- */
   --f1-red:        #e22718;
-  --f1-red-rgb:    226, 39, 24;
+  --f1-red-rgb:    226 39 24;
   --f1-red-dark:   #b01c10;
   --f1-red-glow:   rgba(226, 39, 24, 0.15);
 
@@ -759,3 +759,18 @@ select:-webkit-autofill {
 :root.light .confirm-modal-content {
   box-shadow: 0 25px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.06);
 }
+
+/* Force dark styling on authentication brand sidebar even in light mode */
+:root.light .auth-brand-sidebar .text-white {
+  color: #ffffff !important;
+}
+:root.light .auth-brand-sidebar .text-gray-300 {
+  color: #d1d5db !important;
+}
+:root.light .auth-brand-sidebar .text-f1-light {
+  color: #7e7e7e !important;
+}
+:root.light .auth-brand-sidebar [class*="bg-white/"] {
+  --tw-bg-opacity: 0.05 !important;
+}
+

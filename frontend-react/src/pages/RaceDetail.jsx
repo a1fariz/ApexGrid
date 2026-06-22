@@ -180,7 +180,7 @@ export default function RaceDetail() {
         <Navbar />
         <div className="text-center py-24 animate-fade-in flex-1">
           <FaFlagCheckered className="text-6xl mx-auto mb-4 text-f1-light" />
-          <h2 className="text-xl text-white mb-2">Race not found</h2>
+          <h2 className="text-xl text-f1-white mb-2">Race not found</h2>
           <p className="text-f1-light mb-6 text-sm">The race you're looking for doesn't exist or has been removed.</p>
           <button onClick={() => navigate('/')} className="btn-primary mt-4">Back to Races</button>
         </div>
@@ -248,7 +248,7 @@ export default function RaceDetail() {
               ← Back to Races
             </button>
             <div className="f1-stripe mb-3" />
-            <h1 className="font-f1 text-3xl md:text-5xl font-semibold text-white leading-tight tracking-tight">{race.name}</h1>
+            <h1 className="font-f1 text-3xl md:text-5xl font-semibold text-f1-white leading-tight tracking-tight">{race.name}</h1>
             <p className="text-f1-light mt-2 text-lg">{race.circuitName} · {race.location}, {race.country}</p>
           </div>
         </div>

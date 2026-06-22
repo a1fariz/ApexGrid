@@ -27,7 +27,8 @@ public class UserEmailService {
     @Async
     public void sendVerificationEmail(User user, VerificationToken token) {
         String subject = "Verify your ApexGrid Account";
-        String verificationUrl = "http://localhost:5173/verify?token=" + token.getToken();
+        String frontendUrl = env.getProperty("FRONTEND_URL", "http://localhost");
+        String verificationUrl = frontendUrl + "/verify?token=" + token.getToken();
 
         String htmlBody = """
             <!DOCTYPE html>
@@ -85,7 +86,8 @@ public class UserEmailService {
 
     public void sendPasswordResetEmail(User user, PasswordResetToken resetToken) {
         String subject = "Reset Your ApexGrid Password";
-        String resetUrl = "http://localhost:5173/reset-password?token=" + resetToken.getToken();
+        String frontendUrl = env.getProperty("FRONTEND_URL", "http://localhost");
+        String resetUrl = frontendUrl + "/reset-password?token=" + resetToken.getToken();
 
         String name = (user.getFullName() != null && !user.getFullName().isBlank())
                 ? user.getFullName() : user.getUsername();

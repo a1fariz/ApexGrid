@@ -111,7 +111,7 @@ export default function AdminCircuitManagement() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-f1-black text-f1-white">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 py-10">
 
@@ -119,15 +119,15 @@ export default function AdminCircuitManagement() {
         <div className="mb-8 flex items-center justify-between">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <Link to="/admin" className="text-f1-light hover:text-white transition-colors">
+              <Link to="/admin" className="text-f1-light hover:text-f1-white transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
               </Link>
               <div className="f1-stripe" />
             </div>
-            <h1 className="text-3xl font-bold text-white">Circuit Management</h1>
-            <p className="text-gray-400 mt-1">{circuits.length} circuits in the system</p>
+            <h1 className="text-3xl font-bold text-f1-white">Circuit Management</h1>
+            <p className="text-f1-light mt-1">{circuits.length} circuits in the system</p>
           </div>
           <button onClick={openCreate} id="add-circuit-btn" className="btn-primary">
             + Add New Circuit

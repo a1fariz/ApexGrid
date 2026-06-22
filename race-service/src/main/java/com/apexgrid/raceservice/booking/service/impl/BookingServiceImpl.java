@@ -152,6 +152,18 @@ public class BookingServiceImpl implements BookingService {
             throw new ApiException("Booking has expired and cannot be confirmed", HttpStatus.BAD_REQUEST);
         }
 
+        // Lock the race for update to prevent quota race conditions
+        Race race = raceRepository.findByIdWithCircuitForUpdate(booking.getRace().getId())
+                .orElseThrow(() -> new ApiException("Race not found for booking", HttpStatus.NOT_FOUND));
+
+        // Verify sufficient quota before confirming
+        if (race.getAvailableQuota() < booking.getQuantity()) {
+            throw new ApiException(
+                    "Insufficient quota to confirm booking. Available: " + race.getAvailableQuota()
+                            + ", Requested: " + booking.getQuantity(),
+                    HttpStatus.BAD_REQUEST);
+        }
+
         booking.setStatus("CONFIRMED");
         booking.setConfirmedAt(LocalDateTime.now());
 
@@ -166,7 +178,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingResponse cancelBooking(Integer bookingId, String reason, Integer requestingUserId, String userEmail) {
-        Booking booking = bookingRepository.findByIdWithRace(bookingId)
+        Booking booking = bookingRepository.findByIdWithRaceForUpdate(bookingId)
                 .orElseThrow(() -> new ApiException("Booking not found with id: " + bookingId, HttpStatus.NOT_FOUND));
 
         // Security fix: only the booking owner can cancel
@@ -175,7 +187,13 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if ("CANCELLED".equals(booking.getStatus())) {
-            throw new ApiException("Booking is already cancelled", HttpStatus.BAD_REQUEST);
+            // Idempotent: return existing cancellation instead of throwing error if it's already cancelled
+            return mapToBookingResponse(booking);
+        }
+
+        // B-03 & B-04 Fix: Block illegal transitions, only PENDING or CONFIRMED can be cancelled
+        if (!"PENDING".equals(booking.getStatus()) && !"CONFIRMED".equals(booking.getStatus())) {
+            throw new ApiException("Cannot cancel booking from status: " + booking.getStatus(), HttpStatus.BAD_REQUEST);
         }
 
         // B-04 Fix: prevent cancelling a ticket that has already been scanned/used at the venue
@@ -204,8 +222,13 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingResponse scanBooking(String bookingCode) {
-        Booking booking = bookingRepository.findByBookingCode(bookingCode)
+        Booking booking = bookingRepository.findByBookingCodeForUpdate(bookingCode)
                 .orElseThrow(() -> new ApiException("Invalid QR Code: Booking not found with code " + bookingCode, HttpStatus.NOT_FOUND));
+
+        if ("USED".equals(booking.getStatus())) {
+            // Idempotency check / Re-scan rejection
+            throw new ApiException("Ticket has already been used.", HttpStatus.BAD_REQUEST);
+        }
 
         if (!"CONFIRMED".equals(booking.getStatus())) {
             throw new ApiException("Ticket is invalid. Booking status is: " + booking.getStatus(), HttpStatus.BAD_REQUEST);
@@ -215,8 +238,9 @@ public class BookingServiceImpl implements BookingService {
             throw new ApiException("Ticket has already been scanned on " + booking.getScannedAt(), HttpStatus.BAD_REQUEST);
         }
 
-        // Mark as scanned
+        // Mark as scanned and transition status to USED
         booking.setScannedAt(LocalDateTime.now());
+        booking.setStatus("USED");
         Booking scanned = bookingRepository.save(booking);
 
         log.info("Ticket successfully scanned and verified: {}", scanned.getBookingCode());
@@ -277,11 +301,16 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingResponse adminCancelBooking(Integer bookingId, String reason) {
-        Booking booking = bookingRepository.findByIdWithRace(bookingId)
+        Booking booking = bookingRepository.findByIdWithRaceForUpdate(bookingId)
                 .orElseThrow(() -> new ApiException("Booking not found", HttpStatus.NOT_FOUND));
 
         if ("CANCELLED".equals(booking.getStatus())) {
-            throw new ApiException("Booking is already cancelled", HttpStatus.BAD_REQUEST);
+            return mapToBookingResponse(booking);
+        }
+
+        // Only allow cancel from PENDING or CONFIRMED
+        if (!"PENDING".equals(booking.getStatus()) && !"CONFIRMED".equals(booking.getStatus())) {
+            throw new ApiException("Cannot cancel booking from status: " + booking.getStatus(), HttpStatus.BAD_REQUEST);
         }
 
         booking.setStatus("CANCELLED");

@@ -230,10 +230,10 @@ export default function Payment() {
           
           {/* Header & Back Link */}
           <div className="mb-6 flex items-center justify-between">
-            <Link to="/bookings" className="text-gray-400 hover:text-white transition-colors text-sm font-semibold flex items-center gap-1.5">
+            <Link to="/bookings" className="text-f1-light hover:text-f1-white transition-colors text-sm font-semibold flex items-center gap-1.5">
               ← Back to My Bookings
             </Link>
-            <div className="flex items-center gap-2 bg-white/[0.03] border border-white/[0.05] rounded-full px-3 py-1 text-xs text-gray-400 font-mono">
+            <div className="flex items-center gap-2 bg-f1-surface border border-f1-border/40 rounded-full px-3 py-1 text-xs text-f1-light font-mono">
               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
               Secure 256-bit Connection
             </div>
@@ -245,7 +245,7 @@ export default function Payment() {
             <div className="lg:col-span-2 space-y-6">
               
               {/* Payment Card Wrapper */}
-              <div className="glass-card overflow-hidden border border-white/[0.05] rounded-2xl shadow-xl">
+              <div className="glass-card overflow-hidden rounded-2xl shadow-xl">
                 
                 {/* Header Badge */}
                 <div className="bg-gradient-to-r from-f1-red to-red-600 px-6 py-4 flex items-center justify-between">
@@ -263,7 +263,7 @@ export default function Payment() {
                     
                     {/* Method Selector */}
                     <div>
-                      <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">Select Payment Method</h3>
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-f1-light mb-3">Select Payment Method</h3>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         {PAYMENT_METHODS.map((m) => (
                           <button
@@ -272,13 +272,13 @@ export default function Payment() {
                             className={`flex flex-col items-center justify-between p-4 rounded-xl border transition-all duration-200 text-center ${
                               method === m.id
                                 ? 'border-f1-red/60 bg-f1-red/[0.05] shadow-lg shadow-red-950/20'
-                                : 'border-white/[0.05] bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/15'
+                                : 'border-f1-border/40 bg-f1-surface hover:bg-f1-card-hover hover:border-f1-border'
                             }`}
                           >
                             <span className="text-3xl mb-2 text-f1-red">{m.icon}</span>
                             <div>
-                              <div className="text-white font-semibold text-xs mb-1">{m.label}</div>
-                              <div className="text-[9px] text-gray-500 leading-tight">{m.desc}</div>
+                              <div className="text-f1-white font-semibold text-xs mb-1">{m.label}</div>
+                              <div className="text-[9px] text-f1-light leading-tight">{m.desc}</div>
                             </div>
                             <div className={`mt-3 w-4 h-4 rounded-md border-2 flex items-center justify-center transition-all ${
                               method === m.id ? 'border-f1-red bg-f1-red' : 'border-gray-600'
@@ -291,7 +291,7 @@ export default function Payment() {
                     </div>
 
                     {/* Dynamic Forms */}
-                    <div className="pt-4 border-t border-white/[0.05]">
+                    <div className="pt-4 border-t border-f1-border/60">
                       
                       {/* 1. QRIS */}
                       {method === 'qris' && (
@@ -549,8 +549,8 @@ export default function Payment() {
             <div className="space-y-6">
               
               {/* Order Summary Panel */}
-              <div className="glass-card border border-white/[0.05] rounded-2xl p-6 shadow-xl">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-4 pb-2 border-b border-white/[0.04]">
+              <div className="glass-card rounded-2xl p-6 shadow-xl">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-f1-light mb-4 pb-2 border-b border-f1-border/40">
                   Order Summary
                 </h3>
 
@@ -558,22 +558,22 @@ export default function Payment() {
                   
                   {/* Race / Circuit Details */}
                   <div>
-                    <span className="text-[10px] text-gray-500 uppercase font-semibold">Grand Prix Event</span>
-                    <h4 className="text-white font-bold text-base mt-0.5">{booking.raceName}</h4>
-                    <p className="text-xs text-gray-400 mt-0.5">{booking.circuitName}, {booking.country}</p>
+                    <span className="text-[10px] text-f1-light uppercase font-semibold">Grand Prix Event</span>
+                    <h4 className="text-f1-white font-bold text-base mt-0.5">{booking.raceName}</h4>
+                    <p className="text-xs text-f1-light mt-0.5">{booking.circuitName}, {booking.country}</p>
                   </div>
 
                   {/* Seat Zone & Date */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <span className="text-[10px] text-gray-500 uppercase font-semibold font-mono">Zone</span>
+                      <span className="text-[10px] text-f1-light uppercase font-semibold font-mono">Zone</span>
                       <div className="mt-1 font-bold text-xs uppercase tracking-wide bg-f1-red/10 border border-f1-red/20 text-f1-red px-2.5 py-1 rounded-full w-fit">
                         {booking.zone}
                       </div>
                     </div>
                     <div>
-                      <span className="text-[10px] text-gray-500 uppercase font-semibold">Race Date</span>
-                      <p className="text-white font-bold text-xs mt-1">
+                      <span className="text-[10px] text-f1-light uppercase font-semibold">Race Date</span>
+                      <p className="text-f1-white font-bold text-xs mt-1">
                         {booking.raceDate ? new Date(booking.raceDate).toLocaleDateString('en-US', {
                           day: 'numeric', month: 'short', year: 'numeric'
                         }) : '—'}
@@ -582,20 +582,20 @@ export default function Payment() {
                   </div>
 
                   {/* Quantity & Base Pricing */}
-                  <div className="pt-4 border-t border-white/[0.04] space-y-2">
-                    <div className="flex justify-between text-xs text-gray-400">
+                  <div className="pt-4 border-t border-f1-border/40 space-y-2">
+                    <div className="flex justify-between text-xs text-f1-light">
                       <span>Ticket Quantity</span>
-                      <span className="text-white font-bold">{booking.quantity}x</span>
+                      <span className="text-f1-white font-bold">{booking.quantity}x</span>
                     </div>
-                    <div className="flex justify-between text-xs text-gray-400">
+                    <div className="flex justify-between text-xs text-f1-light">
                       <span>Booking Code</span>
-                      <span className="font-mono text-gray-300">{booking.bookingCode}</span>
+                      <span className="font-mono text-f1-white">{booking.bookingCode}</span>
                     </div>
                   </div>
 
                   {/* Total Pricing Badge */}
-                  <div className="pt-4 border-t border-white/[0.04] flex justify-between items-center">
-                    <span className="text-xs font-bold uppercase text-gray-400">Total Price</span>
+                  <div className="pt-4 border-t border-f1-border/40 flex justify-between items-center">
+                    <span className="text-xs font-bold uppercase text-f1-light">Total Price</span>
                     <span className="text-f1-red font-black text-xl tracking-tight">{formatPrice(booking.totalPrice)}</span>
                   </div>
 

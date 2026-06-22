@@ -96,7 +96,7 @@ export default function BookingHistory() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-f1-black text-f1-white">
         <Navbar />
 
         <div className="max-w-6xl mx-auto px-4 py-10">
@@ -104,7 +104,7 @@ export default function BookingHistory() {
           {/* Header */}
           <div className="mb-10 flex flex-col items-center text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <Link to="/" className="text-f1-light hover:text-f1-white transition-colors text-sm flex items-center gap-2 font-semibold bg-white/5 hover:bg-f1-red px-4 py-1.5 rounded-lg backdrop-blur-sm border border-white/10 hover:border-f1-red shadow-lg">
+              <Link to="/" className="text-f1-light hover:text-f1-white transition-colors text-sm flex items-center gap-2 font-semibold bg-f1-surface hover:bg-f1-red px-4 py-1.5 rounded-lg backdrop-blur-sm border border-f1-border/40 hover:border-f1-red shadow-lg">
                 ← Back to Home
               </Link>
             </div>
@@ -188,17 +188,17 @@ export default function BookingHistory() {
               <button
                 onClick={() => setPage(p => Math.max(0, p - 1))}
                 disabled={page === 0}
-                className="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-f1-surface text-f1-light hover:text-white border border-f1-border disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                className="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-f1-surface text-f1-light hover:text-f1-white border border-f1-border disabled:opacity-20 disabled:cursor-not-allowed transition-all"
               >
                 ← Prev
               </button>
               <span className="text-sm text-f1-light">
-                Page <span className="font-bold text-white">{page + 1}</span> of {totalPages}
+                Page <span className="font-bold text-f1-white">{page + 1}</span> of {totalPages}
               </span>
               <button
                 onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
                 disabled={page >= totalPages - 1}
-                className="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-f1-surface text-f1-light hover:text-white border border-f1-border disabled:opacity-20 disabled:cursor-not-allowed transition-all"
+                className="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-f1-surface text-f1-light hover:text-f1-white border border-f1-border disabled:opacity-20 disabled:cursor-not-allowed transition-all"
               >
                 Next →
               </button>

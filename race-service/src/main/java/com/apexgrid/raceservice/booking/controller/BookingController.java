@@ -80,6 +80,13 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.scanBooking(code));
     }
 
+    // H. Check-in alias: PUT /{code}/checkin — same logic as /scan but accessible via PUT for QA/frontend usage
+    @PutMapping("/{code}/checkin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BookingResponse> checkinBooking(@PathVariable(name = "code") String code) {
+        return ResponseEntity.ok(bookingService.scanBooking(code));
+    }
+
     // Missing feature: Admin endpoint — view all bookings with filter & pagination
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")

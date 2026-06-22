@@ -66,8 +66,14 @@ public class UserServiceImpl implements UserService {
                 ? rawSearch.replace("!", "!!").replace("%", "!%").replace("_", "!_")
                 : null;
 
-        return userRepository.findAllWithSearch(searchParam, pageRequest)
-                .map(user -> UserAdminResponse.builder()
+        Page<User> userPage;
+        if (searchParam == null) {
+            userPage = userRepository.findAll(pageRequest);
+        } else {
+            userPage = userRepository.findAllWithSearch(searchParam, pageRequest);
+        }
+
+        return userPage.map(user -> UserAdminResponse.builder()
                         .id(user.getId())
                         .username(user.getUsername())
                         .email(user.getEmail())
