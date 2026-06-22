@@ -499,41 +499,39 @@ select:-webkit-autofill {
   position: relative;
   border-radius: var(--r-lg);
   overflow: hidden;
+  background: var(--f1-glass-bg);
   backdrop-filter: blur(16px) saturate(1.4);
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.45), 0 2px 8px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.1);
   pointer-events: auto;
+  border: 1px solid var(--f1-border);
 }
 .toast-enter  { animation: toastSlideIn  0.35s cubic-bezier(0.16,1,0.3,1) forwards; }
 .toast-exit   { animation: toastSlideOut 0.35s cubic-bezier(0.55,0,1,0.45) forwards; }
-
+ 
 .toast-success {
-  background: rgba(10,25,20,0.85);
-  border: 1px solid rgba(16,185,129,0.3);
-  border-left: 4px solid #10B981;
+  border-left: 4px solid var(--f1-green);
+  border-color: rgba(15, 163, 54, 0.25);
 }
 .toast-error {
-  background: rgba(25,10,10,0.85);
-  border: 1px solid rgba(var(--m-red-rgb),0.3);
   border-left: 4px solid var(--f1-red);
+  border-color: rgba(226, 39, 24, 0.25);
 }
 .toast-warning {
-  background: rgba(25,20,10,0.85);
-  border: 1px solid rgba(245,158,11,0.3);
-  border-left: 4px solid #F59E0B;
+  border-left: 4px solid var(--f1-gold);
+  border-color: rgba(244, 180, 0, 0.25);
 }
 .toast-info {
-  background: rgba(10,20,25,0.85);
-  border: 1px solid rgba(56,189,248,0.3);
-  border-left: 4px solid #38BDF8;
+  border-left: 4px solid var(--m-blue-dark);
+  border-color: rgba(28, 105, 212, 0.25);
 }
-.toast-icon-success { color: #34D399; }
-.toast-icon-error   { color: #FF6B6B; }
-.toast-icon-warning { color: #FBBF24; }
-.toast-icon-info    { color: #38BDF8; }
-
+.toast-icon-success { color: var(--f1-green); }
+.toast-icon-error   { color: var(--f1-red); }
+.toast-icon-warning { color: var(--f1-gold); }
+.toast-icon-info    { color: var(--bmw-blue); }
+ 
 .toast-dismiss {
-  color: rgba(255,255,255,0.25);
+  color: var(--f1-light);
   transition: color 0.2s ease;
   line-height: 1;
   background: none;
@@ -542,7 +540,7 @@ select:-webkit-autofill {
   padding: 0;
   border-radius: var(--r-xs);
 }
-.toast-dismiss:hover { color: rgba(255,255,255,0.65); }
+.toast-dismiss:hover { color: var(--f1-white); }
 
 .toast-progress-track {
   position: absolute; bottom: 0; left: 0; right: 0;

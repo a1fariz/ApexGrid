@@ -50,21 +50,25 @@ export default function ResetPassword() {
 
     setLoading(true)
     try {
-      const res = await api.post('/auth/reset-password', {
-        token,
-        newPassword: form.newPassword
-      })
-      setSuccessMessage(res.data.message || 'Password has been reset successfully. Redirecting to login...')
-      setForm({ newPassword: '', confirmPassword: '' })
-      setTimeout(() => {
-        navigate('/login')
-      }, 3000)
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to reset password. The link may have expired or is invalid.')
-    } finally {
-      setLoading(false)
-    }
-  }
+       const res = await api.post('/auth/reset-password', {
+         token,
+         newPassword: form.newPassword
+       })
+       setSuccessMessage(res.data.message || 'Password has been reset successfully. Redirecting to login...')
+       setForm({ newPassword: '', confirmPassword: '' })
+       setTimeout(() => {
+         navigate('/login')
+       }, 3000)
+     } catch (err) {
+       if (err.response?.status === 429) {
+         setError('Terlalu banyak percobaan. Batas maksimal adalah 10 kali permintaan dalam 1 menit. Silakan coba lagi nanti.')
+       } else {
+         setError(err.response?.data?.message || 'Failed to reset password. The link may have expired or is invalid.')
+       }
+     } finally {
+       setLoading(false)
+     }
+   }
 
   return (
     <PageTransition>

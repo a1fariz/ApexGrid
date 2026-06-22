@@ -20,7 +20,11 @@ export default function ForgotPassword() {
       setSuccessMessage(res.data.message || 'Password reset instructions have been sent to your email.')
       setEmail('')
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to send password reset link. Please check your email.')
+      if (err.response?.status === 429) {
+        setError('Terlalu banyak percobaan. Batas maksimal adalah 10 kali permintaan dalam 1 menit. Silakan coba lagi nanti.')
+      } else {
+        setError(err.response?.data?.message || 'Failed to send password reset link. Please check your email.')
+      }
     } finally {
       setLoading(false)
     }

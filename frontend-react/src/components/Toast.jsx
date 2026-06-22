@@ -28,6 +28,9 @@ export function showToast(message, type = 'success', duration = 4000) {
   notifyListeners()
   setTimeout(() => dismissToast(id), duration)
 }
+if (typeof window !== 'undefined') {
+  window.showToast = showToast
+}
 
 const ICONS = {
   success: (
@@ -89,7 +92,7 @@ export function Toast() {
             <span className={`toast-icon-${toast.type} flex-shrink-0 mt-0.5`}>
               {ICONS[toast.type]}
             </span>
-            <p className="text-sm font-medium leading-snug flex-1 text-white/90">
+            <p className="text-sm font-medium leading-snug flex-1 text-[var(--f1-white)] opacity-90">
               {toast.message}
             </p>
             <button

@@ -59,8 +59,12 @@ export default function Register() {
       })
       setSuccess(true)
     } catch (err) {
-      const msg = err.response?.data?.message || 'Registration failed'
-      setErrors({ general: msg })
+      if (err.response?.status === 429) {
+        setErrors({ general: 'Terlalu banyak percobaan. Batas maksimal adalah 10 kali permintaan dalam 1 menit. Silakan coba lagi nanti.' })
+      } else {
+        const msg = err.response?.data?.message || 'Registration failed'
+        setErrors({ general: msg })
+      }
     } finally {
       setLoading(false)
     }

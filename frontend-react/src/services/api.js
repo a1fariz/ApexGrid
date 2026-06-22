@@ -38,6 +38,15 @@ const processQueue = (error, token = null) => {
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
+    if (error.response?.status === 429) {
+      if (error.response.data && typeof error.response.data === 'object') {
+        error.response.data.message = 'Terlalu banyak percobaan. Batas maksimal adalah 10 kali permintaan dalam 1 menit. Silakan coba lagi nanti.'
+      } else {
+        error.response.data = {
+          message: 'Terlalu banyak percobaan. Batas maksimal adalah 10 kali permintaan dalam 1 menit. Silakan coba lagi nanti.'
+        }
+      }
+    }
     const originalRequest = error.config
     
     const isAuthEndpoint = originalRequest.url?.includes('/auth/login') || 

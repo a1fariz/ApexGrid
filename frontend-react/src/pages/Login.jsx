@@ -31,7 +31,11 @@ export default function Login() {
       login(res.data.token, res.data.refreshToken, rememberMe)
       navigate('/')
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.')
+      if (err.response?.status === 429) {
+        setError('Terlalu banyak percobaan. Batas maksimal adalah 10 kali permintaan dalam 1 menit. Silakan coba lagi nanti.')
+      } else {
+        setError(err.response?.data?.message || 'Login failed. Please check your credentials.')
+      }
     } finally {
       setLoading(false)
     }
