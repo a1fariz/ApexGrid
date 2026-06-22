@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, Navigate } from 'react-router-dom'
 import PageTransition from '../components/PageTransition'
 import api from '../services/api'
 import f1Register from '../assets/f1_register.png'
+import { useAuth } from '../hooks/useAuth'
 
 export default function Register() {
+  const { isAuthenticated } = useAuth()
   const [form, setForm] = useState({
     username: '', email: '', fullName: '', password: '', confirmPassword: ''
   })
@@ -12,6 +14,10 @@ export default function Register() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const navigate = useNavigate()
+
+  if (isAuthenticated()) {
+    return <Navigate to="/" replace />
+  }
 
   const handleChange = (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value

@@ -82,11 +82,31 @@ export default function UserProfile() {
     e.preventDefault()
     setSaving(true)
     try {
-      await api.put('/users/profile', {
+      const res = await api.put('/users/profile', {
         fullName: editForm.fullName,
         currentPassword: editForm.currentPassword || undefined,
         password: editForm.password || undefined,
       })
+
+      // Update the stored token if returned
+      if (res.data && res.data.accessToken) {
+        const isRemembered = !!localStorage.getItem('apexgrid_token')
+        const storage = isRemembered ? localStorage : sessionStorage
+        storage.setItem('apexgrid_token', res.data.accessToken)
+
+        // Also update apexgrid_user in storage if it exists
+        const storedUser = storage.getItem('apexgrid_user')
+        if (storedUser) {
+          try {
+            const userObj = JSON.parse(storedUser)
+            userObj.fullName = editForm.fullName
+            storage.setItem('apexgrid_user', JSON.stringify(userObj))
+          } catch (e) {
+            // Ignore
+          }
+        }
+      }
+
       showToast('Profile updated successfully! Refreshing...', 'success')
       setTimeout(() => window.location.reload(), 1200)
     } catch (err) {

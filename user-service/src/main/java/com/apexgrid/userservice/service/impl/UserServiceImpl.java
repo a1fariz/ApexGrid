@@ -1,8 +1,11 @@
 package com.apexgrid.userservice.service.impl;
 
 import com.apexgrid.userservice.dto.MessageResponse;
+import com.apexgrid.userservice.dto.ProfileUpdateResponse;
 import com.apexgrid.userservice.dto.UpdateProfileRequest;
 import com.apexgrid.userservice.dto.UserAdminResponse;
+import com.apexgrid.userservice.security.JwtUtils;
+import com.apexgrid.userservice.security.UserDetailsImpl;
 import com.apexgrid.userservice.entity.Role;
 import com.apexgrid.userservice.entity.User;
 import com.apexgrid.userservice.exception.ApiException;
@@ -30,10 +33,11 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtils jwtUtils;
 
     @Override
     @Transactional
-    public MessageResponse updateProfile(Integer userId, UpdateProfileRequest request) {
+    public ProfileUpdateResponse updateProfile(Integer userId, UpdateProfileRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
 
@@ -53,7 +57,12 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.save(user);
-        return new MessageResponse("Profile updated successfully");
+
+        // Generate new token with updated user details
+        UserDetailsImpl userDetails = UserDetailsImpl.build(user);
+        String newToken = jwtUtils.generateToken(userDetails);
+
+        return new ProfileUpdateResponse("Profile updated successfully", newToken);
     }
 
     @Override

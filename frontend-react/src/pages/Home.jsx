@@ -8,8 +8,10 @@ import PageTransition from '../components/PageTransition'
 import api from '../services/api'
 import f1Backdrop from '../assets/f1_backdrop.png'
 import { FaSearch, FaTimes, FaFlagCheckered } from 'react-icons/fa'
+import { useAuth } from '../hooks/useAuth'
 
 export default function Home() {
+  const { isAuthenticated } = useAuth()
   const [races, setRaces] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -200,7 +202,7 @@ export default function Home() {
                 style={{ animationDelay: '0.1s' }}>
               EXPERIENCE
               <br />
-              FORMULA <span className="font-sans font-bold text-f1-red">1</span>
+              FORMULA <span style={{ fontVariantNumeric: 'lining-nums' }}>1</span>
             </h1>
 
             <p className="text-lg md:text-xl text-f1-light max-w-2xl mx-auto mb-8 animate-fade-in leading-relaxed"
@@ -245,9 +247,15 @@ export default function Home() {
               <a href="#races" className="btn-primary px-8 py-3.5 text-base">
                 Browse Races
               </a>
-              <Link to="/register" className="btn-outline px-8 py-3.5 text-base">
-                Get Started
-              </Link>
+              {isAuthenticated() ? (
+                <Link to="/bookings" className="btn-outline px-8 py-3.5 text-base">
+                  My Bookings
+                </Link>
+              ) : (
+                <Link to="/register" className="btn-outline px-8 py-3.5 text-base">
+                  Get Started
+                </Link>
+              )}
             </div>
           </div>
         </section>

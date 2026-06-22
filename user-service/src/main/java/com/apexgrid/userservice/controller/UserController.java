@@ -1,6 +1,7 @@
 package com.apexgrid.userservice.controller;
 
 import com.apexgrid.userservice.dto.MessageResponse;
+import com.apexgrid.userservice.dto.ProfileUpdateResponse;
 import com.apexgrid.userservice.dto.UpdateProfileRequest;
 import com.apexgrid.userservice.dto.UserAdminResponse;
 import com.apexgrid.userservice.security.UserDetailsImpl;
@@ -22,7 +23,7 @@ public class UserController {
 
     // Open to any authenticated user
     @PutMapping("/profile")
-    public ResponseEntity<MessageResponse> updateProfile(
+    public ResponseEntity<ProfileUpdateResponse> updateProfile(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody UpdateProfileRequest request) {
         return ResponseEntity.ok(userService.updateProfile(userDetails.getId(), request));
