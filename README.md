@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/badge/Security-JWT_RBAC-FF0055?style=for-the-badge" alt="JWT RBAC"/>
 </p>
 
-**ApexGrid** adalah platform pemesanan tiket balap Formula 1 tingkat produksi berbasis arsitektur **Microservices**. Sistem ini dilengkapi dengan gerbang rute API terpusat (*API Gateway*), manajemen kuota tiket *real-time* berbasis *PostgreSQL triggers*, scheduler pembatalan otomatis untuk reservasi kedaluwarsa, otentikasi JWT dengan *Role-Based Access Control* (RBAC), pembuatan e-tiket PDF otomatis dengan kode QR terenkripsi, serta dashboard interaktif React.
+**ApexGrid** adalah platform pemesanan tiket balap Formula 1 berbasis arsitektur **Microservices**. Sistem ini dilengkapi dengan gerbang rute API terpusat (*API Gateway*), manajemen kuota tiket *real-time* berbasis *PostgreSQL triggers*, scheduler pembatalan otomatis untuk reservasi kedaluwarsa, otentikasi JWT dengan *Role-Based Access Control* (RBAC), pembuatan e-tiket PDF otomatis dengan kode QR unik, serta dashboard interaktif React.
 
 ---
 
@@ -191,3 +191,11 @@ Untuk menguji alur validasi tiket QR di pintu masuk:
 
 Dikembangkan oleh **Muhammad Hafiz Alfarizi** ([@a1fariz](https://github.com/a1fariz)).  
 *Dibuat untuk portofolio rekayasa perangkat lunak berskala enterprise dan arsitektur microservices.*
+
+## Cakupan verifikasi
+
+Repositori ini mendemonstrasikan arsitektur layanan, autentikasi, dan alur reservasi. Aturan kedaluwarsa 30 menit adalah aturan bisnis; angka tersebut bukan metrik performa. Klaim kapasitas, latensi, dan kesiapan production memerlukan hasil pengujian serta bukti operasional tersendiri.
+
+---
+
+[Portfolio Alfa Rizi](https://alfarizi.my.id) · [GitHub profile](https://github.com/a1fariz) · [Contact](mailto:alfarizi.developer@gmail.com)
